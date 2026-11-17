@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from parsers.sbi import parse_sbi
 from parsers.spotify import parse_spotify
 from parsers.whatsapp import chat_name_from_filename, parse_whatsapp, read_export
 from parsers.youtube import parse_youtube
@@ -17,6 +18,7 @@ FIX = Path(__file__).parent / "fixtures" / "spotify"
 
 # Expected from step 2/3 (see data/samples/README.md)
 WA_EVENTS, WA_MESSAGES, SP_PLAYS, YT_ENTRIES, YT_VIDEOS = 20_780, 20_769, 11_761, 7_802, 7_378
+BANK_TXNS = 2_629
 
 
 def demo_frames():
@@ -29,6 +31,8 @@ def demo_frames():
         out.append(("spotify", f.name, parse_spotify({f.name: f.read_text(encoding="utf-8")})))
     yt = SAMPLES / "google" / "Takeout" / "YouTube and YouTube Music" / "history" / "watch-history.json"
     out.append(("youtube", yt.name, parse_youtube(yt.read_text(encoding="utf-8"))))
+    bank = SAMPLES / "bank" / "SBI_statement_demo.xlsx"
+    out.append(("bank", bank.name, parse_sbi(bank.read_bytes(), bank.name)))
     return out
 
 
@@ -57,9 +61,11 @@ def test_demo_row_counts_match_step3(demo):
     assert count(con, "whatsapp") == WA_EVENTS
     assert count(con, "spotify") == SP_PLAYS
     assert count(con, "youtube") == YT_ENTRIES
+    assert count(con, "bank") == BANK_TXNS
     assert sum(r["rows_added"] for r in results) == count(con)
     assert all(r["rows_skipped"] == 0 for r in results)
-    assert scalar(con, "SELECT count(*) FROM imports") == 8
+    assert scalar(con, "SELECT count(*) FROM imports") == 9
+    assert scalar(con, "SELECT count(*) FROM events WHERE source = 'bank' AND local_hour IS NOT NULL") == 0
     assert scalar(con, "SELECT count(DISTINCT event_key) FROM events") == count(con)  # keys are unique
 
 
@@ -183,8 +189,8 @@ def test_daily_activity_nulls_outside_a_sources_coverage():
 def test_overlap_window_and_coverage(demo):
     con, _ = demo
     assert con.execute("SELECT start_date::VARCHAR, end_date::VARCHAR, days, sources, source_list "
-                       "FROM overlap_window").fetchone() == ("2025-11-17", "2026-11-16", 365, 3,
-                                                             "spotify,whatsapp,youtube")
+                       "FROM overlap_window").fetchone() == ("2025-11-17", "2026-11-16", 365, 4,
+                                                             "bank,spotify,whatsapp,youtube")
     cov = {r[0]: r[1:] for r in con.execute("SELECT source, days_with_data, events FROM source_coverage").fetchall()}
     assert cov["spotify"] == (365, SP_PLAYS) and cov["youtube"][1] == YT_ENTRIES
 
@@ -200,7 +206,7 @@ def test_overlap_window_empty_when_ranges_do_not_meet():
 def test_hourly_heatmap_counts_all_non_system_events(demo):
     con, _ = demo
     total = scalar(con, "SELECT sum(events) FROM hourly_heatmap")
-    assert total == scalar(con, "SELECT count(*) FROM events WHERE event_type <> 'system'")
+    assert total == scalar(con, "SELECT count(*) FROM events WHERE event_type <> 'system' AND source <> 'bank'")
     assert scalar(con, "SELECT count(*) FROM hourly_heatmap WHERE hour NOT BETWEEN 0 AND 23 "
                        "OR weekday NOT BETWEEN 0 AND 6") == 0
 
@@ -214,7 +220,7 @@ def test_remove_import_and_wipe(demo):
     set_vars(con, import_id=priya["import_id"])
     con.execute(named("manage")["remove_import"])
     assert count(con, "whatsapp") == before - priya["rows_added"]
-    assert scalar(con, "SELECT count(*) FROM imports") == 7
+    assert scalar(con, "SELECT count(*) FROM imports") == 8
     con.execute(named("manage")["wipe_all"])
     assert count(con) == 0 and scalar(con, "SELECT count(*) FROM daily_activity") == 0
 
@@ -226,6 +232,7 @@ def test_all_named_queries_run(demo):
         con.execute(q).fetchall()
     preview = con.execute(named("queries")["preview"]).fetchall()
     assert len(preview) == 20
+    assert len(con.execute(named("queries")["bank_top_spend"]).fetchall()) == 10
     chats = con.execute(named("queries")["whatsapp_chats"]).fetchall()
     assert len(chats) == 5 and sum(c[2] for c in chats) == WA_MESSAGES
 
@@ -237,3 +244,45 @@ def test_reset_then_schema_is_idempotent(demo):
     con.execute(sql("schema"))
     con.execute(sql("views"))
     assert count(con) == 0
+
+
+# ---------------------------------------------------------------- bank
+
+def test_bank_columns_in_daily_activity(demo):
+    con, _ = demo
+    spent, received, n, fd, nulls = con.execute(
+        "SELECT sum(spend_total), sum(received_total), sum(spend_txn_count), count(food_delivery_spend), "
+        "count(*) FILTER (WHERE spend_total IS NULL) FROM daily_activity").fetchone()
+    assert spent == pytest.approx(-scalar(con, "SELECT sum(value) FROM events WHERE source='bank' AND value < 0"))
+    assert received == pytest.approx(scalar(con, "SELECT sum(value) FROM events WHERE source='bank' AND value > 0"))
+    assert n == scalar(con, "SELECT count(*) FROM events WHERE source='bank' AND value < 0")
+    assert fd == 0 and nulls == 0  # no categories yet -> NULL; bank covers every demo day
+    # once any bank row is categorised, food_delivery_spend becomes a number (0 on days without)
+    con.execute("UPDATE events SET category = 'food_delivery' WHERE source = 'bank' AND actor IN ('SWIGGY', 'ZOMATO')")
+    total, filled = con.execute("SELECT sum(food_delivery_spend), count(food_delivery_spend) FROM daily_activity").fetchone()
+    assert filled == 365 and total == pytest.approx(
+        -scalar(con, "SELECT sum(value) FROM events WHERE actor IN ('SWIGGY', 'ZOMATO')"))
+
+
+def test_bank_spend_null_outside_coverage():
+    con = connect()
+    text = ("Txn Date,Value Date,Description,Ref No./Cheque No.,Debit,Credit,Balance\n"
+            "3 Mar 2026,3 Mar 2026,TO TRANSFER-UPI/DR/512345678901/RAJU TEA/PYTM/paytmqr1y7/UPI-, ,25.00, ,975.00\n"
+            "5 Mar 2026,5 Mar 2026,BY TRANSFER-UPI/CR/512345678902/SURESH K/SBIN/sureshkuma/UPI-, , ,100.00,1075.00\n")
+    import_df(con, parse_sbi(text, "s.csv"), "bank", "s.csv")
+    yt = parse_youtube(json.dumps([{"title": "Watched V", "time": "2026-03-06T10:00:00Z"}]))
+    import_df(con, yt, "youtube", "y.json")
+    rows = con.execute("SELECT local_date::VARCHAR, spend_total, spend_txn_count, received_total "
+                       "FROM daily_activity").fetchall()
+    assert rows == [("2026-03-03", 25.0, 1, 0.0), ("2026-03-04", 0.0, 0, 0.0),
+                    ("2026-03-05", 0.0, 0, 100.0), ("2026-03-06", None, None, None)]
+
+
+def test_bank_reimport_and_overlapping_statement(frames):
+    con = connect()
+    _, name, df = next(f for f in frames if f[0] == "bank")
+    first = import_df(con, df.iloc[:1500], "bank", "older.xlsx")
+    second = import_df(con, df, "bank", name)
+    assert (first["rows_added"], second["rows_added"], second["rows_skipped"]) == (1500, BANK_TXNS - 1500, 1500)
+    assert import_df(con, df, "bank", name)["rows_added"] == 0
+    assert count(con, "bank") == BANK_TXNS

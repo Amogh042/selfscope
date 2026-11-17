@@ -109,9 +109,10 @@ async function run(code: string, inputs: Record<string, unknown> = {}): Promise<
   const names = Object.keys(inputs)
   try {
     // Plain objects/arrays become Python dicts/lists; strings and numbers convert directly.
+    // Typed arrays (file bytes) stay JS proxies: Python reads them with .to_bytes().
     for (const name of names) {
       const v = inputs[name]
-      py.globals.set(name, v !== null && typeof v === 'object' ? py.toPy(v) : v)
+      py.globals.set(name, v !== null && typeof v === 'object' && !ArrayBuffer.isView(v) ? py.toPy(v) : v)
     }
     // Auto-load any extra Pyodide packages the code imports; keep loader chatter out of stdout.
     await py.loadPackagesFromImports(code, { messageCallback: () => {} })

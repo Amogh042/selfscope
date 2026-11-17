@@ -8,6 +8,8 @@ the real exports use, so the same parsers work on demo data and real data.
   YouTube  -> data/samples/google/Takeout/YouTube and YouTube Music/history/watch-history.json
   WhatsApp -> data/samples/whatsapp/WhatsApp Chat with <Name>.txt  (Android, 4 chats)
               data/samples/whatsapp/WhatsApp Chat - Rohan.zip      (iOS, _chat.txt inside)
+  Bank     -> data/samples/bank/SBI_statement_demo.xlsx         (SBI Excel statement)
+              ml/data/demo_bank_truth.csv  (true category per row; answer key, not used by the app)
 
 All data is SYNTHETIC. Song and channel names are real so the demo looks natural,
 but every play, timestamp, video title and video ID is generated.
@@ -495,6 +497,253 @@ def gen_whatsapp(seed):
     return files, counts
 
 
+# ---------------------------------------------------------------- bank (SBI Excel statement)
+# One year of a student's SBI savings account, written like an OnlineSBI Excel download.
+# Own RNG stream ("<seed>:bank") so the other demo files stay byte-identical.
+# Every merchant/person name, UPI ID, phone number and reference number is made up.
+BK_OPENING = 12000.00
+BK_LOW = 3500.00  # below this, extras are skipped (about 9 days of routine)
+BK_PARENT = ("SURESH KUMAR", "sureshkumar1968@sbi", "SBIN")
+BK_SNACKS = [  # (name, vpa, bank code, weight) — repeat tea/snack vendors (paytmqr-style)
+    ("SRI LAKSHMI TEA STALL", "paytmqr281005050101lak9@paytm", "PYTM", 5),
+    ("RAJU TEA POINT", "paytmqr1y7xk0qz9a@paytm", "PYTM", 4),
+    ("CAMPUS BAKERY", "paytmqr281005050101cmpb@paytm", "PYTM", 3),
+    ("NANDINI MILK PARLOUR", "paytmqr6h2k9d1mz@paytm", "PYTM", 2),
+    ("MANJU CONDIMENTS", "paytmqr5p8c3x0nb@paytm", "PYTM", 2),
+    ("IYENGAR BAKERY", "q839201745@ybl", "YESB", 2),
+]
+BK_LUNCH = [("MAIN CANTEEN", "paytmqr28100505mcan@paytm", "PYTM", 5),
+            ("ANNAPOORNA MESS", "annapoornamess@okaxis", "UTIB", 3),
+            ("HOTEL NALAPAKA", "nalapakahotel@icici", "ICIC", 1)]
+BK_DINNER = [("SRI SAI DARSHINI", "q492018377@ybl", "YESB", 4),
+             ("DAKSHIN MESS", "dakshinmess@oksbi", "SBIN", 3),
+             ("HOTEL NALAPAKA", "nalapakahotel@icici", "ICIC", 2),
+             ("UDUPI GRAND", "udupigrand@hdfcbank", "HDFC", 1)]
+BK_AUTO = [("RAPIDO", "rapido.upi@axisbank", "UTIB", 4),
+           ("MUNIRAJU", "9845012736@ybl", "YESB", 3),     # local autos pay to phone-number VPAs
+           ("VENKATESH K", "9880645213@paytm", "PYTM", 2),
+           ("SHIVANNA", "7259031846@ybl", "YESB", 1)]
+BK_DELIVERY = [("SWIGGY", "swiggy.stores@axb", "UTIB", 1), ("ZOMATO", "zomato.order@hdfcbank", "HDFC", 1)]
+BK_QCOMM = [("ZEPTO MARKETPLACE", "zeptomarketplace@ybl", "YESB", 1), ("BLINKIT", "blinkit.payu@hdfcbank", "HDFC", 1)]
+BK_METRO = ("BMRCL", "bmrcl.qr@icici", "ICIC")
+BK_SHOPPING = [("AMAZON PAY", "amazonupi@apl", "UTIB", 3), ("FLIPKART", "flipkart.payu@axisbank", "UTIB", 2),
+               ("MYNTRA DESIGNS", "myntra.payu@hdfcbank", "HDFC", 1)]
+BK_FUN = [("BOOKMYSHOW", "bookmyshow@icici", "ICIC", 2, (180, 450)),        # movies
+          ("THIRD WAVE COFFEE", "thirdwave.cafe@ybl", "YESB", 2, (180, 380)),  # cafe outings
+          ("CHAI POINT", "chaipoint@icici", "ICIC", 1, (90, 220)),
+          ("CAFE COFFEE DAY", "ccd.upi@axisbank", "UTIB", 1, (150, 320))]
+BK_RECHARGE = ("RELIANCE JIO", "jiorecharge@icici", "ICIC")
+BK_MANDATES = [("SPOTIFY", 119, 5), ("NETFLIX", 199, 12)]  # name, amount, day of month
+# Friends = the same people as the demo WhatsApp chats (Varun is the classmate).
+BK_FRIENDS = [("PRIYA SHARMA", "priyasharma@okhdfcbank", "HDFC", 4), ("ROHAN KUMAR", "rohank98@okicici", "ICIC", 4),
+              ("VARUN RAO", "varunrao@oksbi", "SBIN", 2), ("KARTHIK S", "karthik.s@ybl", "YESB", 2),
+              ("SNEHA M", "sneham@okaxis", "UTIB", 1), ("ISHITA R", "ishita.r@okhdfcbank", "HDFC", 1)]
+BK_FREELANCE = ("PIXELCRAFT STUDIO", "HDFC0004321")
+BK_ATM = ["ATM CASH 4521 SBI JAYANAGAR 4TH BLOCK BANGALORE", "ATM CASH 1187 SBI BASAVANAGUDI BANGALORE"]
+BK_POOL = {"PYTM": "4897691162091", "YESB": "4897736162093", "UTIB": "3199412044306",
+           "ICIC": "4897702162088", "HDFC": "4897718162097", "SBIN": "3199400051121"}
+
+
+def inr(x):
+    """1234567.5 -> '12,34,567.50' (Indian digit grouping)."""
+    whole, frac = f"{x:.2f}".split(".")
+    if len(whole) > 3:
+        head, tail = whole[:-3], whole[-3:]
+        groups = []
+        while len(head) > 2:
+            groups.insert(0, head[-2:])
+            head = head[:-2]
+        whole = ",".join(([head] if head else []) + groups + [tail])
+    return f"{whole}.{frac}"
+
+
+def yt_daily_minutes(yt):
+    """Estimated YouTube minutes per IST date, same method as parsers/youtube.py (ads excluded)."""
+    rows = sorted((datetime.fromisoformat(e["time"].replace("Z", "+00:00")),
+                   any(d.get("name") == "From Google Ads" for d in e.get("details", []))) for e in yt)
+    out = {}
+    for i, (t, ad) in enumerate(rows):
+        gap = (rows[i + 1][0] - t).total_seconds() / 60 if i + 1 < len(rows) else None
+        est = 5.0 if gap is None or gap >= 30 else min(gap, 20.0)
+        if not ad:
+            d = t.astimezone(IST).date()
+            out[d] = out.get(d, 0.0) + est
+    return out
+
+
+def gen_bank(seed, yt):
+    """-> (statement rows [(date, desc, ref, debit, credit, balance)], truth categories, stats)"""
+    rng = random.Random(f"{seed}:bank")
+    pick = lambda opts: rng.choices(opts, [o[3] for o in opts])[0]  # noqa: E731
+    ytm = yt_daily_minutes(yt)
+    yt_mean = sum(ytm.values()) / max(len(ytm), 1)
+    txns = []  # (date, minute-of-day, kind, payload, amount (+credit / -debit), category)
+
+    def upi(d, minute, payee, amount, category, note="UPI", credit=False):
+        txns.append((d, minute, "upi_cr" if credit else "upi_dr", (payee, note), amount if credit else -amount, category))
+
+    d, credit_day = START, None
+    while d <= END:
+        weekend, sunday = d.weekday() >= 5, d.weekday() == 6
+        exam = in_ranges(d, EXAM_WEEKS)
+        dom = d.day
+        # monthly parent credit around the 1st
+        if dom == 1:
+            credit_day = d + timedelta(days=rng.choice([0, 0, 1, 2]))
+        if credit_day == d:
+            upi(d, rng.randint(540, 720), BK_PARENT, 15000, "income", note="Monthly", credit=True)
+        post_credit = credit_day is not None and 0 <= (d - credit_day).days < 7
+        boost = 1.5 if post_credit else 1.0
+
+        # --- base routine
+        n_snacks = rng.choices([2, 3, 4, 5], [0.1, 0.25, 0.4, 0.25])[0] - (1 if sunday else 0)
+        for _ in range(n_snacks):
+            amt = 25 if rng.random() < 0.85 else rng.choice([20, 30, 40])
+            upi(d, rng.randint(480, 1170), pick(BK_SNACKS), amt, "tea_snacks")
+        upi(d, rng.randint(735, 840), pick(BK_LUNCH), rng.randrange(100, 145, 5), "meals")
+        if rng.random() < 20 / 30:
+            upi(d, rng.randint(450, 1260), pick(BK_AUTO), 20, "transport")
+
+        # --- extras
+        f_yt = min(max(0.35 + 0.65 * ytm.get(d, 0.0) / yt_mean, 0.3), 2.5)
+        delivery = rng.random() < 0.13 * f_yt * (1.7 if exam else 1.0) * boost
+        if delivery:
+            upi(d, rng.randint(1170, 1350), pick(BK_DELIVERY), rng.randrange(180, 455, 5), "food_delivery", note="Order")
+        if not delivery or rng.random() < 0.15:  # delivery usually replaces the canteen dinner
+            upi(d, rng.randint(1140, 1260), pick(BK_DINNER), rng.randrange(100, 145, 5), "meals")
+        if rng.random() < 0.06 * (1.3 if weekend else 1.0) * boost:
+            upi(d, rng.randint(600, 1320), pick(BK_QCOMM), rng.randrange(120, 520, 10), "groceries_qcommerce")
+        if rng.random() < 0.11:
+            upi(d, rng.randint(540, 1200), BK_METRO, rng.choice([30, 40, 50, 60]), "transport")
+        if rng.random() < 0.03 * (2.2 if weekend else 1.0) * boost:
+            upi(d, rng.randint(600, 1380), pick(BK_SHOPPING), rng.randrange(249, 1500, 50), "shopping", note="Order")
+        if rng.random() < (0.28 if weekend else 0.03) * boost:
+            fun = rng.choices(BK_FUN, [f[3] for f in BK_FUN])[0]
+            upi(d, rng.randint(900, 1320), fun[:4], rng.randrange(fun[4][0], fun[4][1], 10), "entertainment")
+        if dom == 20:
+            upi(d, rng.randint(600, 1200), BK_RECHARGE, 299, "bills_recharge", note="Recharge")
+        for name, amount, day in BK_MANDATES:
+            if dom == day:
+                txns.append((d, 300, "mandate", name, -amount, "subscriptions"))
+        # friends: splitting bills; exam weeks -> more transfers to the classmate (Varun)
+        if rng.random() < 0.14:
+            upi(d, rng.randint(720, 1380), pick(BK_FRIENDS), rng.randrange(50, 505, 10), "p2p_transfer",
+                note=rng.choice(["split", "UPI", "dinner", "movie", "UPI"]))
+        if exam and rng.random() < 0.35:
+            upi(d, rng.randint(1200, 1410), BK_FRIENDS[2], rng.randrange(60, 260, 10), "p2p_transfer", note="food split")
+        if rng.random() < 0.11:
+            upi(d, rng.randint(600, 1380), pick(BK_FRIENDS), rng.randrange(50, 405, 10), "income", note="returned",
+                credit=True)
+        if rng.random() < 1 / 40:
+            txns.append((d, rng.randint(600, 1200), "atm", rng.choice(BK_ATM), -rng.choice([500, 500, 500, 1000]),
+                         "cash_atm"))
+        d += timedelta(days=1)
+
+    for fd in (date(2026, 1, 23), date(2026, 5, 4), date(2026, 8, 18), date(2026, 10, 9)):  # freelance NEFT
+        txns.append((fd, 660, "neft", BK_FREELANCE, rng.randrange(3000, 8001, 250), "income"))
+    interest_days = (date(2026, 2, 10), date(2026, 5, 10), date(2026, 8, 10), date(2026, 11, 10))
+
+    # --- running balance, in time order; never negative. Like a real student near month-end,
+    # extras (delivery, shopping, outings, transfers, ATM) are skipped when the balance would
+    # drop below BK_LOW; the daily routine only stops if it would overdraw.
+    txns.sort(key=lambda t: (t[0], t[1]))
+    routine = {"tea_snacks", "meals", "transport", "subscriptions", "bills_recharge"}
+    rows, truth, bal, dropped, quarter_sum, quarter_days = [], [], BK_OPENING, 0, 0.0, 0
+    skipped_extras = 0
+    last_day = None
+    pending_interest = list(interest_days)
+    for dd, minute, kind, payload, amount, category in txns:
+        if last_day != dd:
+            if pending_interest and dd >= pending_interest[0]:
+                interest = round(quarter_sum / max(quarter_days, 1) * 0.027 / 4)
+                bal = round(bal + interest, 2)
+                rows.append((pending_interest[0], "CREDIT INTEREST--", "", None, interest, bal))
+                truth.append("income")
+                pending_interest.pop(0)
+                quarter_sum, quarter_days = 0.0, 0
+            quarter_sum, quarter_days, last_day = quarter_sum + bal, quarter_days + 1, dd
+        if amount < 0 and category not in routine and bal + amount < BK_LOW:
+            skipped_extras += 1
+            continue
+        if amount < 0 and bal + amount < 0:
+            dropped += 1
+            continue
+        ref12 = str(rng.choice("456789")) + "".join(rng.choice(string.digits) for _ in range(11))
+        if kind in ("upi_dr", "upi_cr"):
+            (name, vpa, code, *_), note = payload
+            direction = "DR" if kind == "upi_dr" else "CR"
+            desc = (f"{'TO' if direction == 'DR' else 'BY'} TRANSFER-UPI/{direction}/{ref12}/{name[:8]}/{code}/"
+                    f"{vpa[:10]}/{note}-")
+            ref = f"TRANSFER {'TO' if direction == 'DR' else 'FROM'} {BK_POOL[code]}"
+        elif kind == "mandate":
+            desc, ref = f"DEBIT-CMP MANDATE DEBIT {payload}-", ""
+        elif kind == "atm":
+            desc, ref = f"ATM WDL-{payload}-", ""
+        else:  # neft
+            utr = "N" + "".join(rng.choice(string.digits) for _ in range(12))
+            desc = f"BY TRANSFER-NEFT*{payload[1]}*{utr}*{payload[0]}*-"
+            ref = f"TRANSFER FROM {BK_POOL['HDFC']}"
+        bal = round(bal + amount, 2)
+        rows.append((dd, desc, ref, -amount if amount < 0 else None, amount if amount > 0 else None, bal))
+        truth.append(category)
+    return rows, truth, {"dropped_overdraw": dropped, "skipped_low_balance": skipped_extras, "closing": bal}
+
+
+def xlsx_bytes(cells):
+    """Minimal one-sheet .xlsx (inline strings only) built with the stdlib."""
+    from xml.sax.saxutils import escape
+
+    def col(i):
+        return "ABCDEFGHIJ"[i]
+    sheet_rows = []
+    for r, row in enumerate(cells, start=1):
+        cs = "".join(f'<c r="{col(c)}{r}" t="inlineStr"><is><t xml:space="preserve">{escape(str(v))}</t></is></c>'
+                     for c, v in enumerate(row) if v not in (None, ""))
+        sheet_rows.append(f'<row r="{r}">{cs}</row>')
+    files = {
+        "[Content_Types].xml": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>',
+        "_rels/.rels": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+        "xl/workbook.xml": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Statement" sheetId="1" r:id="rId1"/></sheets></workbook>',
+        "xl/_rels/workbook.xml.rels": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>',
+        "xl/styles.xml": '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="1"><font><sz val="11"/><name val="Calibri"/></font></fonts><fills count="1"><fill><patternFill patternType="none"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="1"><xf/></cellXfs></styleSheet>',
+        "xl/worksheets/sheet1.xml": ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'
+                                     + "".join(sheet_rows) + "</sheetData></worksheet>"),
+    }
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for name, text in files.items():
+            zf.writestr(zipfile.ZipInfo(name, date_time=(2026, 11, 17, 9, 0, 0)), text.encode("utf-8"),
+                        compress_type=zipfile.ZIP_DEFLATED)
+    return buf.getvalue()
+
+
+def bank_statement_cells(rows):
+    fmt_d = lambda x: f"{x.day} {x:%b %Y}"  # noqa: E731  "13 Aug 2026"
+    head = [
+        ["Account Name", ":", "DEMO USER"],
+        ["Address", ":", "DEMO ADDRESS, BENGALURU 560000"],
+        ["Date", ":", fmt_d(END + timedelta(days=1))],
+        ["Account Number", ":", "XXXXXXX1234"],
+        ["Account Description", ":", "REGULAR SB CHQ-INDIVIDUALS"],
+        ["Branch", ":", "DEMO BRANCH"],
+        ["Drawing Power", ":", "0.00"],
+        ["Interest Rate(% p.a.)", ":", "2.7"],
+        ["MOD Balance", ":", "0.00"],
+        ["CIF No.", ":", "XXXXXXX5678"],
+        ["IFS Code", ":", "SBIN0000000"],
+        ["MICR Code", ":", "560000000"],
+        ["Nomination Registered", ":", "No"],
+        [f"Balance as on {fmt_d(START)}", ":", inr(BK_OPENING)],
+        [],
+        [f"Account Statement from {fmt_d(START)} to {fmt_d(END)}"],
+        [],
+        ["Txn Date", "Value Date", "Description", "Ref No./Cheque No.", "Debit", "Credit", "Balance"],
+    ]
+    body = [[fmt_d(d), fmt_d(d), desc, ref or " ", inr(dr) if dr else " ", inr(cr) if cr else " ", inr(bal)]
+            for d, desc, ref, dr, cr, bal in rows]
+    return head + body + [[], ["**This is a computer generated statement and does not require a signature."]]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="data/samples")
@@ -522,7 +771,23 @@ def main():
         with open(os.path.join(wa_dir, name), "wb") as f:
             f.write(data)
 
+    bank_rows, bank_truth, bank_stats = gen_bank(a.seed, yt)
+    bank_dir = os.path.join(a.out, "bank")
+    os.makedirs(bank_dir, exist_ok=True)
+    with open(os.path.join(bank_dir, "SBI_statement_demo.xlsx"), "wb") as f:
+        f.write(xlsx_bytes(bank_statement_cells(bank_rows)))
+    # Hidden answer key for evaluating the spend categoriser (NOT used by the app)
+    truth_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+    os.makedirs(truth_dir, exist_ok=True)
+    with open(os.path.join(truth_dir, "demo_bank_truth.csv"), "w", encoding="utf-8", newline="") as f:
+        f.write("row,txn_date,description,debit,credit,category\n")
+        for i, ((dd, desc, _, dr, cr, _), cat) in enumerate(zip(bank_rows, bank_truth), start=1):
+            f.write(f'{i},{dd},"{desc}",{dr or ""},{cr or ""},{cat}\n')
+
     print(f"Spotify plays: {len(sp):,}  |  YouTube entries: {len(yt):,}  |  {START} to {END}")
+    print(f"Bank transactions: {len(bank_rows):,}  |  closing balance {inr(bank_stats['closing'])}"
+          f"  |  extras skipped at low balance: {bank_stats['skipped_low_balance']}"
+          f"  |  overdraw-dropped debits: {bank_stats['dropped_overdraw']}")
     print(f"WhatsApp messages: {sum(wa_counts.values()):,}  |  "
           + ", ".join(f"{k}: {v:,}" for k, v in wa_counts.items()))
 

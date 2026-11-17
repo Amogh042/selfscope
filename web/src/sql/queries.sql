@@ -87,6 +87,57 @@ GROUP BY actor
 ORDER BY videos DESC, name
 LIMIT 5;
 
+-- name: bank_summary
+SELECT
+    count(*)                                                         AS transactions,
+    round(coalesce(sum(-value) FILTER (WHERE value < 0), 0), 2)      AS spent,
+    round(coalesce(sum(value) FILTER (WHERE value > 0), 0), 2)       AS received,
+    count(*) FILTER (WHERE value < 0)                                AS debits,
+    count(*) FILTER (WHERE value > 0)                                AS credits,
+    round(coalesce(sum(-value) FILTER (WHERE value < 0), 0)
+          / nullif(date_diff('day', min(local_date), max(local_date)) + 1, 0), 2) AS avg_daily_spend,
+    CAST(min(local_date) AS VARCHAR)                                 AS first_date,
+    CAST(max(local_date) AS VARCHAR)                                 AS last_date
+FROM events
+WHERE source = 'bank';
+
+-- name: bank_top_spend
+SELECT actor AS name, round(sum(-value), 2) AS spent, count(*) AS txns
+FROM events
+WHERE source = 'bank' AND value < 0
+GROUP BY actor
+ORDER BY spent DESC, name
+LIMIT 10;
+
+-- name: bank_top_count
+SELECT actor AS name, count(*) AS txns, round(sum(-value), 2) AS spent
+FROM events
+WHERE source = 'bank' AND value < 0
+GROUP BY actor
+ORDER BY txns DESC, name
+LIMIT 10;
+
+-- name: bank_by_channel
+SELECT json_extract_string(meta, '$.channel') AS channel,
+       round(sum(-value) FILTER (WHERE value < 0), 2) AS spent,
+       count(*) FILTER (WHERE value < 0) AS debits,
+       round(sum(value) FILTER (WHERE value > 0), 2) AS received,
+       count(*) FILTER (WHERE value > 0) AS credits
+FROM events
+WHERE source = 'bank'
+GROUP BY channel
+ORDER BY spent DESC NULLS LAST, channel;
+
+-- name: bank_by_month
+SELECT strftime(local_date, '%Y-%m') AS month,
+       round(coalesce(sum(-value) FILTER (WHERE value < 0), 0), 2) AS spent,
+       round(coalesce(sum(value) FILTER (WHERE value > 0), 0), 2)  AS received,
+       count(*) AS txns
+FROM events
+WHERE source = 'bank'
+GROUP BY month
+ORDER BY month;
+
 -- name: preview
 -- Variables: preview_source, preview_chat (NULL = any chat).
 SELECT source, strftime(ts_utc, '%Y-%m-%dT%H:%M:%SZ') AS ts_utc, CAST(local_date AS VARCHAR) AS local_date,

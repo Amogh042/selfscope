@@ -18,7 +18,7 @@ interface Item {
   note?: string
 }
 
-const SOURCE_LABEL = { whatsapp: 'WHATSAPP', spotify: 'SPOTIFY', youtube: 'YOUTUBE', unknown: 'UNKNOWN' } as const
+const SOURCE_LABEL = { whatsapp: 'WHATSAPP', spotify: 'SPOTIFY', youtube: 'YOUTUBE', bank: 'BANK · SBI', unknown: 'UNKNOWN' } as const
 
 const STATUS_UI: Record<ItemStatus, { label: string; cls: string }> = {
   detected: { label: 'DETECTED', cls: 'border-orange-light text-orange-light' },
@@ -31,6 +31,8 @@ const STATUS_UI: Record<ItemStatus, { label: string; cls: string }> = {
 }
 
 const fmt = new Intl.NumberFormat('en-IN')
+const inr = (n: number | null | undefined) =>
+  n == null ? '—' : `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`
 const pct = (x: number | null | undefined) => (x == null ? '—' : `${(x * 100).toFixed(1)}%`)
 
 function formatBytes(n?: number) {
@@ -59,7 +61,7 @@ function InventorySlot({ item }: { item: Item }) {
   const { c, status } = item
   const note =
     status === 'unknown'
-      ? 'Not recognised. Expected a WhatsApp .txt/.zip, Spotify StreamingHistory*.json or Takeout watch-history.json.'
+      ? 'Not recognised. Expected a WhatsApp .txt/.zip, Spotify StreamingHistory*.json, Takeout watch-history.json or an SBI statement (.xls/.xlsx).'
       : status === 'parsing'
         ? 'Parsing in Python worker, then storing…'
         : status === 'detected'
@@ -241,6 +243,7 @@ export default function ImportPage() {
         </p>
         <p className="max-w-xl font-mono text-xs text-muted">
           WhatsApp chat .txt or iOS .zip · Spotify StreamingHistory*.json · Google Takeout watch-history.json or Takeout .zip ·
+          SBI statement (Excel .xls/.xlsx) ·
           files you add go to MY DATA; re-adding a file or a newer export only stores new events
         </p>
         <div className="flex flex-wrap justify-center gap-5">
@@ -255,7 +258,7 @@ export default function ImportPage() {
           ref={inputRef}
           type="file"
           multiple
-          accept=".txt,.zip,.json,.html"
+          accept=".txt,.zip,.json,.html,.xls,.xlsx,.csv,.pdf"
           className="hidden"
           onChange={(e) => {
             void addFiles(Array.from(e.target.files ?? []), 'real')
@@ -339,10 +342,14 @@ interface PersonRow {
 function StoredData() {
   const sp = useStoreQuery<SpotifySummary>('spotify_summary').data?.[0]
   const yt = useStoreQuery<YouTubeSummary>('youtube_summary').data?.[0]
+  const bk = useStoreQuery<BankSummary>('bank_summary').data?.[0]
   const hasSp = !!sp && sp.plays > 0
   const hasYt = !!yt && yt.entries > 0
+  const hasBk = !!bk && bk.transactions > 0
   return (
     <>
+      {hasBk && <BankPanel s={bk} />}
+      {hasBk && <PreviewPanel title="BANK · FIRST 20 EVENTS" source="bank" />}
       {(hasSp || hasYt) && (
         <div className="grid gap-8 lg:grid-cols-2">
           {hasSp && <SpotifyPanel s={sp} />}
@@ -356,7 +363,105 @@ function StoredData() {
   )
 }
 
-function TopList({ title, rows }: { title: string; rows: { label: string; sub?: string; n: number }[] }) {
+interface BankSummary {
+  transactions: number
+  spent: number
+  received: number
+  debits: number
+  credits: number
+  avg_daily_spend: number | null
+  first_date: string | null
+  last_date: string | null
+}
+
+function BankPanel({ s }: { s: BankSummary }) {
+  const bySpend = useStoreQuery<{ name: string; spent: number; txns: number }>('bank_top_spend').data ?? []
+  const byCount = useStoreQuery<{ name: string; txns: number; spent: number }>('bank_top_count').data ?? []
+  const channels = useStoreQuery<{ channel: string; spent: number | null; debits: number; received: number | null; credits: number }>(
+    'bank_by_channel',
+  ).data ?? []
+  const months = useStoreQuery<{ month: string; spent: number; received: number; txns: number }>('bank_by_month').data ?? []
+  return (
+    <Panel title="BANK · SBI" tag={<span className="font-mono text-[11px] text-muted">CATEGORIES COME NEXT STEP</span>}>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="flex flex-col gap-4">
+          <DataRows
+            rows={[
+              ['transactions', fmt.format(s.transactions)],
+              ['total spent', inr(s.spent)],
+              ['total received', inr(s.received)],
+              ['avg daily spend', inr(s.avg_daily_spend)],
+              ['from', s.first_date ?? '—'],
+              ['to', s.last_date ?? '—'],
+            ]}
+          />
+          <p className="font-mono text-[11px] text-muted">
+            Spend = every debit (incl. transfers to friends and ATM cash). Statements have dates only, so bank
+            rows have no hour of day.
+          </p>
+          <MiniTable
+            title="SPEND BY CHANNEL"
+            head={['channel', 'spent', 'debits', 'received']}
+            rows={channels.map((c) => [c.channel, inr(c.spent ?? 0), fmt.format(c.debits), inr(c.received ?? 0)])}
+          />
+        </div>
+        <TopList
+          title="TOP 10 BY SPEND"
+          format={inr}
+          rows={bySpend.map((r) => ({ label: r.name, sub: `${fmt.format(r.txns)} txns`, n: r.spent }))}
+        />
+        <TopList title="TOP 10 BY COUNT" rows={byCount.map((r) => ({ label: r.name, sub: inr(r.spent), n: r.txns }))} />
+      </div>
+      <MiniTable
+        title="SPEND PER MONTH"
+        head={['month', 'spent', 'received', 'txns']}
+        rows={months.map((m) => [m.month, inr(m.spent), inr(m.received), fmt.format(m.txns)])}
+      />
+    </Panel>
+  )
+}
+
+function MiniTable({ title, head, rows }: { title: string; head: string[]; rows: (string | number)[][] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-pixel text-[9px] text-orange-light">{title}</span>
+      <div className="overflow-x-auto border-2 border-orange-dark bg-bg">
+        <table className="w-full border-collapse font-mono text-xs">
+          <thead>
+            <tr>
+              {head.map((h, i) => (
+                <th key={h} className={`border-b-2 border-orange-dark px-2 py-1.5 font-normal text-muted uppercase ${i ? 'text-right' : 'text-left'}`}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={i} className="odd:bg-panel/40">
+                {r.map((c, j) => (
+                  <td key={j} className={`px-2 py-1 tabular-nums ${j ? 'text-right text-text' : 'text-orange-light'}`}>
+                    {c}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+function TopList({
+  title,
+  rows,
+  format = (n: number) => fmt.format(n),
+}: {
+  title: string
+  rows: { label: string; sub?: string; n: number }[]
+  format?: (n: number) => string
+}) {
   const max = Math.max(...rows.map((r) => r.n), 1)
   return (
     <div className="flex flex-col gap-2">
@@ -369,7 +474,7 @@ function TopList({ title, rows }: { title: string; rows: { label: string; sub?: 
                 <span className="text-muted">{i + 1}.</span> {r.label}
                 {r.sub && <span className="text-muted"> · {r.sub}</span>}
               </span>
-              <span className="shrink-0 tabular-nums text-muted">{fmt.format(r.n)}</span>
+              <span className="shrink-0 tabular-nums text-muted">{format(r.n)}</span>
             </div>
             <div className="h-2 bg-bg">
               <div className="h-full bg-orange" style={{ width: `${(r.n / max) * 100}%` }} />

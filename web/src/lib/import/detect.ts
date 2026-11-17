@@ -4,7 +4,7 @@
 
 import JSZip from 'jszip'
 
-export type DetectedSource = 'whatsapp' | 'spotify' | 'youtube' | 'unknown'
+export type DetectedSource = 'whatsapp' | 'spotify' | 'youtube' | 'bank' | 'unknown'
 
 export interface Candidate {
   /** Stable id: zip name + inner path, or file name + size. */
@@ -21,9 +21,40 @@ export interface Candidate {
   /** Recognised but not parseable as-is; shown on the card instead of parsing. */
   problem?: string
   readText: () => Promise<string>
+  /** Raw bytes (bank statements are binary: XLSX / XLS). */
+  readBytes: () => Promise<Uint8Array>
 }
 
 export const HTML_TAKEOUT_PROBLEM = 'Re-export from Google Takeout with History format set to JSON.'
+export const PDF_STATEMENT_PROBLEM = 'Please download the statement as Excel from OnlineSBI (PDF not supported yet)'
+
+const OLE2 = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]
+const TXN_DATE = /txn\s*date/i
+
+/**
+ * Bank statements: OnlineSBI ".xls" files may really be binary XLS, XLSX, HTML or
+ * tab-separated text, so look at the bytes. A statement has a "Txn Date" header row.
+ */
+async function looksLikeStatement(name: string, blob: Blob): Promise<boolean> {
+  const lower = name.toLowerCase()
+  if (!/\.(xlsx?|csv|txt)$/.test(lower)) return false
+  const head = new Uint8Array(await blob.slice(0, 8).arrayBuffer())
+  if (OLE2.every((b, i) => head[i] === b)) return true // binary .xls: can't peek inside cheaply
+  if (head[0] === 0x50 && head[1] === 0x4b) {
+    // XLSX: look for "Txn Date" in the shared strings / first sheet
+    try {
+      const zip = await JSZip.loadAsync(blob)
+      for (const path of ['xl/sharedStrings.xml', 'xl/worksheets/sheet1.xml']) {
+        const f = zip.file(path)
+        if (f && TXN_DATE.test(await f.async('string'))) return true
+      }
+    } catch {
+      return false
+    }
+    return false
+  }
+  return TXN_DATE.test(await blob.slice(0, 65536).text())
+}
 
 const WA_ANDROID = /^‎?\d{1,2}[./-]\d{1,2}[./-]\d{2,4},?[   ]\d{1,2}[:.]\d{2}.{0,12}[   ][-–][   ]/m
 const WA_IOS = /^‎?\[\d{1,2}[./-]\d{1,2}[./-]\d{2,4},?[   ]\d{1,2}[:.]\d{2}/m
@@ -45,6 +76,7 @@ export function detectSource(name: string, head: string): DetectedSource {
   }
   // Takeout's default HTML history: recognised so the card can say how to get JSON instead.
   if (base === 'watch-history.html') return 'youtube'
+  if (base.endsWith('.pdf')) return 'bank' // shown with PDF_STATEMENT_PROBLEM
   if (base.endsWith('.json')) {
     if (/^streaminghistory.*\.json$|^streaming_history_audio.*\.json$|^endsong_\d+\.json$/.test(base)) return 'spotify'
     if (base === 'watch-history.json') return 'youtube'
@@ -64,7 +96,10 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
   for (const file of files) {
     if (!file.name.toLowerCase().endsWith('.zip')) {
       const head = await file.slice(0, 4096).text()
-      const source = detectSource(file.name, head)
+      let source = detectSource(file.name, head)
+      if ((source === 'unknown' || /\.(xlsx?|csv)$/i.test(file.name)) && (await looksLikeStatement(file.name, file))) {
+        source = 'bank'
+      }
       candidates.push({
         id: `${file.name}:${file.size}`,
         name: file.name,
@@ -73,6 +108,7 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
         chatName: source === 'whatsapp' ? chatNameFromFilename(file.name) ?? stripExt(file.name) : undefined,
         problem: problemFor(file.name),
         readText: () => file.text(),
+        readBytes: async () => new Uint8Array(await file.arrayBuffer()),
       })
       continue
     }
@@ -81,7 +117,7 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
     try {
       zip = await JSZip.loadAsync(file)
     } catch {
-      candidates.push({ id: `${file.name}:${file.size}`, name: file.name, size: file.size, source: 'unknown', readText: async () => '' })
+      candidates.push(unknownCandidate(file))
       continue
     }
     const entries = Object.values(zip.files).filter((e) => !e.dir && !IGNORED_IN_ZIP.test(e.name))
@@ -96,6 +132,7 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
         source: 'whatsapp',
         chatName: chatNameFromFilename(file.name) ?? stripExt(file.name),
         readText: () => chat.async('string'),
+        readBytes: () => chat.async('uint8array'),
       })
       ignoredInZips += entries.length - 1
       continue
@@ -106,8 +143,11 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
     for (const entry of entries) {
       // Inside zips (e.g. a whole Takeout) match by file name only, so unrelated
       // entries are ignored without being decompressed.
-      const source = detectSource(entry.name, '')
-      if (source === 'unknown') {
+      let source = detectSource(entry.name, '')
+      if (source === 'unknown' && /\.xlsx?$/i.test(entry.name) && /statement|sbi|account/i.test(entry.name)) {
+        source = 'bank'
+      }
+      if (source === 'unknown' || (source === 'bank' && /\.pdf$/i.test(entry.name))) {
         skipped++
         continue
       }
@@ -120,16 +160,31 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
         chatName: source === 'whatsapp' ? chatNameFromFilename(entry.name) ?? stripExt(basename(entry.name)) : undefined,
         problem: problemFor(entry.name),
         readText: () => entry.async('string'),
+        readBytes: () => entry.async('uint8array'),
       })
     }
     if (found > 0) ignoredInZips += skipped
-    else candidates.push({ id: `${file.name}:${file.size}`, name: file.name, size: file.size, source: 'unknown', readText: async () => '' })
+    else candidates.push(unknownCandidate(file))
   }
   return { candidates, ignoredInZips }
 }
 
 function problemFor(name: string): string | undefined {
-  return basename(name).toLowerCase().endsWith('.html') ? HTML_TAKEOUT_PROBLEM : undefined
+  const lower = basename(name).toLowerCase()
+  if (lower.endsWith('.html')) return HTML_TAKEOUT_PROBLEM
+  if (lower.endsWith('.pdf')) return PDF_STATEMENT_PROBLEM
+  return undefined
+}
+
+function unknownCandidate(file: File): Candidate {
+  return {
+    id: `${file.name}:${file.size}`,
+    name: file.name,
+    size: file.size,
+    source: 'unknown',
+    readText: async () => '',
+    readBytes: async () => new Uint8Array(),
+  }
 }
 
 function stripExt(name: string) {

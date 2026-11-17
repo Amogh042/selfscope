@@ -19,6 +19,19 @@ Known gaps and open decisions. Move items to "Done" when fixed.
   not detected; audiobook rows map to `kind = "audiobook"` but are untested on real data.
 - **YouTube HTML export** (step 3). `watch-history.html` is recognised and the card asks the user
   to re-export as JSON; we don't parse HTML.
+- **PDF bank statements** (step 5). SBI PDFs are recognised and the card asks for the Excel
+  download instead. Supporting them needs PDF text extraction in the browser (e.g. pdf.js) plus
+  column reconstruction; password-protected PDFs (common for e-statements) need a password prompt.
+- **Binary .xls statements are untested on a real file** (step 5). The xlrd path exists and
+  Pyodide loads xlrd on demand, but there is no real OLE2 SBI fixture (we have no real statement).
+  XLSX, HTML-as-.xls, tab-separated .xls and CSV are tested.
+- **Other banks** (step 5). Only SBI's layout and narrations are handled; other banks' files
+  fail the "Txn Date" header check. Unknown SBI narrations become `channel = OTHER`.
+- **Several accounts** (step 5). Two different SBI accounts are stored together as one "bank"
+  source (account numbers are deliberately not kept). A user-chosen per-account label would
+  separate them without storing the number.
+- **Bank spend includes transfers** (step 5). `spend_total` counts every debit, including money
+  sent to friends and ATM cash; the categoriser (next step) will let views separate real spend.
 - **Takeout search history, subscriptions, comments** are ignored (step 3). Only
   `watch-history.json` is read from a Takeout zip.
 

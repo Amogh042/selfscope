@@ -16,7 +16,7 @@ Code mirrors of this doc — keep all three in sync:
 | 1 | `source` | str / `Source` | no | `whatsapp` · `spotify` · `youtube` · `bank` |
 | 2 | `ts_utc` | `datetime64[ns, UTC]` / ISO-8601 string ending in `Z` | no | When the event happened, **always UTC** |
 | 3 | `local_date` | str `YYYY-MM-DD` | no | Calendar date in `Asia/Kolkata` |
-| 4 | `local_hour` | int 0–23 | no | Hour in `Asia/Kolkata` |
+| 4 | `local_hour` | int 0–23 | **yes** | Hour in `Asia/Kolkata`. **NULL for date-only sources (bank statements)** |
 | 5 | `weekday` | int 0–6 | no | **0 = Monday … 6 = Sunday** (pandas convention; DuckDB's `dayofweek` uses 0 = Sunday, so use `isodow - 1` there) |
 | 6 | `event_type` | str / `EventType` | no | `message` · `play` · `watch` · `transaction` · `system` |
 | 7 | `actor` | str | yes | Who did it: message sender, track artist, video channel, bank counterparty. Null for system events |
@@ -42,7 +42,7 @@ Code mirrors of this doc — keep all three in sync:
 | whatsapp | `message` / `system` | sender | null | message text | null | `chat`, `platform` (`android`/`ios`), `kind` (`text`/`media`/`deleted`), `media_type`, `edited` |
 | spotify | `play` | artist (show for podcasts) | track (episode) | null | ms played | `kind`, `format`, `skipped`, `start_estimate`, + `album`, `uri`, `platform`, `shuffle`, `reason_start`, `reason_end` when the export has them |
 | youtube | `watch` / `system` | channel | video title | null (system: the entry title) | null | `header`, `video_id`, `channel_url`, `is_ad`, `is_short`, `est_watch_min`, `session`, + `removed` / `title_unavailable` |
-| bank | `transaction` | counterparty | null | narration | INR (signed) | (later) |
+| bank | `transaction` | counterparty / `ATM` / `SBI Interest` | UPI ID fragment or mandate name | null | INR, signed (debit < 0, credit > 0) | `channel`, `direction`, `upi_ref`, `counterparty`, `bank_code`, `vpa_fragment`, `note`, `ref_no`, `balance`, `value_date`, `raw_description` |
 
 ### WhatsApp details
 
@@ -84,6 +84,26 @@ exact duplicate rows dropped.
 - Non-English Takeout prefixes (e.g. "Visto …") on video URLs: kept as-is as the title and
   counted in the parser's `unrecognised_prefix` log (shown on the import screen).
 - The same entry appearing in two files (time + video id + title) is kept once.
+
+### Bank details (SBI statements, `parsers/sbi.py`)
+
+- **Input:** what OnlineSBI calls an Excel statement. The real type is sniffed from the bytes
+  (a bank ".xls" may be binary XLS, XLSX, an HTML table or tab-separated text); CSV also works.
+  Binary XLS needs `xlrd` (Pyodide loads it on demand). PDF is rejected with "Please download the
+  statement as Excel from OnlineSBI (PDF not supported yet)".
+- The table starts at the row containing **"Txn Date"**; the header block above it (name,
+  address, CIF, account number, IFSC, …) is **never read into the output**.
+- **Dates only:** statements have no time of day, so `ts_utc` = local **midnight** of the txn
+  date (converted to UTC) and **`local_hour` is NULL**. `local_date` and `weekday` are exact.
+  Bank rows are excluded from `hourly_heatmap`.
+- `meta.channel` from the Description: `UPI` (`…UPI/DR|CR/<ref>/<payee>/<bank>/<UPI id>/<note>-`),
+  `NEFT` (`NEFT*<IFSC>*<UTR>*<name>*`), `IMPS`, `ATM` (`ATM WDL-…`), `MANDATE`
+  (`DEBIT-CMP MANDATE DEBIT <name>-`), `INTEREST`, else `OTHER` (never an error).
+  `meta.direction` is DR/CR from the Debit/Credit columns; `meta.balance` is the running balance.
+- **Privacy:** every run of **9+ digits** in stored text (description, Ref No., UPI ID, name, note)
+  is masked to its last 4 digits (`XXXXXXXXX2091`), except the row's own **12-digit UPI reference**.
+  So account numbers, phone-number UPI IDs and NEFT UTRs never reach storage.
+- `category` stays NULL until the spend categoriser (next step).
 
 #### YouTube watch time (`meta.est_watch_min`) — an estimate, not a measurement
 
@@ -145,6 +165,7 @@ multi-line fields). The bytes are registered as an in-memory file in DuckDB and 
 | whatsapp | source, `meta.chat`, ts_utc, event_type, actor, text, `meta.kind`, `meta.media_type`, **occurrence** | Exports have minute precision, so two identical "ok"s in the same minute are both real; they are numbered 0, 1, … in file order. A newer export of the same chat reproduces the same numbering. |
 | spotify | source, `meta.format`, ts_utc, actor, title, value (ms), `meta.kind` | An exact replay of the same play is the same event. |
 | youtube | source, ts_utc, event_type, `meta.video_id`, title, text | Same as step 3's cross-file rule. |
+| bank | source, txn date, `meta.upi_ref` (else `meta.ref_no`), signed amount, `meta.direction`, `meta.balance` | The running balance makes two identical same-day payments distinct; the same statement in XLSX / HTML / text form dedupes. |
 | other | source, ts_utc, event_type, actor, title, text, value, meta | Conservative default. |
 
 Rules:
@@ -173,12 +194,15 @@ file to restore them (it will then add them).
   `meta.skipped`), `spotify_late_night_share`, `youtube_est_minutes` (Σ `est_watch_min`, ads
   excluded), `youtube_videos` (ads excluded), `youtube_late_night_share`, `wa_sent` /
   `wa_received` (messages by / not by `settings.me`; NULL until it is set),
-  `wa_late_night_share` (all messages), `wa_active_chats`, `is_weekend` (Sat/Sun).
+  `wa_late_night_share` (all messages), `wa_active_chats`, `spend_total` (Σ debits in INR, as a
+  positive number — includes transfers to friends and ATM cash), `spend_txn_count`,
+  `received_total` (Σ credits), `food_delivery_spend` (NULL until bank rows have categories,
+  then Σ debits with `category = 'food_delivery'`), `is_weekend` (Sat/Sun).
   A source's columns are **NULL outside its own first..last date** (no data ≠ zero activity),
   counts are **0** on in-range days with no events, and shares/rates are NULL when there were
   no events that day (undefined, not 0).
-- **`hourly_heatmap`** — `source × weekday (0 = Mon) × hour → events` (system notices excluded,
-  ads included).
+- **`hourly_heatmap`** — `source × weekday (0 = Mon) × hour → events` (system notices and
+  date-only bank rows excluded, ads included).
 - **`source_coverage`** — per source: `first_date`, `last_date`, `days_with_data`, `events`,
   `last_import`.
 - **`overlap_window`** — `start_date` = latest first date, `end_date` = earliest last date across

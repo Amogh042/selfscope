@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS events (
     source      VARCHAR   NOT NULL,   -- whatsapp | spotify | youtube | bank
     ts_utc      TIMESTAMP NOT NULL,   -- UTC (naive TIMESTAMP, always UTC by convention)
     local_date  DATE      NOT NULL,   -- Asia/Kolkata
-    local_hour  INTEGER   NOT NULL,   -- 0-23, Asia/Kolkata
+    local_hour  INTEGER,              -- 0-23, Asia/Kolkata; NULL for date-only sources (bank)
     weekday     INTEGER   NOT NULL,   -- 0 = Monday ... 6 = Sunday
     event_type  VARCHAR   NOT NULL,   -- message | play | watch | transaction | system
     actor       VARCHAR,

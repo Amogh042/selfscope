@@ -9,13 +9,25 @@ import json
 
 import pandas as pd
 
+from parsers.sbi import parse_sbi
 from parsers.spotify import parse_spotify
 from parsers.whatsapp import parse_whatsapp
 from parsers.youtube import parse_youtube
 from stage import to_csv_text, to_parquet_bytes
 
 
-def parse(source: str, text: str, chat_name: str | None = None, label: str = "file") -> pd.DataFrame:
+def _as_bytes(data) -> bytes:
+    """Bank files arrive as bytes (a JS Uint8Array proxy in Pyodide)."""
+    if hasattr(data, "to_bytes"):  # pyodide JsProxy of a typed array
+        return data.to_bytes()
+    if isinstance(data, str):
+        return data.encode("utf-8")
+    return bytes(data)
+
+
+def parse(source: str, text, chat_name: str | None = None, label: str = "file") -> pd.DataFrame:
+    if source == "bank":
+        return parse_sbi(_as_bytes(text), filename=label)
     if source == "whatsapp":
         return parse_whatsapp(text, chat_name=chat_name)
     if source == "spotify":

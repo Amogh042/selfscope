@@ -41,7 +41,8 @@ const fmt = new Intl.NumberFormat('en-IN')
 const STALE_DAYS = 30
 const DAY = 86_400_000
 
-const iconFor = (s: string): DetectedSource => (s === 'whatsapp' || s === 'spotify' || s === 'youtube' ? s : 'unknown')
+const iconFor = (s: string): DetectedSource =>
+  s === 'whatsapp' || s === 'spotify' || s === 'youtube' || s === 'bank' ? s : 'unknown'
 const toDate = (s: string) => new Date(`${s.slice(0, 10)}T00:00:00Z`)
 const nice = (s: string | null) =>
   s ? toDate(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' }) : '—'

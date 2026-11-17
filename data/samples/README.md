@@ -9,6 +9,7 @@ Everything in this folder is **generated**, not real. It's here to demo SelfScop
   - `WhatsApp Chat - Rohan.zip` (close friend, ~4.7k): **iOS** format, a .zip containing `_chat.txt` (`[17/11/25, 9:41:23 PM] Name: text`, U+200E marks on media/system lines)
   - English + Hinglish; includes media-omitted lines, deleted and edited messages, multi-line messages, and group system lines (created, added, left, icon/description changes)
   - Every text message comes from a clearly positive, neutral or negative pool, so sentiment models have signal
+- `bank/SBI_statement_demo.xlsx`: one year of a student's SBI savings account, **2,629 transactions**, laid out like an OnlineSBI Excel download: a header block (Account Name: DEMO USER, Account Number: XXXXXXX1234, statement period, …), then `Txn Date | Value Date | Description | Ref No./Cheque No. | Debit | Credit | Balance`, dates like "13 Aug 2026", amounts as Indian-formatted text ("1,23,456.78"), and a running balance that never goes negative (opening ₹12,000). Real SBI narration formats: `TO TRANSFER-UPI/DR/<12-digit ref>/<payee cut to 8>/<bank code>/<UPI ID cut>/<note>-`, `BY TRANSFER-UPI/CR/…`, Ref No. `TRANSFER TO <13 digits>`, `ATM WDL-ATM CASH …-`, `DEBIT-CMP MANDATE DEBIT <name>-`, `CREDIT INTEREST--`, `BY TRANSFER-NEFT*<IFSC>*<UTR>*<name>*-`. Every name, UPI ID, phone number and reference number is made up. The true category of every row is in `ml/data/demo_bank_truth.csv` (answer key for the categoriser; the app never reads it)
 
 Date range: 17 Nov 2025 to 16 Nov 2026 (IST). Song and channel names are real; every play, timestamp, video title and video ID is generated. All WhatsApp names and messages are made up.
 
@@ -27,6 +28,24 @@ Bollywood 80%, English 10%, Kannada 10%. Mostly romantic and sad/breakup songs, 
 - **Weekends:** the group chat more than doubles (about 31 vs 14 messages a day); chatting starts later in the day
 - **Semester breaks:** more active (about 69 vs 51 messages a day overall) and more positive (about 55% positive); the classmate chat goes quiet
 - **Group membership:** Nikhil is added on 12 Jan 2026; Rahul leaves on 19 Jul 2026
+
+### Bank (same calendar)
+
+**Daily routine** (the base of the statement, close to a real student budget):
+- **Tea / snacks:** ₹25 (sometimes ₹20–40), 2–5 times a day (about 3.7/day; one fewer on Sundays), at 6 regular paytmqr-style vendors (Sri Lakshmi Tea Stall, Raju Tea Point, Campus Bakery, …)
+- **Lunch:** ₹100–140 every day at 2–3 regular canteens; **dinner:** ₹100–140 at a few regular places (about ₹222/day on meals overall)
+- **Auto:** ₹20 on about 2 of 3 days (Rapido or local autos paid to phone-number UPI IDs)
+- The routine continues through exams. Near month-end, when the balance drops below ₹3,500, *extras* are skipped (21 times in the year); the routine never is.
+
+**Extras:** Swiggy/Zomato about 4 a month (₹180–450; on a delivery day the canteen dinner is usually skipped), Zepto/Blinkit 2–3 a month, Namma Metro (BMRCL) now and then, Amazon/Flipkart/Myntra 1–2 a month, BookMyShow and cafes mostly on weekends, Jio recharge ₹299 on the 20th, Spotify (₹119) and Netflix (₹199) as mandate debits, ATM cash about once a month, and transfers to the same friends as the WhatsApp chats (Priya, Rohan, Varun, Karthik, Sneha, Ishita; ₹50–500).
+
+**Credits:** ₹15,000 from a parent (SURESH K) around the 1st of every month, friends paying back ₹50–400, 4 NEFT freelance payments (₹3,000–8,000), quarterly SBI interest. Spend is about ₹17k/month against about ₹17.4k/month received.
+
+**Planted patterns** (measured on the generated file):
+1. **Food delivery tracks YouTube and exams:** delivery happens on 19% of high-YouTube days vs 8% of low ones (daily YouTube minutes estimated from the demo watch history the same way the app does), and on 24% of exam-week days vs 12% otherwise
+2. **Weekends:** entertainment + shopping ₹120/day vs ₹59/day on weekdays (cafe outings count as entertainment in the answer key)
+3. **First week after the parent credit:** extras ₹222/day vs ₹116/day
+4. **Exam weeks:** transfers to the classmate (Varun, splitting food) 0.46/day vs 0.04/day
 
 ## Regenerate
 ```

@@ -39,17 +39,19 @@ SELECT
     string_agg(source, ',' ORDER BY source)                                          AS source_list
 FROM source_coverage;
 
--- Events per source x weekday x hour (system notices excluded).
+-- Events per source x weekday x hour (system notices and date-only rows, i.e. bank, excluded).
 CREATE OR REPLACE VIEW hourly_heatmap AS
 SELECT source, weekday, local_hour AS hour, count(*) AS events
 FROM events
-WHERE event_type <> 'system'
+WHERE event_type <> 'system' AND local_hour IS NOT NULL
 GROUP BY source, weekday, local_hour;
 
 -- One row per calendar day from the first to the last stored event (any source).
 -- A source's columns are NULL on days outside its first..last coverage, and 0 (counts)
 -- or NULL (shares/rates, which are undefined with no events) inside it on days with no events.
 -- wa_sent / wa_received need settings 'me'; they are NULL until the user picks their name.
+-- Bank: spend_total = sum of all debits (money out, incl. transfers and ATM cash),
+-- received_total = sum of credits. food_delivery_spend stays NULL until bank categories exist.
 CREATE OR REPLACE VIEW daily_activity AS
 WITH
 me AS (SELECT max(value) AS name FROM settings WHERE key = 'me'),
@@ -79,6 +81,19 @@ yt AS (
     WHERE source = 'youtube' AND event_type = 'watch' AND NOT is_ad
     GROUP BY local_date
 ),
+bk AS (
+    SELECT local_date,
+           sum(-value) FILTER (WHERE value < 0)                      AS spend,
+           count(*) FILTER (WHERE value < 0)                         AS spend_n,
+           sum(value) FILTER (WHERE value > 0)                       AS received,
+           sum(-value) FILTER (WHERE value < 0 AND category = 'food_delivery') AS food_delivery
+    FROM events
+    WHERE source = 'bank' AND event_type = 'transaction'
+    GROUP BY local_date
+),
+bank_categorised AS (
+    SELECT count(*) > 0 AS yes FROM events WHERE source = 'bank' AND category IS NOT NULL
+),
 wa AS (
     SELECT f.local_date,
            count(*) FILTER (WHERE f.actor = me.name)                 AS sent,
@@ -104,13 +119,21 @@ SELECT
          THEN coalesce(wa.received, 0) END                                                           AS wa_received,
     wa.late                                                                                          AS wa_late_night_share,
     CASE WHEN d.local_date BETWEEN cwa.first_date AND cwa.last_date THEN coalesce(wa.chats, 0) END   AS wa_active_chats,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date THEN coalesce(bk.spend, 0) END   AS spend_total,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date THEN coalesce(bk.spend_n, 0) END AS spend_txn_count,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date THEN coalesce(bk.received, 0) END AS received_total,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date AND bc.yes
+         THEN coalesce(bk.food_delivery, 0) END                                                      AS food_delivery_spend,
     isodow(d.local_date) >= 6                                                                        AS is_weekend
 FROM days d
 CROSS JOIN me
+CROSS JOIN bank_categorised bc
 LEFT JOIN cov csp ON csp.source = 'spotify'
 LEFT JOIN cov cyt ON cyt.source = 'youtube'
 LEFT JOIN cov cwa ON cwa.source = 'whatsapp'
+LEFT JOIN cov cbk ON cbk.source = 'bank'
 LEFT JOIN sp ON sp.local_date = d.local_date
 LEFT JOIN yt ON yt.local_date = d.local_date
 LEFT JOIN wa ON wa.local_date = d.local_date
+LEFT JOIN bk ON bk.local_date = d.local_date
 ORDER BY d.local_date;

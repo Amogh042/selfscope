@@ -13,6 +13,9 @@ WITH s AS (
         json_extract_string(meta, '$.media_type') AS k_media,
         json_extract_string(meta, '$.format')     AS k_format,
         json_extract_string(meta, '$.video_id')   AS k_video,
+        coalesce(json_extract_string(meta, '$.upi_ref'), json_extract_string(meta, '$.ref_no')) AS k_ref,
+        json_extract_string(meta, '$.direction')  AS k_dir,
+        json_extract_string(meta, '$.balance')    AS k_balance,
         CAST(ts_utc AS VARCHAR)                   AS k_ts
     FROM stage_events
 ),
@@ -32,6 +35,8 @@ k AS (
             WHEN 'whatsapp' THEN [source, k_chat, k_ts, event_type, actor, text, k_kind, k_media, CAST(k_occ AS VARCHAR)]
             WHEN 'spotify'  THEN [source, k_format, k_ts, actor, title, CAST(value AS VARCHAR), k_kind]
             WHEN 'youtube'  THEN [source, k_ts, event_type, k_video, title, text]
+            -- bank: txn date + UPI ref (or Ref No.) + signed amount + direction + running balance
+            WHEN 'bank'     THEN [source, CAST(local_date AS VARCHAR), k_ref, CAST(value AS VARCHAR), k_dir, k_balance]
             ELSE                 [source, k_ts, event_type, actor, title, text, CAST(value AS VARCHAR), meta]
         END)) AS event_key
     FROM o

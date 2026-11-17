@@ -2,3 +2,6 @@
 # Versions match Pyodide 314.0.8 (Python 3.14).
 pandas==3.0.2
 pytest
+# SQL tests (src/sql/*.sql) — same DuckDB version as the browser (DuckDB-WASM v1.5.4)
+duckdb==1.5.4
+pyarrow

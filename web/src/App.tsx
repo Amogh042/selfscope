@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react'
+import { AppHeader } from './components/AppHeader'
+import { AppStateProvider, useApp } from './lib/appState'
+import DataPage from './pages/Data'
 import ImportPage from './pages/Import'
 import SystemCheck from './pages/SystemCheck'
 
-// Tiny hash router: "#/" = System Check, "#/import" = Import.
-function useHash() {
-  const [hash, setHash] = useState(() => window.location.hash)
-  useEffect(() => {
-    const on = () => {
-      setHash(window.location.hash)
-      window.scrollTo(0, 0)
-    }
-    window.addEventListener('hashchange', on)
-    return () => window.removeEventListener('hashchange', on)
-  }, [])
-  return hash
+function Page() {
+  const { path } = useApp()
+  if (path === '/import') return <ImportPage />
+  if (path === '/data') return <DataPage />
+  return <SystemCheck />
 }
 
 export default function App() {
-  return useHash() === '#/import' ? <ImportPage /> : <SystemCheck />
+  return (
+    <AppStateProvider>
+      <AppHeader />
+      <Page />
+    </AppStateProvider>
+  )
 }

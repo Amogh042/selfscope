@@ -6,8 +6,11 @@ here runs on a server.
 
 - `schema.py` — shared event format (see `docs/schema.md`): column names, `finalize_events()`
 - `parsers/whatsapp.py` — WhatsApp export → shared format (Android + iOS, auto date order)
-- `session.py` — in-memory store of parsed frames + JSON summaries for the import screen
-- `tests/` — pytest tests with small fixture exports in `tests/fixtures/`
+- `parsers/spotify.py`, `parsers/youtube.py` — Spotify (both formats) and Takeout watch history
+- `stage.py` — parsed frame → Parquet (pyarrow) / CSV staging file for DuckDB
+- `session.py` — worker entry point: parse one file and stage it
+- `tests/` — pytest tests with small fixture exports in `tests/fixtures/`; `test_storage.py`
+  runs `web/src/sql/*.sql` with the duckdb Python package on the demo data (`tests/sqlkit.py`)
 
 How they get into Pyodide: `src/lib/pythonModules.ts` bundles every `*.py` here and in
 `parsers/` as raw text, writes them into Pyodide's virtual filesystem and adds that folder

@@ -18,8 +18,12 @@ export interface Candidate {
   source: DetectedSource
   /** WhatsApp chat name from the file name (e.g. "Priya"). */
   chatName?: string
+  /** Recognised but not parseable as-is; shown on the card instead of parsing. */
+  problem?: string
   readText: () => Promise<string>
 }
+
+export const HTML_TAKEOUT_PROBLEM = 'Re-export from Google Takeout with History format set to JSON.'
 
 const WA_ANDROID = /^‎?\d{1,2}[./-]\d{1,2}[./-]\d{2,4},?[   ]\d{1,2}[:.]\d{2}.{0,12}[   ][-–][   ]/m
 const WA_IOS = /^‎?\[\d{1,2}[./-]\d{1,2}[./-]\d{2,4},?[   ]\d{1,2}[:.]\d{2}/m
@@ -39,8 +43,10 @@ export function detectSource(name: string, head: string): DetectedSource {
     }
     return 'unknown'
   }
+  // Takeout's default HTML history: recognised so the card can say how to get JSON instead.
+  if (base === 'watch-history.html') return 'youtube'
   if (base.endsWith('.json')) {
-    if (/^streaminghistory.*\.json$|^streaming_history_audio.*\.json$/.test(base)) return 'spotify'
+    if (/^streaminghistory.*\.json$|^streaming_history_audio.*\.json$|^endsong_\d+\.json$/.test(base)) return 'spotify'
     if (base === 'watch-history.json') return 'youtube'
     if (head.includes('"msPlayed"') || head.includes('"ms_played"')) return 'spotify'
     if (head.includes('"header"') && head.includes('youtube.com/watch')) return 'youtube'
@@ -65,6 +71,7 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
         size: file.size,
         source,
         chatName: source === 'whatsapp' ? chatNameFromFilename(file.name) ?? stripExt(file.name) : undefined,
+        problem: problemFor(file.name),
         readText: () => file.text(),
       })
       continue
@@ -97,11 +104,9 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
     let found = 0
     let skipped = 0
     for (const entry of entries) {
-      // Name first; only decompress small-ish text entries when the name doesn't decide.
-      let source = detectSource(entry.name, '')
-      if (source === 'unknown' && /\.(txt|json)$/i.test(entry.name)) {
-        source = detectSource(entry.name, (await entry.async('string')).slice(0, 4096))
-      }
+      // Inside zips (e.g. a whole Takeout) match by file name only, so unrelated
+      // entries are ignored without being decompressed.
+      const source = detectSource(entry.name, '')
       if (source === 'unknown') {
         skipped++
         continue
@@ -113,6 +118,7 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
         origin: `inside ${file.name}`,
         source,
         chatName: source === 'whatsapp' ? chatNameFromFilename(entry.name) ?? stripExt(basename(entry.name)) : undefined,
+        problem: problemFor(entry.name),
         readText: () => entry.async('string'),
       })
     }
@@ -120,6 +126,10 @@ export async function expandFiles(files: File[]): Promise<{ candidates: Candidat
     else candidates.push({ id: `${file.name}:${file.size}`, name: file.name, size: file.size, source: 'unknown', readText: async () => '' })
   }
   return { candidates, ignoredInZips }
+}
+
+function problemFor(name: string): string | undefined {
+  return basename(name).toLowerCase().endsWith('.html') ? HTML_TAKEOUT_PROBLEM : undefined
 }
 
 function stripExt(name: string) {

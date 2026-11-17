@@ -1,0 +1,164 @@
+[
+  {
+    "header": "YouTube",
+    "title": "Watched Broken Time",
+    "titleUrl": "https://www.youtube.com/watch?v=brokenTime1",
+    "subtitles": [
+      {
+        "name": "Fireship",
+        "url": "https://www.youtube.com/channel/UCFireship"
+      }
+    ],
+    "time": "not-a-time",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched entry with no time"
+  },
+  {
+    "header": "YouTube",
+    "title": "Viewed Karthik's post",
+    "titleUrl": "https://www.youtube.com/post/UgkxPostId123",
+    "time": "2026-03-02T12:30:00.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched https://www.youtube.com/watch?v=privateVid1",
+    "time": "2026-03-02T12:21:00.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Some Video Without A Link",
+    "subtitles": [
+      {
+        "name": "Telusko",
+        "url": "https://www.youtube.com/channel/UCTelusko"
+      }
+    ],
+    "time": "2026-03-02T12:20:05.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Visto Tutorial de pandas en español",
+    "titleUrl": "https://www.youtube.com/watch?v=pandasEs001",
+    "subtitles": [
+      {
+        "name": "Krish Naik",
+        "url": "https://www.youtube.com/channel/UCKrishNaik"
+      }
+    ],
+    "time": "2026-03-02T11:55:05.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched a video that has been removed",
+    "time": "2026-03-02T11:20:05.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Funny Moments #shorts",
+    "titleUrl": "https://www.youtube.com/shorts/AbCdEfGhIjK",
+    "subtitles": [
+      {
+        "name": "BB Ki Vines",
+        "url": "https://www.youtube.com/channel/UCBBKiVines"
+      }
+    ],
+    "time": "2026-03-02T10:50:05Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube Music",
+    "title": "Watched Kesariya | Full Video Song",
+    "titleUrl": "https://music.youtube.com/watch?v=kesariya001",
+    "subtitles": [
+      {
+        "name": "T-Series",
+        "url": "https://www.youtube.com/channel/UCT-Series"
+      }
+    ],
+    "time": "2026-03-02T10:12:05.123Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Shoe Sale Ad",
+    "titleUrl": "https://www.youtube.com/watch?v=adShoeSale1",
+    "time": "2026-03-02T10:12:00.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "details": [
+      {
+        "name": "From Google Ads"
+      }
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  },
+  {
+    "header": "YouTube",
+    "title": "Watched Python in One Shot",
+    "titleUrl": "https://www.youtube.com/watch?v=pyOneShot01",
+    "subtitles": [
+      {
+        "name": "CodeWithHarry",
+        "url": "https://www.youtube.com/channel/UCCodeWithHarry"
+      }
+    ],
+    "time": "2026-03-02T10:00:00.000Z",
+    "products": [
+      "YouTube"
+    ],
+    "activityControls": [
+      "YouTube watch history"
+    ]
+  }
+]

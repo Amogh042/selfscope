@@ -2,17 +2,20 @@ import { useEffect, useMemo, useRef, useState, type DragEvent } from 'react'
 import { DataRows, Panel, Terminal } from '../components/pixel'
 import { SourceIcon } from '../components/SourceIcon'
 import { expandFiles, fetchDemoFiles, type Candidate } from '../lib/import/detect'
+import { parseSpotify, parseYouTube, type SpotifySummary, type YouTubeSummary } from '../lib/import/media'
 import { parseWhatsApp, type ChatSummary } from '../lib/import/whatsapp'
 import { pythonEngine, type StatusSnapshot } from '../lib/pythonEngine'
 import { EVENT_COLUMNS } from '../lib/schema'
 
-type ItemStatus = 'detected' | 'parsing' | 'done' | 'error' | 'later' | 'unknown'
+type ItemStatus = 'detected' | 'parsing' | 'done' | 'error' | 'reexport' | 'unknown'
 
 interface Item {
   c: Candidate
   status: ItemStatus
   error?: string
   summary?: ChatSummary
+  /** Spotify / YouTube: rows parsed from this file (before de-duplication). */
+  rows?: number
   ms?: number
 }
 
@@ -23,7 +26,7 @@ const STATUS_UI: Record<ItemStatus, { label: string; cls: string }> = {
   parsing: { label: 'PARSING', cls: 'border-orange-light text-orange-light' },
   done: { label: 'DONE', cls: 'border-xp text-xp' },
   error: { label: 'ERROR', cls: 'border-danger text-danger' },
-  later: { label: 'SOON', cls: 'border-muted text-muted' },
+  reexport: { label: 'RE-EXPORT', cls: 'border-orange-light text-orange-light' },
   unknown: { label: '?', cls: 'border-muted text-muted' },
 }
 
@@ -51,18 +54,18 @@ function InventorySlot({ item }: { item: Item }) {
   const note =
     status === 'unknown'
       ? 'Not recognised. Expected a WhatsApp .txt/.zip, Spotify StreamingHistory*.json or Takeout watch-history.json.'
-      : status === 'later'
-        ? 'Parser coming next.'
-        : status === 'error'
-          ? item.error
-          : status === 'done' && item.summary
+      : status === 'error' || status === 'reexport'
+        ? item.error
+        : status === 'done'
+          ? item.summary
             ? `${fmt.format(item.summary.messages)} messages · ${item.ms} ms`
-            : status === 'parsing'
+            : `${fmt.format(item.rows ?? 0)} ${c.source === 'spotify' ? 'plays' : 'entries'} · merged · ${item.ms} ms`
+          : status === 'parsing'
               ? 'Running parser in Python worker…'
               : 'Waiting to parse…'
   return (
     <li
-      className={`flex gap-3 border-2 bg-panel p-3 shadow-block-sm ${status === 'unknown' ? 'border-muted' : status === 'error' ? 'border-danger' : 'border-orange'}`}
+      className={`flex gap-3 border-2 bg-panel p-3 shadow-block-sm ${status === 'unknown' ? 'border-muted' : status === 'error' ? 'border-danger' : status === 'reexport' ? 'border-orange-light' : 'border-orange'}`}
     >
       <div className="flex size-14 shrink-0 items-center justify-center border-2 border-orange-dark bg-bg shadow-[inset_2px_2px_0_#000]">
         <SourceIcon source={c.source} />
@@ -79,7 +82,9 @@ function InventorySlot({ item }: { item: Item }) {
           {formatBytes(c.size)}
           {c.origin ? ` · ${c.origin}` : ''}
         </span>
-        <span className={`font-mono text-[11px] ${status === 'error' ? 'text-danger' : status === 'done' ? 'text-xp' : 'text-muted'}`}>
+        <span
+          className={`font-mono text-[11px] ${status === 'error' ? 'text-danger' : status === 'reexport' ? 'text-orange-light' : status === 'done' ? 'text-xp' : 'text-muted'}`}
+        >
           {note}
         </span>
       </div>
@@ -102,6 +107,8 @@ export default function ImportPage() {
   const [notice, setNotice] = useState<string | null>(null)
   const [me, setMe] = useState<string | null>(null)
   const [previewId, setPreviewId] = useState<string | null>(null)
+  const [spotify, setSpotify] = useState<SpotifySummary | null>(null)
+  const [youtube, setYouTube] = useState<YouTubeSummary | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const engine = useEngineStatus()
 
@@ -128,10 +135,11 @@ export default function ImportPage() {
       const known = new Set(itemsRef.current.map((it) => it.c.id))
       const fresh = candidates.filter((c) => !known.has(c.id))
       if (fresh.length < candidates.length) setNotice(`${candidates.length - fresh.length} file(s) already added — skipped.`)
-      const added: Item[] = fresh.map((c) => ({
-        c,
-        status: c.source === 'whatsapp' ? 'detected' : c.source === 'unknown' ? 'unknown' : 'later',
-      }))
+      const added: Item[] = fresh.map((c) =>
+        c.problem
+          ? { c, status: 'reexport', error: c.problem }
+          : { c, status: c.source === 'unknown' ? 'unknown' : 'detected' },
+      )
       setAll([...itemsRef.current, ...added])
 
       // Parse WhatsApp chats one by one in the Python worker.
@@ -143,7 +151,26 @@ export default function ImportPage() {
           update(it.c.id, { status: 'done', summary, ms: Math.round(performance.now() - t0) })
           setPreviewId((p) => p ?? it.c.id)
         } catch (err) {
-          update(it.c.id, { status: 'error', error: err instanceof Error ? err.message.split('\n').slice(-2).join(' ') : String(err) })
+          update(it.c.id, { status: 'error', error: errorText(err) })
+        }
+      }
+
+      // Spotify / YouTube: all files of a source are parsed together into one merged frame.
+      for (const source of ['spotify', 'youtube'] as const) {
+        const batch = added.filter((a) => a.c.source === source && a.status === 'detected')
+        if (!batch.length) continue
+        for (const it of batch) update(it.c.id, { status: 'parsing' })
+        const t0 = performance.now()
+        try {
+          const texts: Record<string, string> = {}
+          for (const it of batch) texts[it.c.id] = await it.c.readText()
+          const summary = source === 'spotify' ? await parseSpotify(texts) : await parseYouTube(texts)
+          const ms = Math.round(performance.now() - t0)
+          for (const it of batch) update(it.c.id, { status: 'done', rows: summary.per_file[it.c.id] ?? 0, ms })
+          if (source === 'spotify') setSpotify(summary as SpotifySummary)
+          else setYouTube(summary as YouTubeSummary)
+        } catch (err) {
+          for (const it of batch) update(it.c.id, { status: 'error', error: errorText(err) })
         }
       }
     } catch (err) {
@@ -169,7 +196,7 @@ export default function ImportPage() {
     void addFiles(Array.from(e.dataTransfer.files))
   }
 
-  const chats = items.filter((it) => it.status === 'done' && it.summary)
+  const chats = items.filter((it) => it.status === 'done' && it.c.source === 'whatsapp' && it.summary)
 
   // Everyone who sent a message, with how many chats they appear in.
   const people = useMemo(() => {
@@ -279,6 +306,24 @@ export default function ImportPage() {
         </Panel>
       )}
 
+      {/* Spotify + YouTube summaries */}
+      {(spotify || youtube) && (
+        <div className="grid gap-8 lg:grid-cols-2">
+          {spotify && <SpotifyPanel s={spotify} />}
+          {youtube && <YouTubePanel s={youtube} />}
+        </div>
+      )}
+      {spotify && (
+        <Panel title="SPOTIFY · FIRST 20 EVENTS" tag={<span className="font-mono text-xs text-muted">shared schema</span>}>
+          <PreviewTable rows={spotify.preview} />
+        </Panel>
+      )}
+      {youtube && (
+        <Panel title="YOUTUBE · FIRST 20 EVENTS" tag={<span className="font-mono text-xs text-muted">shared schema</span>}>
+          <PreviewTable rows={youtube.preview} />
+        </Panel>
+      )}
+
       {/* Which one is you? */}
       {people.length > 0 && (
         <Panel title="WHICH ONE IS YOU?" tag={<span className="font-mono text-xs text-muted">{people.length} people</span>}>
@@ -320,7 +365,7 @@ export default function ImportPage() {
             ))}
           </div>
           {preview && (
-            <Panel title="PREVIEW · FIRST 20 EVENTS" tag={<span className="font-mono text-xs text-muted">shared schema</span>}>
+            <Panel title="WHATSAPP · FIRST 20 EVENTS" tag={<span className="font-mono text-xs text-muted">shared schema</span>}>
               <div className="flex flex-wrap gap-2">
                 {chats.map((it) => (
                   <button
@@ -379,6 +424,97 @@ function ChatCard({ item, me }: { item: Item; me: string }) {
           </li>
         ))}
       </ul>
+    </Panel>
+  )
+}
+
+function errorText(err: unknown) {
+  // Python tracebacks: the last line holds the actual error.
+  return err instanceof Error ? err.message.trim().split('\n').slice(-1)[0] : String(err)
+}
+
+const pct = (x: number | null) => (x == null ? '—' : `${(x * 100).toFixed(1)}%`)
+
+function TopList({ title, rows }: { title: string; rows: { label: string; sub?: string; n: number }[] }) {
+  const max = Math.max(...rows.map((r) => r.n), 1)
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-pixel text-[9px] text-orange-light">{title}</span>
+      <ol className="flex flex-col gap-2">
+        {rows.map((r, i) => (
+          <li key={`${r.label}-${i}`} className="flex flex-col gap-1 font-mono text-xs">
+            <div className="flex justify-between gap-3">
+              <span className="min-w-0 truncate text-text" title={r.sub ? `${r.label} — ${r.sub}` : r.label}>
+                <span className="text-muted">{i + 1}.</span> {r.label}
+                {r.sub && <span className="text-muted"> · {r.sub}</span>}
+              </span>
+              <span className="shrink-0 tabular-nums text-muted">{fmt.format(r.n)}</span>
+            </div>
+            <div className="h-2 bg-bg">
+              <div className="h-full bg-orange" style={{ width: `${(r.n / max) * 100}%` }} />
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
+function SpotifyPanel({ s }: { s: SpotifySummary }) {
+  return (
+    <Panel
+      title="SPOTIFY"
+      tag={<span className="font-mono text-[11px] text-muted">{s.formats.join(' + ').toUpperCase()} FORMAT</span>}
+    >
+      <DataRows
+        rows={[
+          ['plays', fmt.format(s.plays)],
+          ['hours listened', fmt.format(s.hours)],
+          ['skip rate', pct(s.skip_rate)],
+          ['artists', fmt.format(s.artists)],
+          ['podcast plays', fmt.format(s.podcast_plays)],
+          ['from', s.first_date ?? '—'],
+          ['to', s.last_date ?? '—'],
+          ...(s.duplicates_dropped ? [['duplicates dropped', fmt.format(s.duplicates_dropped)] as [string, string]] : []),
+        ]}
+      />
+      {s.formats.length > 1 && (
+        <p className="font-mono text-[11px] text-orange-light">
+          Both Spotify export formats are loaded. Plays from a period covered by both are counted twice.
+        </p>
+      )}
+      <TopList title="TOP ARTISTS · PLAYS" rows={s.top_artists.map((a) => ({ label: a.name, sub: `${a.hours} h`, n: a.plays }))} />
+      <TopList title="TOP TRACKS · PLAYS" rows={s.top_tracks.map((t) => ({ label: t.title, sub: t.artist, n: t.plays }))} />
+    </Panel>
+  )
+}
+
+function YouTubePanel({ s }: { s: YouTubeSummary }) {
+  return (
+    <Panel title="YOUTUBE" tag={<span className="font-mono text-[11px] text-muted">TAKEOUT · {fmt.format(s.sessions)} SESSIONS</span>}>
+      <DataRows
+        rows={[
+          ['videos watched', fmt.format(s.videos)],
+          ['est. hours', fmt.format(s.est_hours)],
+          ['ads', `${fmt.format(s.ads)} (${pct(s.entries ? s.ads / s.entries : null)})`],
+          ['channels', fmt.format(s.channels)],
+          ['shorts', fmt.format(s.shorts)],
+          ['from', s.first_date ?? '—'],
+          ['to', s.last_date ?? '—'],
+          ...(s.removed ? [['removed / private', fmt.format(s.removed)] as [string, string]] : []),
+        ]}
+      />
+      <p className="font-mono text-[11px] text-muted">
+        Takeout has no watch duration: hours are estimated from gaps between videos (see docs/schema.md).
+      </p>
+      {s.unrecognised_prefix > 0 && (
+        <p className="font-mono text-[11px] text-orange-light">
+          {fmt.format(s.unrecognised_prefix)} {s.unrecognised_prefix === 1 ? 'entry' : 'entries'} had a non-English
+          prefix and {s.unrecognised_prefix === 1 ? 'was' : 'were'} kept as-is (e.g. "
+          {s.prefix_examples[0]}").
+        </p>
+      )}
+      <TopList title="TOP CHANNELS · VIDEOS" rows={s.top_channels.map((c) => ({ label: c.name, n: c.videos }))} />
     </Panel>
   )
 }

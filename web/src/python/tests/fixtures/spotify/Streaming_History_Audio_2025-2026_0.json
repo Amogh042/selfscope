@@ -1,0 +1,84 @@
+[
+  {
+    "ts": "2025-11-17T16:15:30Z",
+    "platform": "android",
+    "ms_played": 268000,
+    "conn_country": "IN",
+    "master_metadata_track_name": "Kesariya",
+    "master_metadata_album_artist_name": "Arijit Singh",
+    "master_metadata_album_album_name": "Brahmastra",
+    "spotify_track_uri": "spotify:track:0000000000000000000001",
+    "episode_name": null,
+    "episode_show_name": null,
+    "spotify_episode_uri": null,
+    "reason_start": "trackdone",
+    "reason_end": "trackdone",
+    "shuffle": false,
+    "skipped": false,
+    "offline": false,
+    "incognito_mode": false
+  },
+  {
+    "ts": "2025-11-17T16:16:20Z",
+    "platform": "android",
+    "ms_played": 45000,
+    "master_metadata_track_name": "Raabta",
+    "master_metadata_album_artist_name": "Arijit Singh",
+    "master_metadata_album_album_name": "Agent Vinod",
+    "spotify_track_uri": "spotify:track:0000000000000000000002",
+    "reason_start": "trackdone",
+    "reason_end": "fwdbtn",
+    "shuffle": true,
+    "skipped": true
+  },
+  {
+    "ts": "2025-11-17T16:16:25Z",
+    "platform": "ios",
+    "ms_played": 5000,
+    "master_metadata_track_name": "Tum Hi Ho",
+    "master_metadata_album_artist_name": "Arijit Singh",
+    "master_metadata_album_album_name": "Aashiqui 2",
+    "spotify_track_uri": "spotify:track:0000000000000000000003",
+    "reason_end": "fwdbtn",
+    "shuffle": false,
+    "skipped": null
+  },
+  {
+    "ts": "2025-11-17T17:00:00Z",
+    "platform": "web_player",
+    "ms_played": 600000,
+    "master_metadata_track_name": null,
+    "master_metadata_album_artist_name": null,
+    "master_metadata_album_album_name": null,
+    "spotify_track_uri": null,
+    "episode_name": "Ep. 40: AI and Jobs",
+    "episode_show_name": "Startup Stories India",
+    "spotify_episode_uri": "spotify:episode:0000000000000000000004",
+    "reason_start": "clickrow",
+    "reason_end": "endplay",
+    "shuffle": false,
+    "skipped": false
+  },
+  {
+    "ts": "2025-11-17T17:10:00Z",
+    "ms_played": 1000,
+    "master_metadata_track_name": null,
+    "master_metadata_album_artist_name": null,
+    "episode_name": null,
+    "episode_show_name": null
+  },
+  {
+    "ts": "2025-11-18T10:00:00Z",
+    "ms_played": 200000,
+    "master_metadata_track_name": "Perfect",
+    "brand_new_field_2027": {"nested": true}
+  },
+  {
+    "ts": "not a timestamp",
+    "ms_played": 5
+  },
+  "not an object",
+  {
+    "something_else": 1
+  }
+]

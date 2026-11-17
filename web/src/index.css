@@ -1,0 +1,122 @@
+@import 'tailwindcss';
+
+/* SelfScope design system — see docs/design.md.
+   Tailwind v4 theme tokens: these generate utilities like bg-panel, text-orange,
+   border-orange, shadow-block, font-pixel, font-mono. */
+@theme {
+  --color-*: initial;
+  --color-bg: #0d0d0d;
+  --color-panel: #1a1a1a;
+  --color-orange: #ff7a00;
+  --color-orange-dark: #a84e00;
+  --color-orange-light: #ffb066;
+  --color-xp: #5fd35f;
+  --color-text: #f2f2f2;
+  --color-muted: #9a9a9a;
+  --color-danger: #ff4d4d;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-pixel: 'Press Start 2P', ui-monospace, monospace;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Square corners everywhere: no rounded-* utilities exist. */
+  --radius-*: initial;
+
+  /* Hard offset "block" shadows — never blurred. */
+  --shadow-*: initial;
+  --shadow-block-sm: 2px 2px 0 0 var(--color-orange-dark);
+  --shadow-block: 4px 4px 0 0 var(--color-orange-dark);
+  --shadow-block-lg: 6px 6px 0 0 var(--color-orange-dark);
+  --shadow-block-xp: 4px 4px 0 0 #2f7a2f;
+
+  /* 2px is the default border width (`border` == 2px orange). */
+  --default-border-width: 2px;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-radius: 0 !important;
+    border-color: var(--color-orange);
+  }
+
+  html {
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-pixel);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  ::selection {
+    background: var(--color-orange);
+    color: var(--color-bg);
+  }
+}
+
+@layer components {
+  /* Panel: dark slab, 2px orange border, hard block shadow. */
+  .pixel-panel {
+    background: var(--color-panel);
+    border: 2px solid var(--color-orange);
+    box-shadow: var(--shadow-block);
+  }
+
+  /* Button: presses "into" its shadow on :active, like a block being pushed. */
+  .pixel-btn {
+    font-family: var(--font-pixel);
+    font-size: 10px;
+    line-height: 1;
+    padding: 14px 18px;
+    background: var(--color-orange);
+    color: var(--color-bg);
+    border: 2px solid var(--color-orange-light);
+    box-shadow: var(--shadow-block);
+    transition: transform 60ms steps(1), box-shadow 60ms steps(1);
+    cursor: pointer;
+  }
+  .pixel-btn:hover:not(:disabled) {
+    background: var(--color-orange-light);
+  }
+  .pixel-btn:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: none;
+  }
+  .pixel-btn:disabled {
+    background: var(--color-panel);
+    color: var(--color-muted);
+    border-color: var(--color-muted);
+    box-shadow: 4px 4px 0 0 #333;
+    cursor: not-allowed;
+  }
+  .pixel-btn:focus-visible {
+    outline: 2px solid var(--color-xp);
+    outline-offset: 4px;
+  }
+}
+
+@keyframes pixel-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.animate-pixel-blink {
+  animation: pixel-blink 1s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pixel-blink { animation: none; }
+}

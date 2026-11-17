@@ -1,0 +1,29 @@
+# ── PRIVATE DATA — NEVER COMMIT ─────────────────────────────
+# Real personal exports (bank/UPI statements, WhatsApp, Spotify, Takeout).
+data/private/
+**/data/private/
+
+# Node / Vite
+node_modules/
+dist/
+*.tsbuildinfo
+.vite/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.log

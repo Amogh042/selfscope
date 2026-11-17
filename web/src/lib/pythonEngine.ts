@@ -52,10 +52,13 @@ class PythonEngine {
     return this.initPromise
   }
 
-  /** Run Python code in the worker. Resolves with the last expression's value + stdout. */
-  async runPython(code: string): Promise<RunResult> {
+  /**
+   * Run Python code in the worker. Resolves with the last expression's value + stdout.
+   * `inputs` are exposed to the code as Python globals for this run only.
+   */
+  async runPython(code: string, inputs?: Record<string, unknown>): Promise<RunResult> {
     await this.init()
-    return this.request<RunResult>({ type: 'run', code })
+    return this.request<RunResult>({ type: 'run', code, inputs })
   }
 
   private ensureWorker(): Worker {

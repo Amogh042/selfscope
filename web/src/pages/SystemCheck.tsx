@@ -184,11 +184,16 @@ export default function SystemCheck() {
             SYSTEM CHECK<span className="animate-pixel-blink text-orange">_</span>
           </p>
         </div>
-        <p className="max-w-sm font-mono text-xs text-muted sm:text-right">
-          All analysis runs in this browser tab.
-          <br />
-          <span className="text-xp">No data leaves this device.</span>
-        </p>
+        <div className="flex flex-col gap-4 sm:items-end">
+          <p className="max-w-sm font-mono text-xs text-muted sm:text-right">
+            All analysis runs in this browser tab.
+            <br />
+            <span className="text-xp">No data leaves this device.</span>
+          </p>
+          <a href="#/import" className="pixel-btn self-start sm:self-end">
+            ▶ IMPORT DATA
+          </a>
+        </div>
       </header>
 
       <div className="pixel-panel p-4">

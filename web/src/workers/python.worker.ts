@@ -100,18 +100,25 @@ function toPlain(value: unknown): unknown {
   return value
 }
 
-async function run(code: string): Promise<RunResult> {
+async function run(code: string, inputs: Record<string, unknown> = {}): Promise<RunResult> {
   const py = pyodide ?? (await (initPromise ??= init()), pyodide)
   if (!py) throw new Error('Python engine failed to initialise')
 
   const t0 = performance.now()
   stdoutSink = []
+  const names = Object.keys(inputs)
   try {
+    // Plain objects/arrays become Python dicts/lists; strings and numbers convert directly.
+    for (const name of names) {
+      const v = inputs[name]
+      py.globals.set(name, v !== null && typeof v === 'object' ? py.toPy(v) : v)
+    }
     // Auto-load any extra Pyodide packages the code imports; keep loader chatter out of stdout.
     await py.loadPackagesFromImports(code, { messageCallback: () => {} })
     const raw = await py.runPythonAsync(code)
     return { result: toPlain(raw), stdout: stdoutSink, durationMs: Math.round(performance.now() - t0) }
   } finally {
+    for (const name of names) if (py.globals.has(name)) py.globals.delete(name)
     stdoutSink = []
   }
 }
@@ -126,7 +133,7 @@ self.onmessage = (event: MessageEvent<WorkerRequest>) => {
       throw err
     })
   } else {
-    const runJob = queue.catch(() => {}).then(() => run(req.code))
+    const runJob = queue.catch(() => {}).then(() => run(req.code, req.inputs))
     queue = runJob
     job = runJob
   }

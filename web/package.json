@@ -4,13 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "copy-demo": "node scripts/copy-demo.mjs",
+    "predev": "npm run copy-demo",
     "dev": "vite",
+    "prebuild": "npm run copy-demo",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
+    "jszip": "^3.10.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

@@ -103,6 +103,16 @@
     box-shadow: 4px 4px 0 0 #333;
     cursor: not-allowed;
   }
+  /* Secondary: dark slab with orange text, same press behaviour. */
+  .pixel-btn-secondary {
+    background: var(--color-bg);
+    color: var(--color-orange);
+    border-color: var(--color-orange);
+  }
+  .pixel-btn-secondary:hover:not(:disabled) {
+    background: var(--color-panel);
+    color: var(--color-orange-light);
+  }
   .pixel-btn:focus-visible {
     outline: 2px solid var(--color-xp);
     outline-offset: 4px;

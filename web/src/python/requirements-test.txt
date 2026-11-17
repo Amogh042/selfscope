@@ -1,0 +1,4 @@
+# Run the browser-side Python modules under normal CPython.
+# Versions match Pyodide 314.0.8 (Python 3.14).
+pandas==3.0.2
+pytest

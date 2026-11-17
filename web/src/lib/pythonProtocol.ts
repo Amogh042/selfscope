@@ -25,7 +25,8 @@ export interface RunResult {
 // main thread -> worker
 export type WorkerRequest =
   | { id: number; type: 'init' }
-  | { id: number; type: 'run'; code: string }
+  /** `inputs` become Python globals for this run only (then deleted). */
+  | { id: number; type: 'run'; code: string; inputs?: Record<string, unknown> }
 
 // worker -> main thread
 export type WorkerResponse =

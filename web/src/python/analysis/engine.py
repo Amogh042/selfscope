@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 
 from . import ENGINE_VERSION
-from . import anomalies, correlations, periods, trends
+from . import anomalies, calendar_control, correlations, periods, trends
+from .metrics import METRICS
 
 
 def frame(features: list[dict]) -> pd.DataFrame:
@@ -48,8 +49,16 @@ def run(payload: dict) -> dict:
     overlap_ok = bool(ov.get("start_date")) and (corr_from is None or corr_to is None or corr_from <= corr_to)
     corr_df = window(df, corr_from, corr_to) if overlap_ok and not df.empty else df.iloc[0:0]
 
-    ins, summary, weak = (correlations.insights(corr_df) if len(corr_df)
-                          else ([], {"tests": 0, "significant": 0, "weak_signals": 0}, []))
+    tagged = payload.get("periods") or []
+    if len(corr_df):
+        tests = correlations.run_tests(corr_df)
+        ins, summary, weak = correlations.insights(corr_df, tests=tests)
+        controlled, tests_c = calendar_control.control(corr_df, tagged, ins, weak)
+        corr_matrix = correlations.matrix(tests, tests_c)
+    else:
+        ins, summary, weak = [], {"tests": 0, "significant": 0, "weak_signals": 0}, []
+        controlled = {"insights": [], "weak_signals": [], "tests": 0, "controls": []}
+        corr_matrix = {"metrics": [], "cells": []}
     out = {
         "engine_version": ENGINE_VERSION,
         "range": {"from": rng.get("from"), "to": rng.get("to"), "days": int(len(in_range))},
@@ -58,8 +67,11 @@ def run(payload: dict) -> dict:
         "insights": ins,
         "weak_signals": weak,
         "tests": summary,
+        "calendar_controlled": controlled,
+        "matrix": corr_matrix,
+        "metrics": {m: {"source": v.source, "label": v.short, "unit": v.unit} for m, v in METRICS.items()},
         "song_mood_by_hour": trends.mood_by_hour(payload.get("mood_by_hour") or []),
-        "periods": periods.compare(in_range, payload.get("periods") or []) if len(in_range) else [],
+        "periods": periods.compare(in_range, tagged) if len(in_range) else [],
         "anomalies": anomalies.detect(in_range) if len(in_range) else {"days": [], "per_metric": []},
         "trends": {**(trends.aggregates(in_range) if len(in_range) else {}),
                    "heatmaps": trends.heatmaps(payload.get("heatmap") or [])},

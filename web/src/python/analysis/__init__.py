@@ -4,4 +4,4 @@ Pure Python + pandas / numpy / scipy / scikit-learn: runs in Pyodide (browser) a
 (tests). Input is the daily_features view (one row per day); see docs/analysis.md.
 """
 
-ENGINE_VERSION = "1"
+ENGINE_VERSION = "3"

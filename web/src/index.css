@@ -14,6 +14,12 @@
   --color-text: #f2f2f2;
   --color-muted: #9a9a9a;
   --color-danger: #ff4d4d;
+  /* One fixed colour per data source (Okabe-Ito, colour-blind safe), used everywhere. */
+  --color-music: #56b4e9;
+  --color-youtube: #cc79a7;
+  --color-chats: #009e73;
+  --color-money: #f0e442;
+  --color-grid: #2e2e2e;
   --color-transparent: transparent;
   --color-current: currentColor;
 

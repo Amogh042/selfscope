@@ -151,8 +151,10 @@ def conditional(df: pd.DataFrame, x: str, y: str, lag: int, rho: float) -> dict 
         groups = {"kind": "mean", "high": round(m_hi, 4), "low": round(m_lo, 4)}
     if (groups["high"] > groups["low"]) != (rho > 0):
         return None  # the simple split disagrees with the rank correlation: don't oversimplify
-    return {"sentence": f"{when} {cond}, {outcome}.", "threshold": t, "n_high": int(len(hi)), "n_low": int(len(lo)),
-            **groups}
+    return {"sentence": f"{when} {cond}, {outcome}.", "threshold": t, "threshold_text": fmt(x, t),
+            "high_text": fmt(y, groups["high"]) if groups["kind"] == "mean" else f"{groups['high']:.0%}",
+            "low_text": fmt(y, groups["low"]) if groups["kind"] == "mean" else f"{groups['low']:.0%}",
+            "n_high": int(len(hi)), "n_low": int(len(lo)), **groups}
 
 
 def _describe(df: pd.DataFrame, sig: pd.DataFrame) -> list[dict]:
@@ -175,9 +177,10 @@ def _describe(df: pd.DataFrame, sig: pd.DataFrame) -> list[dict]:
     return out
 
 
-def insights(df: pd.DataFrame, top: int | None = None) -> tuple[list[dict], dict, list[dict]]:
+def insights(df: pd.DataFrame, top: int | None = None, tests: pd.DataFrame | None = None
+             ) -> tuple[list[dict], dict, list[dict]]:
     """-> (ranked insights, summary of the tests run, weaker signals)."""
-    tests = run_tests(df)
+    tests = run_tests(df) if tests is None else tests
     sig = significant(tests)
     weak = significant(tests, lo=WEAK_RHO, hi=MIN_RHO)
     out, weak_out = _describe(df, sig), _describe(df, weak)
@@ -185,6 +188,24 @@ def insights(df: pd.DataFrame, top: int | None = None) -> tuple[list[dict], dict
                "fdr": FDR, "min_rho": MIN_RHO, "weak_rho": WEAK_RHO, "min_days": MIN_DAYS, "lags": list(LAGS),
                "metrics": metric_columns(df)}
     return (out[:top] if top else out), summary, weak_out
+
+
+def matrix(tests: pd.DataFrame, controlled: pd.DataFrame | None = None) -> dict:
+    """Same-day (lag 0) cross-source cells for the correlation-matrix heatmap. q is adjusted over
+    ALL tests run (same correction as the insights); `significant` = q < FDR."""
+    t = tests[tests["lag"] == 0]
+    c = ({(r.x, r.y): r for r in controlled[controlled["lag"] == 0].itertuples()}
+         if controlled is not None else {})
+    cells = []
+    for r in t.itertuples():
+        rc = c.get((r.x, r.y))
+        cells.append({"x": r.x, "y": r.y, "n": int(r.n), "rho": round(float(r.rho), 3), "q": float(r.q),
+                      "significant": bool(r.q < FDR),
+                      "rho_c": round(float(rc.rho), 3) if rc is not None else None,
+                      "q_c": float(rc.q) if rc is not None else None,
+                      "significant_c": bool(rc.q < FDR) if rc is not None else False})
+    ms = sorted({*t["x"], *t["y"]}, key=list(METRICS).index)
+    return {"metrics": ms, "cells": cells}
 
 
 def _p(q: float) -> str:

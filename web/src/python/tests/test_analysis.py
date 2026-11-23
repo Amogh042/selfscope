@@ -130,3 +130,50 @@ def test_null_test_finds_almost_nothing(con):
     assert sum(r["false_insights"] for r in runs) <= 1
     # ... the "weaker signals" tier lets a few chance findings through (why it is labelled "may be chance")
     assert sum(r["false_weak_signals"] for r in runs) / len(runs) <= 8
+
+
+# ---------------------------------------------------------------- calendar control (step 8)
+
+def test_calendar_residuals_remove_weekday_and_period_means(con):
+    from analysis import calendar_control
+    p = dp.engine_payload(con)
+    df = engine.frame(p["features"])
+    res = calendar_control.residualize(df, p["periods"])
+    X = calendar_control.design(df.index, p["periods"])
+    for m in ["youtube_comedy_min", "spotify_sad_share", "discretionary_spend"]:
+        r = res[m].dropna()
+        by_weekday = r.groupby(r.index.weekday).mean()
+        assert by_weekday.abs().max() < 1e-6 * max(1.0, df[m].abs().max())
+        assert abs(r[X.loc[r.index, "period_Exams"] == 1].mean()) < 1e-6 * max(1.0, df[m].abs().max())
+
+
+def test_calendar_control_keeps_the_planted_youtube_food_link(res):
+    # Food delivery depends directly on YouTube time in the generator (and also on exams).
+    # After removing weekday + exam effects the link must still be at least a weak signal:
+    # same direction, partial rho >= 0.1, and "holds" (adjusted p < 0.05 over the re-checked links).
+    pool = res["insights"] + res["weak_signals"]
+    hits = [i for i in pool if i["x"] in ("youtube_videos", "youtube_est_minutes") and i["y"] == "food_delivery_spend"]
+    assert hits
+    best = max(hits, key=lambda i: i["calendar"]["rho"])
+    assert best["calendar"]["holds"] and best["calendar"]["rho"] >= 0.1 and best["calendar"]["q"] < 0.05
+
+
+def test_calendar_only_links_weaken(res):
+    # exam-driven pairs (study videos, sad songs, negative messages) shrink towards zero
+    ins = res["insights"]
+    raw = sorted(abs(i["rho"]) for i in ins)
+    ctl = sorted(abs(i["calendar"]["rho"]) for i in ins)
+    assert ctl[len(ctl) // 2] < 0.5 * raw[len(raw) // 2]
+    exam_pair = next(i for i in ins if {i["x"], i["y"]} == {"youtube_study_min", "wa_negative_share"})
+    assert not exam_pair["calendar"]["holds"] and abs(exam_pair["calendar"]["rho"]) < 0.5 * abs(exam_pair["rho"])
+    assert sum(i["calendar"]["holds"] for i in ins) <= len(ins) / 2
+    assert res["calendar_controlled"]["controls"] == ["weekday", "Exams"]
+
+
+def test_matrix_cells_match_tests(res):
+    m = res["matrix"]
+    assert m["metrics"] and all(c["x"] in m["metrics"] and c["y"] in m["metrics"] for c in m["cells"])
+    assert all(res["metrics"][c["x"]]["source"] != res["metrics"][c["y"]]["source"] for c in m["cells"])
+    sig = {(i["x"], i["y"]) for i in res["insights"] if i["lag"] == 0}
+    cells = {(c["x"], c["y"]): c for c in m["cells"]}
+    assert all(cells[k]["significant"] for k in sig if k in cells)

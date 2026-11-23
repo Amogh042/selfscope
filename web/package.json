@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
+    "echarts": "6.1.0",
     "jszip": "^3.10.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

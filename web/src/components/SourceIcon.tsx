@@ -4,7 +4,7 @@ import type { DetectedSource } from '../lib/import/detect'
 // Each row is a string of 12 chars: '#' = filled pixel, '.' = empty.
 const GLYPHS: Record<DetectedSource, { color: string; rows: string[] }> = {
   whatsapp: {
-    color: 'var(--color-xp)',
+    color: 'var(--color-chats)',
     rows: [
       '............',
       '.##########.',
@@ -21,7 +21,7 @@ const GLYPHS: Record<DetectedSource, { color: string; rows: string[] }> = {
     ],
   },
   spotify: {
-    color: 'var(--color-orange-light)',
+    color: 'var(--color-music)',
     rows: [
       '.....#######',
       '.....#######',
@@ -38,7 +38,7 @@ const GLYPHS: Record<DetectedSource, { color: string; rows: string[] }> = {
     ],
   },
   youtube: {
-    color: 'var(--color-danger)',
+    color: 'var(--color-youtube)',
     rows: [
       '............',
       '############',
@@ -55,7 +55,7 @@ const GLYPHS: Record<DetectedSource, { color: string; rows: string[] }> = {
     ],
   },
   bank: {
-    color: 'var(--color-orange)',
+    color: 'var(--color-money)',
     rows: [
       '............',
       '...######...',

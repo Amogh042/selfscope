@@ -7,7 +7,7 @@ import { ensurePythonModules } from './pythonModules'
 import { store, type Mode } from './store'
 
 /** Must match ENGINE_VERSION in src/python/analysis/__init__.py. */
-export const ENGINE_VERSION = '1'
+export const ENGINE_VERSION = '3'
 
 export interface Insight {
   x: string
@@ -22,6 +22,37 @@ export interface Insight {
   sentence: string
   stats: string
   note: string
+  /** Conditional split behind the sentence (null = plain correlation). */
+  detail: {
+    kind: 'rate' | 'mean'
+    high: number
+    low: number
+    ratio?: number
+    threshold: number
+    threshold_text: string
+    high_text: string
+    low_text: string
+    n_high: number
+    n_low: number
+  } | null
+  /** Same test after removing weekday + tagged-period effects (only on raw insights). */
+  calendar?: { rho: number | null; p?: number; q: number | null; holds: boolean }
+}
+export interface MetricMeta {
+  source: string
+  label: string
+  unit: 'min' | 'inr' | 'share' | 'score' | 'count'
+}
+export interface MatrixCell {
+  x: string
+  y: string
+  n: number
+  rho: number
+  q: number
+  significant: boolean
+  rho_c: number | null
+  q_c: number | null
+  significant_c: boolean
 }
 export interface PeriodResult {
   period: string
@@ -30,6 +61,10 @@ export interface PeriodResult {
   label: string
   direction: 'up' | 'down'
   pct_change: number | null
+  n_in: number
+  n_out: number
+  mean_in: number
+  mean_out: number
   strength: string
   q: number
   significant: boolean
@@ -50,6 +85,9 @@ export interface EngineResult {
   song_mood_by_hour: { sentence: string | null; late_sad_share: number; other_sad_share: number; p: number } | null
   periods: PeriodResult[]
   anomalies: { days: AnomalyDay[]; per_metric: { date: string; metric: string; value: number; z: number }[] }
+  calendar_controlled: { insights: Insight[]; weak_signals: Insight[]; tests: number; controls: string[] }
+  matrix: { metrics: string[]; cells: MatrixCell[] }
+  metrics: Record<string, MetricMeta>
   trends: Record<string, unknown>
 }
 

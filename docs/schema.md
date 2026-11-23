@@ -184,6 +184,7 @@ DuckDB-WASM v1.5.4) and by the tests (`src/python/tests/test_storage.py`, duckdb
 | `views.sql` | `event_facts`, `daily_activity`, `daily_features`, `hourly_heatmap`, `source_coverage`, `overlap_window` |
 | `manage.sql` | `remove_import`, `wipe_all`, `set_me`, `reset`, `add_period`, `delete_period`, `save_insights` |
 | `enrich.sql` | `apply_enrichment` (topic / mood / sentiment into `category` + `meta`) |
+| `dashboard.sql` | read queries for the dashboard (KPIs, timeline, source panels, day drill-down; never returns message text) |
 | `categorise.sql` | `apply_predictions`, `refresh_categories`, `set_override`, `clear_override` |
 | `queries.sql` | read queries for the Import and Data screens |
 

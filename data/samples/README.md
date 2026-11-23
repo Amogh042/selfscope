@@ -11,7 +11,7 @@ Everything in this folder is **generated**, not real. It's here to demo SelfScop
   - Every text message comes from a clearly positive, neutral or negative pool, so sentiment models have signal
 - `bank/SBI_statement_demo.xlsx`: one year of a student's SBI savings account, **2,629 transactions**, laid out like an OnlineSBI Excel download: a header block (Account Name: DEMO USER, Account Number: XXXXXXX1234, statement period, …), then `Txn Date | Value Date | Description | Ref No./Cheque No. | Debit | Credit | Balance`, dates like "13 Aug 2026", amounts as Indian-formatted text ("1,23,456.78"), and a running balance that never goes negative (opening ₹12,000). Real SBI narration formats: `TO TRANSFER-UPI/DR/<12-digit ref>/<payee cut to 8>/<bank code>/<UPI ID cut>/<note>-`, `BY TRANSFER-UPI/CR/…`, Ref No. `TRANSFER TO <13 digits>`, `ATM WDL-ATM CASH …-`, `DEBIT-CMP MANDATE DEBIT <name>-`, `CREDIT INTEREST--`, `BY TRANSFER-NEFT*<IFSC>*<UTR>*<name>*-`. Every name, UPI ID, phone number and reference number is made up. The true category of every row is in `ml/data/demo_bank_truth.csv` (answer key for the categoriser; the app never reads it)
 
-- `periods.json`: the 3 exam periods, pre-tagged in the DEMO database when demo data is loaded (the Insights page compares them with other days)
+- `periods.json`: the 3 exam periods, pre-tagged in the DEMO database when demo data is loaded (the dashboard compares them with other days), and the demo user's chat name (`"me": "Amogh"`), picked automatically
 
 The true sentiment label of every demo WhatsApp text message is in `ml/data/demo_whatsapp_truth.csv` (answer key for the sentiment scorer, made by the generator with its own random stream so the demo files did not change; the app never reads it).
 

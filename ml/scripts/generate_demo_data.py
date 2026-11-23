@@ -792,10 +792,10 @@ def main():
         w.writerow(["chat", "local_time", "sender", "label", "text"])
         for chat, t, sender, label, text in wa_truth:
             w.writerow([chat, t.isoformat(sep=" "), sender, label, text])
-    # Exam periods, pre-tagged in the app's DEMO database
+    # Exam periods, pre-tagged in the app's DEMO database, and the demo user's chat name ("me")
     with open(os.path.join(a.out, "periods.json"), "w", encoding="utf-8") as f:
         json.dump({"periods": [{"label": "Exams", "start": s.isoformat(), "end": e.isoformat()}
-                               for s, e in EXAM_WEEKS]}, f, indent=2)
+                               for s, e in EXAM_WEEKS], "me": WA_ME}, f, indent=2)
 
     bank_rows, bank_truth, bank_stats = gen_bank(a.seed, yt)
     bank_dir = os.path.join(a.out, "bank")

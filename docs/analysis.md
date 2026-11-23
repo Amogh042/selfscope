@@ -65,6 +65,48 @@ For every pair of daily metrics **from different apps**, inside the window where
   late nights, sad songs, negative messages *and* food delivery together. Every insight is phrased as
   "on days with…, … is higher" and carries that note.
 
+### 3b. Calendar control (`analysis/calendar_control.py`, the dashboard toggle)
+
+*Question:* is a link between two apps more than "both follow the calendar"? Exams push study videos,
+sad songs and negative messages up together; weekends push comedy and spending up together.
+
+**Method: partial Spearman correlation.**
+1. Rank each daily metric (as Spearman does).
+2. Fit a small linear model to each metric's ranks on **its own day's calendar**: 7 weekday means + one
+   in/out dummy per tagged period label (on the demo: Exams). Keep the **residual** = "higher or lower than
+   usual for this weekday and period".
+3. Correlate the residuals (Pearson) for every cross-app pair at lags 0/1/2. The p-value comes from a t-test
+   with n − 2 − (number of calendar terms) degrees of freedom; then BH over all tests, as before.
+
+*Why rank first?* If we took residuals of the raw values and then ranked them, the many tied zeros of a
+rare metric (food delivery) would get different ranks in different weekday groups, which puts the weekday
+pattern straight back in. (A first version did this and produced odd "two days later" links; fixed.)
+
+**Two outputs:**
+- Each reported insight / weaker signal gets a **"holds after controlling for calendar"** badge when, at
+  the same lag, the partial rho has the same sign, |partial rho| ≥ 0.1 and its adjusted p < 0.05. This is a
+  **re-check of links already found**, so BH runs over those ~100 re-checked links (not a new search over
+  all 1,170). Because the links were picked on the same data, this check is a bit optimistic.
+- The toggle also shows a **new ranking** with the calendar removed (a new search: BH over all tests).
+
+**Demo results (full year, 365 days):**
+- **16 of 40** insights and **12 of 62** weaker signals hold; the median |rho| of the 40 insights falls from
+  0.28 to 0.11. The links that hold are mostly "busy days": more music ↔ more messages, more comedy, better
+  mood (partial rho ≈ 0.13–0.18).
+- **Calendar-only links fade:** study videos ↔ your negative messages (rho 0.27 → about 0.06, no longer
+  significant), sad-song share ↔ late-night messages, and other exam-driven pairs.
+- **The planted YouTube → food delivery link holds:** partial rho 0.18 (24+ videos) and 0.16 (3h+ of YouTube),
+  re-check adjusted p 0.02. This fits the generator, which makes delivery depend on YouTube time directly
+  (as well as on exams). Over all 1,170 tests its q is 0.056, so it just misses the new-search weak tier.
+- The new-search ranking (calendar removed) finds 5 links at |rho| ≈ 0.20–0.22, all "two days later"
+  between music, comedy videos and messages. Their residual cross-correlations are positive at **every**
+  lag from −4 to +4 (≈ 0.1–0.2), which means a slow shared change the model did not remove: the demo's
+  **semester breaks** (more listening, comedy and chatting) are not tagged. Tagging them as a period would
+  remove it. So "calendar removed" means *weekday + tagged periods* only.
+
+Tests: `test_calendar_residuals_remove_weekday_and_period_means`,
+`test_calendar_control_keeps_the_planted_youtube_food_link`, `test_calendar_only_links_weaken`.
+
 ## 4. Periods (`analysis/periods.py`)
 
 You tag date ranges ("Exams", "Trip"); weekends are compared automatically. For every metric, days inside
@@ -109,7 +151,8 @@ bar and why weaker signals are labelled "may be chance".
 
 - **Synthetic data.** The patterns found are the patterns planted; real life is noisier.
 - **Confounding.** Most cross-app links in the demo come from the exam calendar. Tag your exams/trips and
-  compare periods to see the common cause directly.
+  compare periods to see the common cause directly, and use the calendar-control toggle (section 3b), which
+  removes weekday and tagged-period effects but not untagged ones.
 - **Time-series dependence.** Neighbouring days are similar, which makes p-values a bit optimistic; the null
   test (which keeps each app's own day-to-day pattern) is the practical check.
 - **Enrichment quality caps everything:** unknown songs and channels, lexicon-based sentiment (~79% on the

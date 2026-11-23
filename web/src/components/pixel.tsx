@@ -1,5 +1,5 @@
 // Small set of pixel-UI primitives. See docs/design.md.
-import type { ReactNode } from 'react'
+import { Component, type ReactNode } from 'react'
 
 export type Status = 'idle' | 'loading' | 'ready' | 'error'
 
@@ -93,4 +93,21 @@ export function Terminal({ children, tone = 'text' }: { children: ReactNode; ton
       {children}
     </pre>
   )
+}
+
+/** Keeps one failing panel from blanking the whole page. */
+export class PanelBoundary extends Component<{ children: ReactNode; name: string }, { error: string | null }> {
+  state = { error: null as string | null }
+  static getDerivedStateFromError(e: unknown) {
+    return { error: e instanceof Error ? e.message : String(e) }
+  }
+  render() {
+    if (this.state.error)
+      return (
+        <Terminal tone="error">
+          {this.props.name} failed to draw: {this.state.error}
+        </Terminal>
+      )
+    return this.props.children
+  }
 }

@@ -67,13 +67,27 @@ Known gaps and open decisions. Move items to "Done" when fixed.
   the same vocabulary as the lexicon. Known errors: "ok"/"free" read as positive, Hindi *baad*
   ("later") vs English "bad", sarcasm, "dead 💀" (= very funny) read as negative.
 - **Curated lists cover the demo 100% by construction** (step 7). On real data many channels and
-  songs will be "unknown" (moods are never guessed). The Insights page should show coverage, and
+  songs will be "unknown" (moods are never guessed). The dashboard should show coverage, and
   the user could label their top unknown channels/songs.
 - **Insights need `me`** (step 7). Without "Which one is you?" the user's own message mood metrics
   are NULL; the page shows a tip.
 - **Cross-app links are mostly calendar-driven** (step 7). Most strong associations come from exams /
   weekends moving several habits together. Partial correlation controlling for weekend + tagged
   periods would separate "direct" links.
+
+## Dashboard (step 8)
+
+- **First analysis after a cold start is slow** (step 8). Booting Pyodide + the engine (now with the calendar
+  control) took ~15 s on the full demo year in the browser; after that the result is cached per range + data
+  version (warm runs ~2 s for 30 days). Runs in the worker, so the UI stays usable. Could precompute the
+  "All" range right after an import.
+- **Weekly charts start on Monday** (step 8): the first bar of a custom range can be a partial week
+  (labelled "week of …"). Could normalise per day instead.
+- **Scatter plots show raw daily values** (step 8), also for calendar-controlled links, whose statistic is
+  computed on residuals. A residual scatter would match the number better.
+- **Timeline metric list = all daily metrics** (step 8); it may need grouping on real data with more sources.
+- **Demo `me`** (step 8): LOAD DEMO DATA now also sets "Which one is you?" to the demo user (from
+  `data/samples/periods.json`) unless a name is already set.
 
 ## App / architecture
 
@@ -109,6 +123,8 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 - **First import downloads pyarrow** (~10 MB, step 4); CSV fallback is used if that fails.
 
 ## Done
+
+- Step 8: dashboard (player stats, timeline, source panels, insights + matrix, periods, day drill-down) and calendar-controlled correlations.
 
 - Step 7: video topics, song moods and message sentiment; cross-app insights, periods and unusual days on the Insights page (cached per range + data version).
 

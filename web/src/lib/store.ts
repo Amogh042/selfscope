@@ -13,6 +13,7 @@ import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm'
 import { initDuckDB } from './duckdb'
 import { idbDelete, idbGet, idbPut } from './idb'
 import categoriseSql from '../sql/categorise.sql?raw'
+import dashboardSql from '../sql/dashboard.sql?raw'
 import enrichSql from '../sql/enrich.sql?raw'
 import importSql from '../sql/import.sql?raw'
 import manageSql from '../sql/manage.sql?raw'
@@ -62,7 +63,7 @@ function namedBlocks(text: string): Record<string, string> {
   return out
 }
 
-export const QUERIES = namedBlocks(queriesSql)
+export const QUERIES = { ...namedBlocks(queriesSql), ...namedBlocks(dashboardSql) }
 const MANAGE = namedBlocks(manageSql)
 const CATEGORISE = namedBlocks(categoriseSql)
 const ENRICH = namedBlocks(enrichSql)

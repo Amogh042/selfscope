@@ -193,9 +193,15 @@ function stripExt(name: string) {
 
 /** Exam periods that come pre-tagged with the demo data (data/samples/periods.json). */
 export async function fetchDemoPeriods(): Promise<{ label: string; start: string; end: string }[]> {
+  return (await fetchDemoSettings()).periods
+}
+
+/** Demo settings shipped with the samples: the exam periods and the demo user's chat name. */
+export async function fetchDemoSettings(): Promise<{ periods: { label: string; start: string; end: string }[]; me: string | null }> {
   const r = await fetch(`${import.meta.env.BASE_URL}demo/periods.json`)
-  if (!r.ok) return []
-  return ((await r.json()) as { periods: { label: string; start: string; end: string }[] }).periods
+  if (!r.ok) return { periods: [], me: null }
+  const j = (await r.json()) as { periods?: { label: string; start: string; end: string }[]; me?: string }
+  return { periods: j.periods ?? [], me: j.me ?? null }
 }
 
 /** Fetch the bundled synthetic demo files (copied from data/samples by scripts/copy-demo.mjs). */

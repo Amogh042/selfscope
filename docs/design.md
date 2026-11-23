@@ -45,3 +45,41 @@ Fonts load from Google Fonts in `web/index.html` (fonts only — no user data is
 
 Stepped only (`steps(1)`): blinking cursors, button presses. No easing curves, no fades.
 Respect `prefers-reduced-motion`.
+
+## Data colours (one per source, everywhere)
+
+| Source | Token | Hex | Utility |
+|---|---|---|---|
+| Music (Spotify) | `music` | `#56B4E9` sky blue | `text-music`, `border-music` |
+| YouTube | `youtube` | `#CC79A7` reddish purple | `text-youtube` |
+| Chats (WhatsApp) | `chats` | `#009E73` bluish green | `text-chats` |
+| Money (bank) | `money` | `#F0E442` yellow | `text-money` |
+| Chart grid | `grid` | `#2E2E2E` | `border-grid` |
+
+From the Okabe–Ito palette, which stays distinguishable with the common kinds of colour blindness;
+none of them is orange, so **orange stays the accent** (UI chrome, highlights, trend lines, "rise
+together" in the matrix). A source is always drawn in its colour: KPI tiles, panel frames, timeline
+lines, chips, the pixel source icons. Categories *inside* one chart (moods, topics, spend categories)
+use lightness steps of that source's colour (`SHADES` in `src/lib/sourceStyle.ts`, biggest category
+brightest) and a dim grey for "other" / "rest", so they never look like another source.
+In TypeScript, read colours with `colors()` / `sourceColor()` (they come from these CSS tokens).
+
+## Charts (Apache ECharts, `src/components/charts/Chart.tsx`)
+
+- **Square everything:** bars with no rounding, square markers (`symbol: 'rect'`), no gradients, no
+  shadows inside charts, no animation.
+- **Thin muted grid lines** (1px `grid`), muted axis labels; **JetBrains Mono** for every number and label
+  in a chart; **Press Start 2P only for section headings** (in HTML, never inside a chart).
+- **Every chart has:**
+  1. a **title that states the takeaway**, computed from the data ("Sad songs peak around 02:00 (55% …)"),
+     drawn inside the canvas so it is in the PNG;
+  2. **axis units** (₹, min, %, count, "mood −1…1");
+  3. a **tooltip with exact values** (square swatch, mono, 2px orange border, hard shadow);
+  4. an **empty state** ("No data in this range", dashed frame) and a **loading state** (blinking
+     "LOADING…"); a source that was never imported shows "Import <source> to unlock this panel";
+  5. a **save-as-PNG** button (toolbox, 2× pixel ratio, panel background).
+- Charts are created when scrolled near the viewport and resize with their box. Wide charts (the
+  correlation matrix) scroll inside their own box; the page never scrolls sideways.
+- Diverging scales (correlations): orange = positive, white = negative, panel colour = 0; non-significant
+  cells are flat grey with no label.
+- Sequential scales (heatmaps, calendar): panel colour → the source colour.

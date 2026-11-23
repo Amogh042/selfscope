@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react'
 import { RANGE_LABEL, useApp, type RangePreset } from '../lib/appState'
 
 const NAV = [
-  ['/', 'CHECK'],
+  ['/dashboard', 'DASHBOARD'],
   ['/import', 'IMPORT'],
-  ['/insights', 'INSIGHTS'],
   ['/data', 'DATA'],
+  ['/system', 'SYSTEM'],
 ] as const
 
 const fmt = (s: string) =>
   new Date(`${s}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
 
 export function AppHeader() {
-  const { path, mode, setMode, range, setRange, resolved, href, storeState } = useApp()
+  const { path, mode, setMode, range, setRange, resolved, href, storeState, bounds } = useApp()
+  // "/" shows the dashboard once there is data, else the import screen
+  const current = path === '/' ? ((bounds?.events ?? 0) > 0 ? '/dashboard' : '/import') : path === '/insights' ? '/dashboard' : path
   const [from, setFrom] = useState(range.from ?? '')
   const [to, setTo] = useState(range.to ?? '')
   useEffect(() => {
@@ -23,7 +25,7 @@ export function AppHeader() {
   const busy = storeState.status === 'opening'
 
   return (
-    <header className="sticky top-0 z-20 border-b-2 border-orange bg-bg/95 backdrop-blur-none">
+    <header className="top-0 z-20 border-b-2 md:sticky border-orange bg-bg/95 backdrop-blur-none">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3 sm:px-6">
         <a href={href('/')} className="font-pixel text-[11px] text-orange">
           SELFSCOPE
@@ -33,8 +35,8 @@ export function AppHeader() {
             <a
               key={p}
               href={href(p)}
-              aria-current={path === p ? 'page' : undefined}
-              className={`border-2 px-2 py-1 font-pixel text-[9px] ${path === p ? 'border-orange bg-orange text-bg' : 'border-transparent text-text hover:border-orange-dark'}`}
+              aria-current={current === p ? 'page' : undefined}
+              className={`border-2 px-2 py-1 font-pixel text-[9px] ${current === p ? 'border-orange bg-orange text-bg' : 'border-transparent text-text hover:border-orange-dark'}`}
             >
               {label}
             </a>

@@ -13,6 +13,7 @@ import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm'
 import { initDuckDB } from './duckdb'
 import { idbDelete, idbGet, idbPut } from './idb'
 import categoriseSql from '../sql/categorise.sql?raw'
+import enrichSql from '../sql/enrich.sql?raw'
 import importSql from '../sql/import.sql?raw'
 import manageSql from '../sql/manage.sql?raw'
 import queriesSql from '../sql/queries.sql?raw'
@@ -24,7 +25,7 @@ import viewsSql from '../sql/views.sql?raw'
 export type Mode = 'demo' | 'real'
 export const DB_NAME: Record<Mode, string> = { demo: 'selfscope_demo', real: 'selfscope_real' }
 
-const SNAPSHOT_TABLES = ['events', 'imports', 'settings', 'category_overrides'] as const
+const SNAPSHOT_TABLES = ['events', 'imports', 'settings', 'category_overrides', 'periods', 'insights'] as const
 const SNAPSHOT_VERSION = 1
 
 interface Snapshot {
@@ -64,6 +65,7 @@ function namedBlocks(text: string): Record<string, string> {
 export const QUERIES = namedBlocks(queriesSql)
 const MANAGE = namedBlocks(manageSql)
 const CATEGORISE = namedBlocks(categoriseSql)
+const ENRICH = namedBlocks(enrichSql)
 
 function literal(v: string | number | null | undefined): string {
   if (v === null || v === undefined) return 'NULL'
@@ -266,6 +268,60 @@ class Store {
         pred_file: file,
         model_version: modelVersion,
         model_f1: modelF1,
+      })
+    } finally {
+      await db.dropFile(file)
+    }
+  }
+
+  /** Store enrichment output (src/sql/enrich.sql): YouTube topic, Spotify mood/language, WhatsApp sentiment. */
+  async applyEnrichment(mode: Mode, predictionsJson: string) {
+    await this.ready(mode)
+    if (this.state.mode !== mode) throw new Error(`database switched away from ${mode}`)
+    const db = await initDuckDB()
+    const file = `enrich_${crypto.randomUUID()}.json`
+    await db.registerFileText(file, predictionsJson)
+    try {
+      await this.runBlocks([ENRICH.apply_enrichment], { pred_file: file })
+    } finally {
+      await db.dropFile(file)
+    }
+  }
+
+  /** Tag a date range (e.g. "Exams") for period comparisons. */
+  addPeriod = (label: string, startDate: string, endDate: string, origin: 'user' | 'demo' = 'user') =>
+    this.mutate('add_period', {
+      period_id: crypto.randomUUID(),
+      label,
+      start_date: startDate <= endDate ? startDate : endDate,
+      end_date: startDate <= endDate ? endDate : startDate,
+      origin,
+      created_at: new Date().toISOString().replace('T', ' ').replace('Z', ''),
+    })
+
+  deletePeriod = (periodId: string) => this.mutate('delete_period', { period_id: periodId })
+
+  /** Cache analysis-engine output. Does not bump the data version (it is derived data). */
+  async saveInsights(mode: Mode, key: string, range: { from: string | null; to: string | null }, fingerprint: string, payload: string) {
+    await this.ready(mode)
+    if (this.state.mode !== mode) return
+    const db = await initDuckDB()
+    const file = `insights_${crypto.randomUUID()}.json`
+    await db.registerFileText(file, payload)
+    try {
+      await this.exclusive(async (c) => {
+        await c.query(
+          setVars({
+            cache_key: key,
+            range_from: range.from,
+            range_to: range.to,
+            fingerprint,
+            created_at: new Date().toISOString().replace('T', ' ').replace('Z', ''),
+            payload_file: file,
+          }),
+        )
+        await c.query(MANAGE.save_insights)
+        await this.persist(c)
       })
     } finally {
       await db.dropFile(file)

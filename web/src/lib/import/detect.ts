@@ -191,6 +191,13 @@ function stripExt(name: string) {
   return basename(name).replace(/\.[^.]+$/, '')
 }
 
+/** Exam periods that come pre-tagged with the demo data (data/samples/periods.json). */
+export async function fetchDemoPeriods(): Promise<{ label: string; start: string; end: string }[]> {
+  const r = await fetch(`${import.meta.env.BASE_URL}demo/periods.json`)
+  if (!r.ok) return []
+  return ((await r.json()) as { periods: { label: string; start: string; end: string }[] }).periods
+}
+
 /** Fetch the bundled synthetic demo files (copied from data/samples by scripts/copy-demo.mjs). */
 export async function fetchDemoFiles(): Promise<File[]> {
   const base = `${import.meta.env.BASE_URL}demo/`
@@ -198,7 +205,7 @@ export async function fetchDemoFiles(): Promise<File[]> {
   if (!res.ok) throw new Error('Demo data not found — run `npm run copy-demo` in web/')
   const { files } = (await res.json()) as { files: { path: string }[] }
   return Promise.all(
-    files.map(async ({ path }) => {
+    files.filter(({ path }) => path !== 'periods.json').map(async ({ path }) => {
       const r = await fetch(base + path.split('/').map(encodeURIComponent).join('/'))
       if (!r.ok) throw new Error(`Could not load demo file ${path}`)
       return new File([await r.blob()], basename(path))

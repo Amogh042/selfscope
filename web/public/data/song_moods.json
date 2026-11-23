@@ -1,0 +1,1689 @@
+{
+ "version": "1",
+ "note": "Curated song -> mood/language list (hand-written; demo songs taken from the demo generator). Spotify no longer gives new apps audio features (valence/energy), so moods come from this list. Songs not listed are 'unknown' and excluded from mood statistics.",
+ "moods": [
+  "romantic",
+  "sad",
+  "upbeat"
+ ],
+ "languages": [
+  "hi",
+  "en",
+  "kn",
+  "other"
+ ],
+ "songs": [
+  {
+   "title": "Tum Hi Ho",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Raabta",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kesariya",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tera Ban Jaunga",
+   "artist": "Akhil Sachdeva",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pehla Nasha",
+   "artist": "Udit Narayan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Se Hi",
+   "artist": "Mohit Chauhan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Raataan Lambiyan",
+   "artist": "Jubin Nautiyal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Shayad",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pee Loon",
+   "artist": "Mohit Chauhan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Gerua",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Hawayein",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Apna Bana Le",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tere Vaaste",
+   "artist": "Varun Jain",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Ve Kamleya",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Satranga",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Jeene Laga Hoon",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tera Hone Laga Hoon",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kabira",
+   "artist": "Tochi Raina",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Ilahi",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Sanam Re",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Zaalima",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tujh Mein Rab Dikhta Hai",
+   "artist": "Roop Kumar Rathod",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "O Maahi",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Heeriye",
+   "artist": "Jasleen Royal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Chaleya",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Kya Mile",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Jo Aaye",
+   "artist": "Rahat Fateh Ali Khan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "O Saathi",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Main Rang Sharbaton Ka",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tujhe Kitna Chahne Lage",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Channa Mereya",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Agar Tum Saath Ho",
+   "artist": "Alka Yagnik",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Phir Bhi Tumko Chaahunga",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Kalank",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Hamari Adhuri Kahani",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tadap Tadap",
+   "artist": "KK",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tujhe Bhula Diya",
+   "artist": "Mohit Chauhan",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Bhula Dena",
+   "artist": "Mustafa Zahid",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Lambiyaan Si Judaiyaan",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Main Dhoondne Ko Zamaane Mein",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Khairiyat",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Humnava Mere",
+   "artist": "Jubin Nautiyal",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Ae Dil Hai Mushkil",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Achha Chalta Hoon",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Bekhayali",
+   "artist": "Sachet Tandon",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Mere Bina",
+   "artist": "Nikhil D'Souza",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tujhe Bhoolna Toh Chaaha",
+   "artist": "Jubin Nautiyal",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Dil Ibaadat",
+   "artist": "KK",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Badtameez Dil",
+   "artist": "Benny Dayal",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Kala Chashma",
+   "artist": "Amar Arshi",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "The Breakup Song",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Kar Gayi Chull",
+   "artist": "Badshah",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Perfect",
+   "artist": "Ed Sheeran",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "All of Me",
+   "artist": "John Legend",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Photograph",
+   "artist": "Ed Sheeran",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Love Story",
+   "artist": "Taylor Swift",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Until I Found You",
+   "artist": "Stephen Sanchez",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Night Changes",
+   "artist": "One Direction",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Say You Won't Let Go",
+   "artist": "James Arthur",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Someone Like You",
+   "artist": "Adele",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Let Her Go",
+   "artist": "Passenger",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Happier",
+   "artist": "Ed Sheeran",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "drivers license",
+   "artist": "Olivia Rodrigo",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "When I Was Your Man",
+   "artist": "Bruno Mars",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "lovely",
+   "artist": "Billie Eilish",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Too Good At Goodbyes",
+   "artist": "Sam Smith",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Belageddu",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Bombe Helutaite",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Anisuthide",
+   "artist": "Sonu Nigam",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Mungaru Maleye",
+   "artist": "Sonu Nigam",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Minchagi Neenu Baralu",
+   "artist": "Sonu Nigam",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Jagave Neenu Gelathiye",
+   "artist": "Sid Sriram",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Onde Samane",
+   "artist": "Sonu Nigam",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Mugulu Nage",
+   "artist": "Sonu Nigam",
+   "mood": "sad",
+   "lang": "kn"
+  },
+  {
+   "title": "Nenapina Hudugiye",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Shrungarada Honge Mara",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Saaluthillave",
+   "artist": "Shreya Ghoshal",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Sariyaagi",
+   "artist": "Armaan Malik",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Arere Avala Naguva",
+   "artist": "Vasuki Vaibhav",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Tujhe Dekha To",
+   "artist": "Kumar Sanu",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Chaiyya Chaiyya",
+   "artist": "Sukhwinder Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Kal Ho Naa Ho",
+   "artist": "Sonu Nigam",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Lag Ja Gale",
+   "artist": "Lata Mangeshkar",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pal Pal Dil Ke Paas",
+   "artist": "Kishore Kumar",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kabhi Kabhi Aditi",
+   "artist": "Rashid Ali",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "London Thumakda",
+   "artist": "Labh Janjua",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Gallan Goodiyaan",
+   "artist": "Yashita Sharma",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Malhari",
+   "artist": "Vishal Dadlani",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Ghungroo",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Swag Se Swagat",
+   "artist": "Vishal Dadlani",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Nashe Si Chadh Gayi",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Jhoome Jo Pathaan",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Besharam Rang",
+   "artist": "Shilpa Rao",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Agar Tum Mil Jao",
+   "artist": "Shreya Ghoshal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tera Yaar Hoon Main",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Hasi",
+   "artist": "Ami Mishra",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Muskurane",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Sooraj Dooba Hai",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Galliyan",
+   "artist": "Ankit Tiwari",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Sun Raha Hai",
+   "artist": "Ankit Tiwari",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Mile",
+   "artist": "Javed Ali",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pehli Nazar Mein",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Dil Diyan Gallan",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Dekhte Dekhte",
+   "artist": "Atif Aslam",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Jeena Jeena",
+   "artist": "Atif Aslam",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Mann Mera",
+   "artist": "Gajendra Verma",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tera Ghata",
+   "artist": "Gajendra Verma",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Phir Le Aya Dil",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Main Tera Boyfriend",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Zinda",
+   "artist": "Siddharth Mahadevan",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Senorita",
+   "artist": "Farhan Akhtar",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Dil Dhadakne Do",
+   "artist": "Priyanka Chopra",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Janam Janam",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Bol Do Na Zara",
+   "artist": "Armaan Malik",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Main Hoon Hero Tera",
+   "artist": "Armaan Malik",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kaun Tujhe",
+   "artist": "Palak Muchhal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Saibo",
+   "artist": "Shreya Ghoshal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tera Fitoor",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "O Re Piya",
+   "artist": "Rahat Fateh Ali Khan",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Teri Meri",
+   "artist": "Rahat Fateh Ali Khan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tere Mast Mast Do Nain",
+   "artist": "Rahat Fateh Ali Khan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Jag Ghoomeya",
+   "artist": "Rahat Fateh Ali Khan",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kaise Hua",
+   "artist": "Vishal Mishra",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pehle Bhi Main",
+   "artist": "Vishal Mishra",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Arjan Vailly",
+   "artist": "Bhupinder Babbal",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "What Jhumka",
+   "artist": "Arijit Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Maan Meri Jaan",
+   "artist": "King",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Phir Aur Kya Chahiye",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Naatu Naatu",
+   "artist": "Rahul Sipligunj",
+   "mood": "upbeat",
+   "lang": "other"
+  },
+  {
+   "title": "Ishq Wala Love",
+   "artist": "Salim Merchant",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Dard Dilo Ke",
+   "artist": "Mohammed Irfan",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Naina",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Kho Gaye Hum Kahan",
+   "artist": "Jasleen Royal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Kahani Suno 2.0",
+   "artist": "Kaifi Khalil",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Baarish Ban Jaana",
+   "artist": "Stebin Ben",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Thoda Thoda Pyaar",
+   "artist": "Stebin Ben",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Mere Yaaraa",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Hi Aana",
+   "artist": "Jubin Nautiyal",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Lut Gaye",
+   "artist": "Jubin Nautiyal",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Mann Bharryaa",
+   "artist": "B Praak",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Filhaal",
+   "artist": "B Praak",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Teri Mitti",
+   "artist": "B Praak",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Ranjha",
+   "artist": "B Praak",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tu Jaane Na",
+   "artist": "Atif Aslam",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Abhi Mujh Mein Kahin",
+   "artist": "Sonu Nigam",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Iktara",
+   "artist": "Kavita Seth",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Tere Bina",
+   "artist": "A.R. Rahman",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Chhaila Chhabeela",
+   "artist": "Shreya Ghoshal",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Badri Ki Dulhania",
+   "artist": "Dev Negi",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Kamariya",
+   "artist": "Darshan Raval",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Dilbar",
+   "artist": "Neha Kakkar",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Aankh Marey",
+   "artist": "Neha Kakkar",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Garmi",
+   "artist": "Badshah",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Paani Paani",
+   "artist": "Badshah",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Genda Phool",
+   "artist": "Badshah",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "DJ Waley Babu",
+   "artist": "Badshah",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Kar Har Maidaan Fateh",
+   "artist": "Sukhwinder Singh",
+   "mood": "upbeat",
+   "lang": "hi"
+  },
+  {
+   "title": "Lo Maan Liya",
+   "artist": "Arijit Singh",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Pachtaoge",
+   "artist": "Arijit Singh",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Bekhudi",
+   "artist": "Darshan Raval",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Ek Mulaqat",
+   "artist": "Jubin Nautiyal",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Shiddat",
+   "artist": "Manan Bhardwaj",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Jo Tum Mere Ho",
+   "artist": "Anuv Jain",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Husn",
+   "artist": "Anuv Jain",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Baarishein",
+   "artist": "Anuv Jain",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Riha",
+   "artist": "Anuv Jain",
+   "mood": "sad",
+   "lang": "hi"
+  },
+  {
+   "title": "Kasoor",
+   "artist": "Prateek Kuhad",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "Tum Jab Paas",
+   "artist": "Prateek Kuhad",
+   "mood": "romantic",
+   "lang": "hi"
+  },
+  {
+   "title": "cold/mess",
+   "artist": "Prateek Kuhad",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Excuses",
+   "artist": "AP Dhillon",
+   "mood": "upbeat",
+   "lang": "other"
+  },
+  {
+   "title": "Brown Munde",
+   "artist": "AP Dhillon",
+   "mood": "upbeat",
+   "lang": "other"
+  },
+  {
+   "title": "With You",
+   "artist": "AP Dhillon",
+   "mood": "romantic",
+   "lang": "other"
+  },
+  {
+   "title": "Lover",
+   "artist": "Diljit Dosanjh",
+   "mood": "romantic",
+   "lang": "other"
+  },
+  {
+   "title": "Born To Shine",
+   "artist": "Diljit Dosanjh",
+   "mood": "upbeat",
+   "lang": "other"
+  },
+  {
+   "title": "Qismat",
+   "artist": "Ammy Virk",
+   "mood": "sad",
+   "lang": "other"
+  },
+  {
+   "title": "Shape of You",
+   "artist": "Ed Sheeran",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Thinking Out Loud",
+   "artist": "Ed Sheeran",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Bad Habits",
+   "artist": "Ed Sheeran",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Blinding Lights",
+   "artist": "The Weeknd",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Save Your Tears",
+   "artist": "The Weeknd",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Die For You",
+   "artist": "The Weeknd",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Someone You Loved",
+   "artist": "Lewis Capaldi",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Before You Go",
+   "artist": "Lewis Capaldi",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Love Me Like You Do",
+   "artist": "Ellie Goulding",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Señorita",
+   "artist": "Shawn Mendes",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Treat You Better",
+   "artist": "Shawn Mendes",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Stitches",
+   "artist": "Shawn Mendes",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "STAY",
+   "artist": "The Kid LAROI",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Levitating",
+   "artist": "Dua Lipa",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Don't Start Now",
+   "artist": "Dua Lipa",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "As It Was",
+   "artist": "Harry Styles",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Watermelon Sugar",
+   "artist": "Harry Styles",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Believer",
+   "artist": "Imagine Dragons",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Thunder",
+   "artist": "Imagine Dragons",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Counting Stars",
+   "artist": "OneRepublic",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Fix You",
+   "artist": "Coldplay",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "The Scientist",
+   "artist": "Coldplay",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Yellow",
+   "artist": "Coldplay",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Viva La Vida",
+   "artist": "Coldplay",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Something Just Like This",
+   "artist": "The Chainsmokers",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Closer",
+   "artist": "The Chainsmokers",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Uptown Funk",
+   "artist": "Mark Ronson",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Happy",
+   "artist": "Pharrell Williams",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "CAN'T STOP THE FEELING!",
+   "artist": "Justin Timberlake",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Shallow",
+   "artist": "Lady Gaga",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "A Thousand Years",
+   "artist": "Christina Perri",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Love Yourself",
+   "artist": "Justin Bieber",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Peaches",
+   "artist": "Justin Bieber",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Anti-Hero",
+   "artist": "Taylor Swift",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Cruel Summer",
+   "artist": "Taylor Swift",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Blank Space",
+   "artist": "Taylor Swift",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Shake It Off",
+   "artist": "Taylor Swift",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "All Too Well",
+   "artist": "Taylor Swift",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Enchanted",
+   "artist": "Taylor Swift",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Rewrite The Stars",
+   "artist": "Zac Efron",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Dance Monkey",
+   "artist": "Tones And I",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Easy On Me",
+   "artist": "Adele",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Hello",
+   "artist": "Adele",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Set Fire to the Rain",
+   "artist": "Adele",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Unstoppable",
+   "artist": "Sia",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Cheap Thrills",
+   "artist": "Sia",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Chandelier",
+   "artist": "Sia",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Faded",
+   "artist": "Alan Walker",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Attention",
+   "artist": "Charlie Puth",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "See You Again",
+   "artist": "Wiz Khalifa",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Glimpse of Us",
+   "artist": "Joji",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Golden Hour",
+   "artist": "JVKE",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Daylight",
+   "artist": "David Kushner",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Calm Down",
+   "artist": "Rema",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Espresso",
+   "artist": "Sabrina Carpenter",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Flowers",
+   "artist": "Miley Cyrus",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Snooze",
+   "artist": "SZA",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "The Night We Met",
+   "artist": "Lord Huron",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Sweater Weather",
+   "artist": "The Neighbourhood",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Riptide",
+   "artist": "Vance Joy",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Perfect Strangers",
+   "artist": "Jonas Blue",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Heather",
+   "artist": "Conan Gray",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Traitor",
+   "artist": "Olivia Rodrigo",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "good 4 u",
+   "artist": "Olivia Rodrigo",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "vampire",
+   "artist": "Olivia Rodrigo",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Happier Than Ever",
+   "artist": "Billie Eilish",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "when the party's over",
+   "artist": "Billie Eilish",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "bad guy",
+   "artist": "Billie Eilish",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Lose You To Love Me",
+   "artist": "Selena Gomez",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Story of My Life",
+   "artist": "One Direction",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "What Makes You Beautiful",
+   "artist": "One Direction",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Just The Way You Are",
+   "artist": "Bruno Mars",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Marry You",
+   "artist": "Bruno Mars",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "Talking to the Moon",
+   "artist": "Bruno Mars",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Die With A Smile",
+   "artist": "Bruno Mars",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "APT.",
+   "artist": "ROSÉ",
+   "mood": "upbeat",
+   "lang": "en"
+  },
+  {
+   "title": "Line Without a Hook",
+   "artist": "Ricky Montgomery",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "I Wanna Be Yours",
+   "artist": "Arctic Monkeys",
+   "mood": "romantic",
+   "lang": "en"
+  },
+  {
+   "title": "505",
+   "artist": "Arctic Monkeys",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Somebody That I Used To Know",
+   "artist": "Gotye",
+   "mood": "sad",
+   "lang": "en"
+  },
+  {
+   "title": "Salaam Rocky Bhai",
+   "artist": "Vijay Prakash",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Toofan",
+   "artist": "Mohan Krishna",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Mehabooba",
+   "artist": "Ananya Bhat",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Singara Siriye",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Ra Ra Rakkamma",
+   "artist": "Nakash Aziz",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Karabuu",
+   "artist": "Chandan Shetty",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Kaagadada Doniyalli",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Neenade Naa",
+   "artist": "Armaan Malik",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Ondu Malebillu",
+   "artist": "Armaan Malik",
+   "mood": "romantic",
+   "lang": "kn"
+  },
+  {
+   "title": "Tagaru Banthu Tagaru",
+   "artist": "Anthony Daasan",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Jokae Naanu Balliya Minchu",
+   "artist": "Shamitha Malnad",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Hodi Maga",
+   "artist": "Chandan Shetty",
+   "mood": "upbeat",
+   "lang": "kn"
+  },
+  {
+   "title": "Yenammi Yenammi",
+   "artist": "Vijay Prakash",
+   "mood": "romantic",
+   "lang": "kn"
+  }
+ ],
+ "artists": {
+  "Arijit Singh": "hi",
+  "Atif Aslam": "hi",
+  "Jubin Nautiyal": "hi",
+  "Mohit Chauhan": "hi",
+  "Akhil Sachdeva": "hi",
+  "Udit Narayan": "hi",
+  "Kumar Sanu": "hi",
+  "Lata Mangeshkar": "hi",
+  "Kishore Kumar": "hi",
+  "KK": "hi",
+  "Rahat Fateh Ali Khan": "hi",
+  "B Praak": "hi",
+  "Vishal Mishra": "hi",
+  "Ankit Tiwari": "hi",
+  "Badshah": "hi",
+  "Neha Kakkar": "hi",
+  "Darshan Raval": "hi",
+  "Jasleen Royal": "hi",
+  "Tochi Raina": "hi",
+  "Roop Kumar Rathod": "hi",
+  "Alka Yagnik": "hi",
+  "Mustafa Zahid": "hi",
+  "Sachet Tandon": "hi",
+  "Benny Dayal": "hi",
+  "Amar Arshi": "hi",
+  "Varun Jain": "hi",
+  "Anuv Jain": "hi",
+  "Stebin Ben": "hi",
+  "Gajendra Verma": "hi",
+  "Javed Ali": "hi",
+  "Ed Sheeran": "en",
+  "John Legend": "en",
+  "Taylor Swift": "en",
+  "Stephen Sanchez": "en",
+  "One Direction": "en",
+  "James Arthur": "en",
+  "Adele": "en",
+  "Passenger": "en",
+  "Olivia Rodrigo": "en",
+  "Bruno Mars": "en",
+  "Billie Eilish": "en",
+  "Sam Smith": "en",
+  "The Weeknd": "en",
+  "Lewis Capaldi": "en",
+  "Coldplay": "en",
+  "Dua Lipa": "en",
+  "Harry Styles": "en",
+  "Imagine Dragons": "en",
+  "Shawn Mendes": "en",
+  "Justin Bieber": "en",
+  "Sia": "en",
+  "Charlie Puth": "en",
+  "Selena Gomez": "en",
+  "Arctic Monkeys": "en",
+  "Lord Huron": "en",
+  "Vijay Prakash": "kn",
+  "Vasuki Vaibhav": "kn",
+  "Chandan Shetty": "kn",
+  "Ananya Bhat": "kn",
+  "AP Dhillon": "other",
+  "Diljit Dosanjh": "other",
+  "Ammy Virk": "other"
+ }
+}

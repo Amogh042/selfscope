@@ -1,0 +1,65 @@
+{
+  "all": {
+    "n": 19532,
+    "accuracy": 0.7916,
+    "macro_f1": 0.7895
+  },
+  "mine": {
+    "n": 8025,
+    "accuracy": 0.789,
+    "macro_f1": 0.7882
+  },
+  "unique": {
+    "n": 194,
+    "accuracy": 0.768,
+    "macro_f1": 0.7697
+  },
+  "baseline_neutral": {
+    "accuracy": 0.4702,
+    "macro_f1": 0.2132
+  },
+  "per_label": {
+    "neg": {
+      "precision": 0.8407,
+      "recall": 0.7388,
+      "f1-score": 0.7864
+    },
+    "neu": {
+      "precision": 0.7959,
+      "recall": 0.8115,
+      "f1-score": 0.8036
+    },
+    "pos": {
+      "precision": 0.7682,
+      "recall": 0.7888,
+      "f1-score": 0.7784
+    }
+  },
+  "confusion": [
+    [
+      2285,
+      670,
+      138
+    ],
+    [
+      142,
+      7453,
+      1589
+    ],
+    [
+      291,
+      1241,
+      5723
+    ]
+  ],
+  "labels": [
+    "neg",
+    "neu",
+    "pos"
+  ],
+  "pred_counts": {
+    "pos": 7450,
+    "neg": 2718,
+    "neu": 9364
+  }
+}

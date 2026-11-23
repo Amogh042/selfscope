@@ -214,6 +214,73 @@ LIMIT 25 OFFSET CAST(getvariable('txn_offset') AS INTEGER);
 SELECT count(*) AS n FROM events
 WHERE source = 'bank' AND (getvariable('txn_category') IS NULL OR category = getvariable('txn_category'));
 
+-- name: enrich_pending
+-- Variables: enrich_version. YouTube / Spotify / WhatsApp rows not enriched by this version.
+SELECT event_key, source, event_type, actor, title, text, meta
+FROM events
+WHERE source IN ('youtube', 'spotify', 'whatsapp')
+  AND json_extract_string(meta, '$.enrich_version') IS DISTINCT FROM getvariable('enrich_version');
+
+-- name: enrichment_coverage
+-- How much of each source the enrichment could label (not "other" / "unknown").
+SELECT source,
+       count(*) AS rows,
+       count(*) FILTER (WHERE (source = 'youtube' AND category IS NOT NULL AND category <> 'other')
+                           OR (source = 'spotify' AND category IS NOT NULL AND category <> 'unknown')
+                           OR (source = 'whatsapp' AND category IS NOT NULL)) AS labelled
+FROM event_facts
+WHERE (source = 'youtube' AND event_type = 'watch' AND NOT is_ad)
+   OR (source = 'spotify' AND event_type = 'play')
+   OR (source = 'whatsapp' AND event_type = 'message' AND kind = 'text')
+GROUP BY source
+ORDER BY source;
+
+-- name: features_for_engine
+SELECT CAST(local_date AS VARCHAR) AS local_date, * EXCLUDE (local_date)
+FROM daily_features
+ORDER BY local_date;
+
+-- name: spotify_mood_by_hour
+-- Variables: range_from, range_to (NULL = all). Plays with a known mood per local hour.
+SELECT local_hour AS hour, category AS mood, count(*) AS plays
+FROM events
+WHERE source = 'spotify' AND category IN ('romantic', 'sad', 'upbeat')
+  AND (getvariable('range_from') IS NULL OR local_date >= CAST(getvariable('range_from') AS DATE))
+  AND (getvariable('range_to') IS NULL OR local_date <= CAST(getvariable('range_to') AS DATE))
+GROUP BY local_hour, category
+ORDER BY hour, mood;
+
+-- name: heatmap_in_range
+-- Variables: range_from, range_to (NULL = all).
+SELECT source, weekday, local_hour AS hour, count(*) AS events
+FROM events
+WHERE event_type <> 'system' AND local_hour IS NOT NULL
+  AND (getvariable('range_from') IS NULL OR local_date >= CAST(getvariable('range_from') AS DATE))
+  AND (getvariable('range_to') IS NULL OR local_date <= CAST(getvariable('range_to') AS DATE))
+GROUP BY source, weekday, local_hour
+ORDER BY source, weekday, hour;
+
+-- name: periods_list
+SELECT period_id, label, CAST(start_date AS VARCHAR) AS start_date, CAST(end_date AS VARCHAR) AS end_date, origin
+FROM periods
+ORDER BY start_date, label;
+
+-- name: data_fingerprint
+-- Variables: engine_version. Changes whenever anything the analysis depends on changes.
+SELECT md5(concat_ws('|',
+    (SELECT string_agg(source || ':' || CAST(n AS VARCHAR) || ':' || CAST(c AS VARCHAR), ',' ORDER BY source)
+     FROM (SELECT source, count(*) AS n, count(category) AS c FROM events GROUP BY source)),
+    (SELECT string_agg(import_id, ',' ORDER BY import_id) FROM imports),
+    (SELECT string_agg(scope || target || category, ',' ORDER BY scope, target) FROM category_overrides),
+    (SELECT string_agg(label || CAST(start_date AS VARCHAR) || CAST(end_date AS VARCHAR), ',' ORDER BY period_id)
+     FROM periods),
+    (SELECT string_agg(key || '=' || coalesce(value, ''), ',' ORDER BY key) FROM settings),
+    getvariable('engine_version'))) AS fingerprint;
+
+-- name: insights_cached
+-- Variables: cache_key.
+SELECT payload FROM insights WHERE cache_key = getvariable('cache_key');
+
 -- name: preview
 -- Variables: preview_source, preview_chat (NULL = any chat).
 SELECT source, strftime(ts_utc, '%Y-%m-%dT%H:%M:%SZ') AS ts_utc, CAST(local_date AS VARCHAR) AS local_date,

@@ -1,0 +1,294 @@
+{
+  "coverage": {
+    "spotify": {
+      "rows": 11761,
+      "labelled": 11761,
+      "share": 1.0
+    },
+    "whatsapp": {
+      "rows": 19532,
+      "labelled": 19532,
+      "share": 1.0
+    },
+    "youtube": {
+      "rows": 7378,
+      "labelled": 7378,
+      "share": 1.0
+    },
+    "youtube_title_rules_only": {
+      "labelled_share": 0.9038,
+      "agrees_with_channel_map": 0.8672
+    }
+  },
+  "youtube_topics": {
+    "podcast": 875,
+    "tech": 698,
+    "study": 1488,
+    "music": 1840,
+    "comedy": 2050,
+    "finance": 427
+  },
+  "spotify_moods": {
+    "upbeat": 563,
+    "romantic": 7996,
+    "sad": 3202
+  },
+  "spotify_languages": {
+    "hi": 9424,
+    "en": 1190,
+    "kn": 1147
+  },
+  "whatsapp_sentiment": {
+    "neg": 2718,
+    "pos": 7450,
+    "neu": 9364
+  },
+  "sentiment_eval": {
+    "all": {
+      "n": 19532,
+      "accuracy": 0.7916,
+      "macro_f1": 0.7895
+    },
+    "mine": {
+      "n": 8025,
+      "accuracy": 0.789,
+      "macro_f1": 0.7882
+    },
+    "baseline_neutral": {
+      "accuracy": 0.4702,
+      "macro_f1": 0.2132
+    }
+  },
+  "tests": {
+    "tests": 1170,
+    "significant": 40,
+    "weak_signals": 62,
+    "fdr": 0.05,
+    "min_rho": 0.2,
+    "weak_rho": 0.1,
+    "min_days": 30,
+    "lags": [
+      0,
+      1,
+      2
+    ],
+    "metrics": [
+      "spotify_minutes",
+      "spotify_plays",
+      "skip_rate",
+      "spotify_late_night_share",
+      "spotify_sad_share",
+      "spotify_romantic_share",
+      "youtube_est_minutes",
+      "youtube_videos",
+      "youtube_late_night_share",
+      "youtube_study_min",
+      "youtube_comedy_min",
+      "youtube_music_min",
+      "wa_sent",
+      "wa_received",
+      "wa_late_night_share",
+      "wa_active_chats",
+      "wa_sentiment_mean",
+      "wa_negative_share",
+      "wa_others_sentiment_mean",
+      "spend_total",
+      "spend_txn_count",
+      "received_total",
+      "food_delivery_spend",
+      "discretionary_spend",
+      "entertainment_shopping_spend"
+    ]
+  },
+  "top_insights": [
+    {
+      "sentence": "On days with 45 min+ of study videos, the mood of messages you receive is lower (+0.07 vs +0.17 on average).",
+      "strength": "moderate",
+      "stats": "rho -0.39 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days when the share of romantic songs is 75% or more, the share of your messages that are negative is 5 points lower (11% vs 16%).",
+      "strength": "moderate",
+      "stats": "rho -0.38 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days when the share of sad songs is 30% or more, the share of your messages that are negative is 9 points higher (20% vs 12%).",
+      "strength": "moderate",
+      "stats": "rho +0.37 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 37+ songs played, the number of messages you receive is 30% higher (40 vs 31 on average).",
+      "strength": "moderate",
+      "stats": "rho +0.36 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 2.0h+ of Spotify listening, the number of messages you receive is 26% higher (38 vs 30 on average).",
+      "strength": "moderate",
+      "stats": "rho +0.36 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days when the share of romantic songs is 75% or more, the mood of your messages is higher (+0.17 vs +0.12 on average).",
+      "strength": "moderate",
+      "stats": "rho +0.35 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 37+ songs played, your time on comedy videos is 47% higher (56 min vs 38 min on average).",
+      "strength": "moderate",
+      "stats": "rho +0.35 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 37+ songs played, the number of messages you send is 23% higher (27 vs 22 on average).",
+      "strength": "moderate",
+      "stats": "rho +0.34 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 2.0h+ of Spotify listening, your time on comedy videos is 47% higher (54 min vs 37 min on average).",
+      "strength": "moderate",
+      "stats": "rho +0.34 · n 365 days · adjusted p < 0.001 · same day"
+    },
+    {
+      "sentence": "On days with 2.0h+ of Spotify listening, the number of messages you send is 20% higher (26 vs 22 on average).",
+      "strength": "moderate",
+      "stats": "rho +0.34 · n 365 days · adjusted p < 0.001 · same day"
+    }
+  ],
+  "planted": {
+    "a_youtube_food_delivery": [
+      {
+        "tier": "weaker signal",
+        "sentence": "On days with 24+ YouTube videos, you're 3.2x as likely to order food delivery (24% vs 8% of days).",
+        "stats": "rho +0.19 · n 365 days · adjusted p 0.003 · same day"
+      },
+      {
+        "tier": "weaker signal",
+        "sentence": "On days with 3.0h+ of YouTube, you're 2.0x as likely to order food delivery (20% vs 10% of days).",
+        "stats": "rho +0.17 · n 365 days · adjusted p 0.011 · same day"
+      }
+    ],
+    "b_exams": {
+      "youtube_study_min": {
+        "sentence": "During Exams, your time on study videos is 166% higher (70 min vs 26 min a day).",
+        "q": 2.5800209832237383e-12,
+        "significant": true,
+        "direction": "up"
+      },
+      "wa_late_night_share": {
+        "sentence": "During Exams, the share of your chat messages that are late at night is 23 points higher (30% vs 8%).",
+        "q": 5.850720217804142e-18,
+        "significant": true,
+        "direction": "up"
+      },
+      "spotify_late_night_share": {
+        "sentence": "During Exams, the share of songs you play late at night is 9 points higher (28% vs 20%).",
+        "q": 1.0451842393954137e-06,
+        "significant": true,
+        "direction": "up"
+      },
+      "youtube_late_night_share": {
+        "sentence": "During Exams, the share of YouTube you watch late at night is 4 points higher (26% vs 22%).",
+        "q": 0.21617075125232282,
+        "significant": false,
+        "direction": "up"
+      },
+      "spotify_sad_share": {
+        "sentence": "During Exams, the share of sad songs you play is 26 points higher (51% vs 25%).",
+        "q": 1.196199286538299e-22,
+        "significant": true,
+        "direction": "up"
+      },
+      "wa_negative_share": {
+        "sentence": "During Exams, the share of your messages that are negative is 22 points higher (34% vs 12%).",
+        "q": 3.476114467101891e-19,
+        "significant": true,
+        "direction": "up"
+      }
+    },
+    "c_weekends": {
+      "youtube_comedy_min": {
+        "sentence": "On weekends, your time on comedy videos is 71% higher (62 min vs 36 min a day).",
+        "q": 2.0631788779359355e-15,
+        "significant": true,
+        "direction": "up"
+      },
+      "entertainment_shopping_spend": {
+        "sentence": "On weekends, your entertainment & shopping spend is 105% higher (₹120 vs ₹59 a day).",
+        "q": 2.9790127477602533e-07,
+        "significant": true,
+        "direction": "up"
+      }
+    },
+    "d_late_night_sad": {
+      "late_sad_share": 0.4762,
+      "other_sad_share": 0.2201,
+      "ratio": 2.16,
+      "late_plays": 2394,
+      "other_plays": 9367,
+      "p": 5.933680820980976e-139,
+      "sad_share_by_hour": {
+        "0": 0.4726,
+        "1": 0.4768,
+        "2": 0.55,
+        "3": 0.24,
+        "4": 0.2222,
+        "5": 0.1176,
+        "6": 0.2667,
+        "7": 0.2,
+        "8": 0.2051,
+        "9": 0.2347,
+        "10": 0.2016,
+        "11": 0.2248,
+        "12": 0.2234,
+        "13": 0.1949,
+        "14": 0.2238,
+        "15": 0.2141,
+        "16": 0.1923,
+        "17": 0.1721,
+        "18": 0.2309,
+        "19": 0.2326,
+        "20": 0.2071,
+        "21": 0.2128,
+        "22": 0.2391,
+        "23": 0.4655
+      },
+      "sentence": "Songs you play late at night (11pm–3am) are sad 48% of the time, vs 22% at other hours (2.2x)."
+    }
+  },
+  "null_test": {
+    "runs": 40,
+    "false_insights_total": 0,
+    "false_insights_per_run": 0.0,
+    "false_weak_per_run": 1.5,
+    "by_source": {
+      "spotify": {
+        "false_insights": 0,
+        "false_weak_signals": 8
+      },
+      "youtube": {
+        "false_insights": 0,
+        "false_weak_signals": 11
+      },
+      "whatsapp": {
+        "false_insights": 0,
+        "false_weak_signals": 7
+      },
+      "bank": {
+        "false_insights": 0,
+        "false_weak_signals": 34
+      }
+    },
+    "real_insights_involving_each_source": {
+      "spotify": 28,
+      "youtube": 21,
+      "whatsapp": 31,
+      "bank": 0
+    }
+  },
+  "anomalies": [
+    "18 Dec 2025: ₹1,554 discretionary spend, ₹1,764 total spend and ₹1,199 entertainment & shopping spend, all far above your usual.",
+    "11 May 2026: share of your messages that are negative 54% (above usual), the mood of your messages -0.27 (below usual), 1.9h of study videos (above usual).",
+    "16 Dec 2025: ₹1,675 total spend, 1.6h of study videos and share of songs played late at night 44%, all far above your usual.",
+    "15 May 2026: 2.5h of study videos (above usual), share of sad songs 69% (above usual), share of romantic songs 31% (below usual).",
+    "3 Aug 2026: ₹1,689 discretionary spend, ₹15,000 money received and ₹1,689 total spend, all far above your usual."
+  ],
+  "seconds": 33
+}

@@ -49,6 +49,26 @@ CREATE TABLE IF NOT EXISTS category_overrides (
     PRIMARY KEY (scope, target)
 );
 
+-- Tagged date ranges ("Exams", "Trip") compared inside vs outside by the analysis engine.
+CREATE TABLE IF NOT EXISTS periods (
+    period_id  VARCHAR PRIMARY KEY,
+    label      VARCHAR NOT NULL,
+    start_date DATE    NOT NULL,
+    end_date   DATE    NOT NULL,
+    origin     VARCHAR NOT NULL,     -- 'user' | 'demo'
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Cached analysis-engine results, keyed by date range + data fingerprint (see queries.sql).
+CREATE TABLE IF NOT EXISTS insights (
+    cache_key   VARCHAR PRIMARY KEY,
+    range_from  DATE,
+    range_to    DATE,
+    fingerprint VARCHAR NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
+    payload     VARCHAR NOT NULL     -- JSON from analysis.engine.run
+);
+
 -- Scratch table one parsed file is loaded into before import.sql merges it. Not persisted.
 CREATE TABLE IF NOT EXISTS stage_events (
     seq         BIGINT,               -- row order within the parsed file

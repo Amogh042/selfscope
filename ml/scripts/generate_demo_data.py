@@ -10,6 +10,8 @@ the real exports use, so the same parsers work on demo data and real data.
               data/samples/whatsapp/WhatsApp Chat - Rohan.zip      (iOS, _chat.txt inside)
   Bank     -> data/samples/bank/SBI_statement_demo.xlsx         (SBI Excel statement)
               ml/data/demo_bank_truth.csv  (true category per row; answer key, not used by the app)
+  Periods  -> data/samples/periods.json (exam weeks, pre-tagged in the DEMO database)
+  Answer key for sentiment: ml/data/demo_whatsapp_truth.csv (true pos/neu/neg per text message)
 
 All data is SYNTHETIC. Song and channel names are real so the demo looks natural,
 but every play, timestamp, video title and video ID is generated.
@@ -372,19 +374,26 @@ def wa_sentiment(rng, exam, brk, weekend, late):
     return rng.choices(["pos", "neu", "neg"], p)[0]
 
 
+# True sentiment of each multi-line template (single-line texts take the label of their pool).
+WA_MULTILINE_LABELS = ["neu", "neu", "neu", "pos", "neu", "neu", "neg"]
+
+
 def wa_text(rng, kind, sentiment, exam, brk):
+    """-> (text, true sentiment label). The label is bookkeeping only: it uses no randomness,
+    so recording it does not change any generated file."""
     if rng.random() < 0.015:
-        return rng.choice(WA_MULTILINE)
+        text = rng.choice(WA_MULTILINE)
+        return text, WA_MULTILINE_LABELS[WA_MULTILINE.index(text)]
     if kind == "family":
-        return rng.choice(WA_FAMILY[sentiment])
+        return rng.choice(WA_FAMILY[sentiment]), sentiment
     pools = {"pos": WA_POS + (WA_BREAK_POS * 2 if brk else []),
              "neu": WA_NEU + (WA_STUDY_NEU * (3 if exam else 1) if kind in ("classmate", "group") or exam else []),
              "neg": WA_NEG + (WA_EXAM_NEG * 3 if exam else [])}
     if kind == "group" and rng.random() < 0.35:
-        return rng.choice(WA_GROUP_EXTRA[sentiment])
+        return rng.choice(WA_GROUP_EXTRA[sentiment]), sentiment
     if kind == "classmate" and sentiment == "neu":
-        return rng.choice(WA_STUDY_NEU)
-    return rng.choice(pools[sentiment])
+        return rng.choice(WA_STUDY_NEU), "neu"
+    return rng.choice(pools[sentiment]), sentiment
 
 
 def wa_line(platform, t, sender, body, marked=False):
@@ -428,18 +437,19 @@ def gen_whatsapp_chat(rng, chat):
                 if r < 0.004:
                     body = (("You deleted this message" if mine else "This message was deleted")
                             + ("." if platform == "ios" else ""))
-                    msgs.append((t, sender, body, platform == "ios"))
+                    msgs.append((t, sender, body, platform == "ios", None))
                 elif r < 0.004 + media_p:
                     if platform == "ios":
-                        msgs.append((t, sender, rng.choice(WA_IOS_MEDIA), True))
+                        msgs.append((t, sender, rng.choice(WA_IOS_MEDIA), True, None))
                     else:
-                        msgs.append((t, sender, "<Media omitted>", False))
+                        msgs.append((t, sender, "<Media omitted>", False, None))
                 else:
-                    body = wa_text(rng, kind, wa_sentiment(rng, exam, brk, weekend, late), exam, brk)
+                    body, label = wa_text(rng, kind, wa_sentiment(rng, exam, brk, weekend, late), exam, brk)
+                    truth = (label, body)
                     if rng.random() < 0.005:
                         body += (f" {WA_LRM}<This message was edited>" if platform == "ios"
                                  else " <This message was edited>")
-                    msgs.append((t, sender, body, False))
+                    msgs.append((t, sender, body, False, truth))
                 made += 1
                 t += timedelta(seconds=rng.choice([4, 9, 15, 25, 40, 60, 90, 150, 300]) + rng.randint(0, 20))
                 if rng.random() < (0.4 if kind != "group" else 0.25):
@@ -471,19 +481,21 @@ def gen_whatsapp_chat(rng, chat):
         system += [(datetime(2026, 1, 3, 18, 30), "Aditi changed this group's icon"),
                    (datetime(2026, 8, 3, 9, 15), "Sneha changed the group description")]
         lines[0] = wa_line("android", created, None, lines[0].split(" - ", 1)[1])
-    events = [(t, None, s, False) for t, s in system] + msgs
+    events = [(t, None, s, False, None) for t, s in system] + msgs
     events.sort(key=lambda e: e[0])
-    for t, sender, body, marked in events:
+    for t, sender, body, marked, _ in events:
         lines.append(wa_line(platform, t, sender, body, marked))
-    return lines, len(msgs)
+    truth = [(t, sender, tr[0], tr[1]) for t, sender, _, _, tr in msgs if tr]
+    return lines, len(msgs), truth
 
 
 def gen_whatsapp(seed):
     """-> {filename: bytes}, {chat name: message count}"""
     rng = random.Random(f"{seed}:whatsapp")
-    files, counts = {}, {}
+    files, counts, truth = {}, {}, []
     for chat in WA_CHATS:
-        lines, n = gen_whatsapp_chat(rng, chat)
+        lines, n, chat_truth = gen_whatsapp_chat(rng, chat)
+        truth += [(chat["name"], *x) for x in chat_truth]
         text = ("\n".join(lines) + "\n").encode("utf-8")
         counts[chat["name"]] = n
         if chat["platform"] == "ios":  # iOS exports: a .zip containing _chat.txt
@@ -494,7 +506,7 @@ def gen_whatsapp(seed):
             files[f"WhatsApp Chat - {chat['name']}.zip"] = buf.getvalue()
         else:
             files[f"WhatsApp Chat with {chat['name']}.txt"] = text
-    return files, counts
+    return files, counts, truth
 
 
 # ---------------------------------------------------------------- bank (SBI Excel statement)
@@ -764,12 +776,26 @@ def main():
     with open(os.path.join(yt_dir, "watch-history.json"), "w", encoding="utf-8") as f:
         json.dump(yt, f, ensure_ascii=False, indent=2)
 
-    wa_files, wa_counts = gen_whatsapp(a.seed)
+    wa_files, wa_counts, wa_truth = gen_whatsapp(a.seed)
     wa_dir = os.path.join(a.out, "whatsapp")
     os.makedirs(wa_dir, exist_ok=True)
     for name, data in wa_files.items():
         with open(os.path.join(wa_dir, name), "wb") as f:
             f.write(data)
+
+    # Answer key for the sentiment scorer: true pos/neu/neg of every demo text message (NOT used by the app)
+    import csv as _csv
+    truth_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+    os.makedirs(truth_dir, exist_ok=True)
+    with open(os.path.join(truth_dir, "demo_whatsapp_truth.csv"), "w", encoding="utf-8", newline="") as f:
+        w = _csv.writer(f)
+        w.writerow(["chat", "local_time", "sender", "label", "text"])
+        for chat, t, sender, label, text in wa_truth:
+            w.writerow([chat, t.isoformat(sep=" "), sender, label, text])
+    # Exam periods, pre-tagged in the app's DEMO database
+    with open(os.path.join(a.out, "periods.json"), "w", encoding="utf-8") as f:
+        json.dump({"periods": [{"label": "Exams", "start": s.isoformat(), "end": e.isoformat()}
+                               for s, e in EXAM_WEEKS]}, f, indent=2)
 
     bank_rows, bank_truth, bank_stats = gen_bank(a.seed, yt)
     bank_dir = os.path.join(a.out, "bank")

@@ -4,11 +4,20 @@
 import { pythonEngine } from './pythonEngine'
 
 // Bundled as raw text at build time. Tests are not shipped.
-const SOURCES = import.meta.glob(['../python/*.py', '../python/parsers/*.py', '../python/selfscope_ml/*.py'], {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-}) as Record<string, string>
+const SOURCES = import.meta.glob(
+  [
+    '../python/*.py',
+    '../python/parsers/*.py',
+    '../python/selfscope_ml/*.py',
+    '../python/enrich/*.py',
+    '../python/analysis/*.py',
+  ],
+  {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  },
+) as Record<string, string>
 
 const ROOT = '/home/pyodide/selfscope'
 

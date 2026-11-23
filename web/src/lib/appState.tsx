@@ -4,6 +4,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { ensureCategorised } from './categorise'
+import { ensureEnriched } from './enrich'
 import { store, type Mode, type StoreState } from './store'
 
 export type RangePreset = '30d' | '3m' | '6m' | '1y' | 'all' | 'custom'
@@ -125,10 +126,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   }, [mode])
 
   // Bank rows without a category from the current model (new import, older data, new
-  // model version) are categorised in the Python worker. No-op when everything is done.
+  // model version) are categorised, and YouTube / Spotify / WhatsApp rows not yet enriched
+  // are enriched, in the Python worker. Both are no-ops when everything is done.
   useEffect(() => {
     if (storeState.status !== 'ready' || !storeState.mode) return
-    void ensureCategorised(storeState.mode)
+    const mode = storeState.mode
+    void ensureCategorised(mode).then(() => ensureEnriched(mode))
   }, [storeState.status, storeState.version, storeState.mode])
 
   // Data bounds for resolving relative ranges; refetched whenever the data changes.

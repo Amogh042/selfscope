@@ -50,6 +50,31 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 - **Takeout search history, subscriptions, comments** are ignored (step 3). Only
   `watch-history.json` is read from a Takeout zip.
 
+## Analysis (step 7)
+
+- **Rare events and Spearman** (step 7). Food delivery happens on ~13% of days, so its rho with
+  YouTube is only 0.17–0.19 even though delivery is 3x as likely on heavy-YouTube days. It shows up
+  in the "weaker signals" tier, not as a main insight. A test made for rare outcomes (logistic
+  regression / point-biserial on "any delivery") would rank it better.
+- **Weak-signal tier admits chance findings** (step 7). The null test shows ~1.5 false weak signals
+  per run (0 false main insights). The UI labels them "may be chance"; keep it that way.
+- **Exam late-night YouTube not detected** (step 7). Planted, but only +4 points and not
+  significant after correction; the generator's effect is smaller than its README suggests.
+- **Time-series dependence** (step 7). Spearman/Mann-Whitney assume independent days; daily habits
+  are autocorrelated, so p-values are optimistic. Block bootstrap or effective-n correction would be
+  more honest.
+- **Sentiment on real chats is untested** (step 7). 79% accuracy is on demo messages written from
+  the same vocabulary as the lexicon. Known errors: "ok"/"free" read as positive, Hindi *baad*
+  ("later") vs English "bad", sarcasm, "dead 💀" (= very funny) read as negative.
+- **Curated lists cover the demo 100% by construction** (step 7). On real data many channels and
+  songs will be "unknown" (moods are never guessed). The Insights page should show coverage, and
+  the user could label their top unknown channels/songs.
+- **Insights need `me`** (step 7). Without "Which one is you?" the user's own message mood metrics
+  are NULL; the page shows a tip.
+- **Cross-app links are mostly calendar-driven** (step 7). Most strong associations come from exams /
+  weekends moving several habits together. Partial correlation controlling for weekend + tagged
+  periods would separate "direct" links.
+
 ## App / architecture
 
 - **Timezone override in the UI** (step 2). WhatsApp exports have no timezone; the parser
@@ -84,6 +109,8 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 - **First import downloads pyarrow** (~10 MB, step 4); CSV fallback is used if that fails.
 
 ## Done
+
+- Step 7: video topics, song moods and message sentiment; cross-app insights, periods and unusual days on the Insights page (cached per range + data version).
 
 - Step 6: bank debits are categorised (in-browser model + rules), with user corrections that survive re-imports.
 - Step 4: data survives reloads (DuckDB + IndexedDB snapshots, separate demo/real databases).

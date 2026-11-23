@@ -142,3 +142,75 @@ LEFT JOIN yt ON yt.local_date = d.local_date
 LEFT JOIN wa ON wa.local_date = d.local_date
 LEFT JOIN bk ON bk.local_date = d.local_date
 ORDER BY d.local_date;
+
+-- daily_activity + enrichment-based features, one row per day. Same NULL-vs-0 rule:
+-- NULL outside a source's coverage (or before its enrichment has run), 0 for counts/minutes
+-- on covered days without events, NULL for shares/means when there is nothing to average.
+CREATE OR REPLACE VIEW daily_features AS
+WITH
+me AS (SELECT max(value) AS name FROM settings WHERE key = 'me'),
+cov AS (SELECT source, first_date, last_date FROM source_coverage),
+done AS (
+    SELECT bool_or(source = 'youtube' AND category IS NOT NULL)  AS yt,
+           bool_or(source = 'spotify' AND category IS NOT NULL)  AS sp,
+           bool_or(source = 'whatsapp' AND category IS NOT NULL) AS wa,
+           bool_or(source = 'bank' AND category IS NOT NULL)     AS bk
+    FROM events
+),
+yt AS (
+    SELECT local_date,
+           sum(est_watch_min) FILTER (WHERE category = 'study')  AS study,
+           sum(est_watch_min) FILTER (WHERE category = 'comedy') AS comedy,
+           sum(est_watch_min) FILTER (WHERE category = 'music')  AS music
+    FROM event_facts
+    WHERE source = 'youtube' AND event_type = 'watch' AND NOT is_ad
+    GROUP BY local_date
+),
+sp AS (
+    SELECT local_date,
+           count(*) FILTER (WHERE category IN ('romantic', 'sad', 'upbeat')) AS known,
+           count(*) FILTER (WHERE category = 'sad')                          AS sad,
+           count(*) FILTER (WHERE category = 'romantic')                     AS romantic
+    FROM events
+    WHERE source = 'spotify' AND event_type = 'play'
+    GROUP BY local_date
+),
+wa AS (
+    SELECT f.local_date,
+           avg(TRY_CAST(json_extract_string(f.meta, '$.sentiment') AS DOUBLE)) FILTER (WHERE f.actor = me.name)  AS mine_mean,
+           avg(CASE WHEN f.category = 'neg' THEN 1.0 ELSE 0.0 END) FILTER (WHERE f.actor = me.name)             AS mine_neg,
+           avg(TRY_CAST(json_extract_string(f.meta, '$.sentiment') AS DOUBLE)) FILTER (WHERE f.actor <> me.name) AS others_mean
+    FROM event_facts f, me
+    WHERE f.source = 'whatsapp' AND f.event_type = 'message' AND f.category IN ('pos', 'neu', 'neg')
+    GROUP BY f.local_date
+),
+bk AS (
+    SELECT local_date,
+           sum(-value) FILTER (WHERE value < 0 AND category NOT IN ('p2p_transfer', 'cash_atm', 'subscriptions')) AS discretionary,
+           sum(-value) FILTER (WHERE value < 0 AND category IN ('entertainment', 'shopping'))                      AS ent_shop
+    FROM events
+    WHERE source = 'bank'
+    GROUP BY local_date
+)
+SELECT
+    d.*,
+    CASE WHEN d.local_date BETWEEN cyt.first_date AND cyt.last_date AND done.yt THEN coalesce(yt.study, 0) END  AS youtube_study_min,
+    CASE WHEN d.local_date BETWEEN cyt.first_date AND cyt.last_date AND done.yt THEN coalesce(yt.comedy, 0) END AS youtube_comedy_min,
+    CASE WHEN d.local_date BETWEEN cyt.first_date AND cyt.last_date AND done.yt THEN coalesce(yt.music, 0) END  AS youtube_music_min,
+    CASE WHEN sp.known > 0 THEN sp.sad / sp.known END                                                          AS spotify_sad_share,
+    CASE WHEN sp.known > 0 THEN sp.romantic / sp.known END                                                     AS spotify_romantic_share,
+    wa.mine_mean                                                                                               AS wa_sentiment_mean,
+    wa.mine_neg                                                                                                AS wa_negative_share,
+    wa.others_mean                                                                                             AS wa_others_sentiment_mean,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date AND done.bk THEN coalesce(bk.discretionary, 0) END AS discretionary_spend,
+    CASE WHEN d.local_date BETWEEN cbk.first_date AND cbk.last_date AND done.bk THEN coalesce(bk.ent_shop, 0) END      AS entertainment_shopping_spend
+FROM daily_activity d
+CROSS JOIN me
+CROSS JOIN done
+LEFT JOIN cov cyt ON cyt.source = 'youtube'
+LEFT JOIN cov cbk ON cbk.source = 'bank'
+LEFT JOIN yt ON yt.local_date = d.local_date
+LEFT JOIN sp ON sp.local_date = d.local_date
+LEFT JOIN wa ON wa.local_date = d.local_date
+LEFT JOIN bk ON bk.local_date = d.local_date
+ORDER BY d.local_date;

@@ -3,7 +3,7 @@ import { BankCategories } from '../components/BankCategories'
 import { DataRows, Panel, Terminal } from '../components/pixel'
 import { SourceIcon } from '../components/SourceIcon'
 import { useApp, useStoreQuery } from '../lib/appState'
-import { expandFiles, fetchDemoFiles, type Candidate } from '../lib/import/detect'
+import { expandFiles, fetchDemoFiles, fetchDemoPeriods, type Candidate } from '../lib/import/detect'
 import { ingest } from '../lib/import/ingest'
 import { pythonEngine, type StatusSnapshot } from '../lib/pythonEngine'
 import { EVENT_COLUMNS, type EventRow } from '../lib/schema'
@@ -187,6 +187,11 @@ export default function ImportPage() {
     setBusy(true)
     try {
       await addFiles(await fetchDemoFiles(), 'demo')
+      // the demo comes with its exam periods tagged (only once)
+      const existing = await store.query<{ origin: string }>('periods_list')
+      if (!existing.some((p) => p.origin === 'demo')) {
+        for (const p of await fetchDemoPeriods()) await store.addPeriod(p.label, p.start, p.end, 'demo')
+      }
     } catch (err) {
       setNotice({ text: errorText(err), tone: 'error' })
       setBusy(false)

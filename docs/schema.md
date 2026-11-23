@@ -23,7 +23,7 @@ Code mirrors of this doc — keep all three in sync:
 | 8 | `title` | str | yes | Track / video title. Null for chats |
 | 9 | `text` | str | yes | Message text (or system notice text). Null otherwise, and null for media / deleted messages |
 | 10 | `value` | float | yes | Numeric measure: ms played (Spotify), amount in INR (bank, signed: debit < 0). Null otherwise |
-| 11 | `category` | str | yes | Reserved for later classification (e.g. spend category, video topic). Null for now |
+| 11 | `category` | str | yes | Set after import: bank = spend category (categoriser), youtube = video topic, spotify = song mood, whatsapp = sentiment label (see "Enrichment"). Null until then |
 | 12 | `meta` | str (JSON object) | no | Source-specific extras, always a JSON object string (`"{}"` if empty) |
 
 ## Time rules
@@ -156,6 +156,21 @@ each session; it over-counts when a video was opened and abandoned while the tab
 idle. The constants live in `parsers/youtube.py` (`SESSION_GAP_MIN`, `MAX_WATCH_MIN`,
 `LAST_IN_SESSION_MIN`) so the sensitivity can be shown in the dashboard later.
 
+## Enrichment (step 7)
+
+`src/python/enrich/` (run by `src/lib/enrich.ts` after every import, only on rows not yet
+enriched by the current `ENRICH_VERSION`) fills `category` and merges keys into `meta`:
+
+| Source | `category` | `meta` keys added | How |
+|---|---|---|---|
+| youtube (watch) | `study` · `music` · `comedy` · `podcast` · `tech` · `finance` · `other` (ads and unmatched videos) | `topic_source` (`channel` / `topic_channel` / `title` / `ad` / `none`) | curated channel map `public/data/youtube_channels.json`, then title keyword rules; "… - Topic" channels = music |
+| spotify (music) | `romantic` · `sad` · `upbeat` · `unknown` | `language` (`hi` / `en` / `kn` / … / `unknown`), `mood_source` (`song` / `title` / `artist` / `none` / `not_music`) | curated list `public/data/song_moods.json` (title + artist); language also from a single-language artist map. **Unknown is never guessed** and is left out of mood statistics |
+| whatsapp (text messages) | `pos` · `neu` · `neg` | `sentiment` (−1..1) | VADER-style lexicon scorer + Hinglish and emoji lexicons (`public/data/sentiment_lexicon.json`) |
+
+Every enriched row also gets `meta.enrich_version`. Spotify no longer offers audio features
+(valence, energy) to new apps, and we would not send user data to it anyway, so moods come from
+the curated list. Details and accuracy: `docs/analysis.md`.
+
 ## Storage (DuckDB, step 4)
 
 All SQL lives in `web/src/sql/` and is run unchanged by the browser (`src/lib/store.ts`,
@@ -163,11 +178,12 @@ DuckDB-WASM v1.5.4) and by the tests (`src/python/tests/test_storage.py`, duckdb
 
 | File | What |
 |---|---|
-| `schema.sql` | tables `events`, `imports`, `settings`, `stage_events` |
+| `schema.sql` | tables `events`, `imports`, `settings`, `stage_events`, `category_overrides`, `periods`, `insights` |
 | `stage_parquet.sql` / `stage_csv.sql` | load one parsed file into `stage_events` |
 | `import.sql` | merge `stage_events` into `events` (dedupe), record the import |
-| `views.sql` | `event_facts`, `daily_activity`, `hourly_heatmap`, `source_coverage`, `overlap_window` |
-| `manage.sql` | `remove_import`, `wipe_all`, `set_me`, `reset` |
+| `views.sql` | `event_facts`, `daily_activity`, `daily_features`, `hourly_heatmap`, `source_coverage`, `overlap_window` |
+| `manage.sql` | `remove_import`, `wipe_all`, `set_me`, `reset`, `add_period`, `delete_period`, `save_insights` |
+| `enrich.sql` | `apply_enrichment` (topic / mood / sentiment into `category` + `meta`) |
 | `categorise.sql` | `apply_predictions`, `refresh_categories`, `set_override`, `clear_override` |
 | `queries.sql` | read queries for the Import and Data screens |
 
@@ -181,6 +197,13 @@ DuckDB-WASM v1.5.4) and by the tests (`src/python/tests/test_storage.py`, duckdb
 - **`settings`** — key/value; `me` = the user's own WhatsApp name (needed for sent/received);
   `categoriser_version`, `categoriser_test_macro_f1`.
 - **`category_overrides`** — the user's category corrections (see "Bank categories").
+- **`periods`** — user-tagged date ranges compared by the analysis engine: `period_id`, `label`,
+  `start_date`, `end_date`, `origin` (`user` / `demo`; the DEMO database gets its 3 exam periods
+  from `data/samples/periods.json` on LOAD DEMO DATA), `created_at`.
+- **`insights`** — cache of analysis results: `cache_key` (= range from | range to | data
+  fingerprint), `range_from`, `range_to`, `fingerprint`, `created_at`, `payload` (engine JSON).
+  The fingerprint (`queries.sql data_fingerprint`) changes with the events, imports, corrections,
+  periods, settings and engine version, so a stale result is never shown.
 
 ### Getting rows from Python into DuckDB
 
@@ -235,6 +258,15 @@ file to restore them (it will then add them).
   A source's columns are **NULL outside its own first..last date** (no data ≠ zero activity),
   counts are **0** on in-range days with no events, and shares/rates are NULL when there were
   no events that day (undefined, not 0).
+- **`daily_features`** — `daily_activity` plus the enrichment-based columns the analysis engine
+  uses: `youtube_study_min`, `youtube_comedy_min`, `youtube_music_min` (Σ `est_watch_min` by
+  topic), `spotify_sad_share`, `spotify_romantic_share` (share of plays **among known moods**;
+  NULL when no known-mood plays), `wa_sentiment_mean`, `wa_negative_share` (the user's **own**
+  messages; NULL until `me` is set or on days they sent no text), `wa_others_sentiment_mean`
+  (messages received), `discretionary_spend` (debits excluding `p2p_transfer`, `cash_atm`,
+  `subscriptions`), `entertainment_shopping_spend`, and `food_delivery_spend` (from
+  `daily_activity`). Same NULL-vs-0 rule: NULL outside the source's own date range or before its
+  rows are enriched/categorised, 0 on in-range days with nothing in that topic/category.
 - **`hourly_heatmap`** — `source × weekday (0 = Mon) × hour → events` (system notices and
   date-only bank rows excluded, ads included).
 - **`source_coverage`** — per source: `first_date`, `last_date`, `days_with_data`, `events`,
@@ -251,7 +283,7 @@ the real one (the UI switches mode when needed).
 
 The installed duckdb-wasm (`1.33.1-dev57.0`) opens `opfs://` database files but writes never
 reach them in this browser (0-byte files after `CHECKPOINT`; tested in step 4), so we use the
-planned fallback: DuckDB runs **in memory** and after every change `events`, `imports` and
-`settings` are written as **Parquet snapshots to IndexedDB** under the database's name. On load
+planned fallback: DuckDB runs **in memory** and after every change `events`, `imports`,
+`settings`, `category_overrides`, `periods` and `insights` are written as **Parquet snapshots to IndexedDB** under the database's name. On load
 (or when switching mode) the tables are dropped and the snapshot is restored. Everything stays
 in this browser profile.

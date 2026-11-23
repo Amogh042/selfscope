@@ -4,6 +4,7 @@ import { RANGE_LABEL, useApp, type RangePreset } from '../lib/appState'
 const NAV = [
   ['/', 'CHECK'],
   ['/import', 'IMPORT'],
+  ['/insights', 'INSIGHTS'],
   ['/data', 'DATA'],
 ] as const
 

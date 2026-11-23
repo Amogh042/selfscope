@@ -4,4 +4,6 @@
 pandas>=3.0,<3.1
 numpy>=2.4,<2.5
 scikit-learn>=1.8,<1.9
+matplotlib
 jupyter
+nbconvert

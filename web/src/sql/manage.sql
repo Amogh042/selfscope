@@ -10,6 +10,7 @@ DELETE FROM imports WHERE import_id = getvariable('import_id');
 DELETE FROM events;
 DELETE FROM imports;
 DELETE FROM settings;
+DELETE FROM category_overrides;
 
 -- name: set_me
 -- me: the user's own WhatsApp name (used by daily_activity wa_sent / wa_received).
@@ -25,4 +26,5 @@ DROP VIEW IF EXISTS event_facts;
 DROP TABLE IF EXISTS events;
 DROP TABLE IF EXISTS imports;
 DROP TABLE IF EXISTS settings;
+DROP TABLE IF EXISTS category_overrides;
 DROP TABLE IF EXISTS stage_events;

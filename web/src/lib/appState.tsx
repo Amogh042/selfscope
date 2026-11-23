@@ -3,6 +3,7 @@
 // reproduces the view. The mode is also remembered in localStorage.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { ensureCategorised } from './categorise'
 import { store, type Mode, type StoreState } from './store'
 
 export type RangePreset = '30d' | '3m' | '6m' | '1y' | 'all' | 'custom'
@@ -122,6 +123,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
   }, [mode])
+
+  // Bank rows without a category from the current model (new import, older data, new
+  // model version) are categorised in the Python worker. No-op when everything is done.
+  useEffect(() => {
+    if (storeState.status !== 'ready' || !storeState.mode) return
+    void ensureCategorised(storeState.mode)
+  }, [storeState.status, storeState.version, storeState.mode])
 
   // Data bounds for resolving relative ranges; refetched whenever the data changes.
   useEffect(() => {

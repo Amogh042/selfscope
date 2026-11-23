@@ -42,7 +42,7 @@ Code mirrors of this doc — keep all three in sync:
 | whatsapp | `message` / `system` | sender | null | message text | null | `chat`, `platform` (`android`/`ios`), `kind` (`text`/`media`/`deleted`), `media_type`, `edited` |
 | spotify | `play` | artist (show for podcasts) | track (episode) | null | ms played | `kind`, `format`, `skipped`, `start_estimate`, + `album`, `uri`, `platform`, `shuffle`, `reason_start`, `reason_end` when the export has them |
 | youtube | `watch` / `system` | channel | video title | null (system: the entry title) | null | `header`, `video_id`, `channel_url`, `is_ad`, `is_short`, `est_watch_min`, `session`, + `removed` / `title_unavailable` |
-| bank | `transaction` | counterparty / `ATM` / `SBI Interest` | UPI ID fragment or mandate name | null | INR, signed (debit < 0, credit > 0) | `channel`, `direction`, `upi_ref`, `counterparty`, `bank_code`, `vpa_fragment`, `note`, `ref_no`, `balance`, `value_date`, `raw_description` |
+| bank | `transaction` | counterparty / `ATM` / `SBI Interest` | UPI ID fragment or mandate name | null | INR, signed (debit < 0, credit > 0) | `channel`, `direction`, `upi_ref`, `counterparty`, `bank_code`, `vpa_fragment`, `note`, `ref_no`, `balance`, `value_date`, `raw_description`; after categorising also `model_category`, `category_confidence`, `category_source`, `model_version` |
 
 ### WhatsApp details
 
@@ -103,7 +103,38 @@ exact duplicate rows dropped.
 - **Privacy:** every run of **9+ digits** in stored text (description, Ref No., UPI ID, name, note)
   is masked to its last 4 digits (`XXXXXXXXX2091`), except the row's own **12-digit UPI reference**.
   So account numbers, phone-number UPI IDs and NEFT UTRs never reach storage.
-- `category` stays NULL until the spend categoriser (next step).
+- `category` is set by the **spend categoriser** (below).
+
+### Bank categories (spend categoriser)
+
+Every bank row gets a `category`:
+
+| Row | Category | `meta.category_source` |
+|---|---|---|
+| credit | `income` | `rule` |
+| ATM withdrawal | `cash_atm` | `rule` |
+| other debit, model confidence ≥ threshold | the model's class | `model` |
+| other debit, confidence < threshold | **`other`** (flagged for REVIEW; the guess stays in `meta.model_category`) | `review` |
+| any row the user corrected | the user's choice | (override; shown as `override` / `payee override`) |
+
+Debit classes: `tea_snacks`, `meals`, `food_delivery`, `groceries_qcommerce`, `transport`, `shopping`,
+`entertainment`, `bills_recharge`, `subscriptions`, `p2p_transfer`, `cash_atm`, `other`
+(conventions in `ml/data/README.md`). `meta.category_confidence` is the model's top probability;
+`meta.model_version` says which model produced it — when the shipped model version changes, stored rows
+are re-categorised automatically.
+
+The model (logistic regression on text + rule flags + amount + payee behaviour) is trained offline in
+`ml/` and runs in the browser from `web/public/models/categoriser.json`
+(`web/src/python/categoriser.py`). Payee behaviour is computed over **all stored bank rows**, so the
+whole bank history is re-categorised after each bank import. Evaluation: `ml/reports/categoriser_report.md`.
+
+**User corrections** — table `category_overrides (scope, target, category, created_at)`:
+`scope = 'event'` targets one transaction (`event_key`), `scope = 'payee'` targets every **debit** to a
+payee (`payee_key(meta)` = lower(counterparty) + `|` + lower(UPI ID fragment); same rule in
+`selfscope_ml.features.payee_key`). Final category = event correction > payee correction > model.
+A new payee correction replaces earlier one-transaction corrections for that payee. Corrections are never
+touched by imports or re-categorising (`categorise.sql refresh_categories` recomputes `category` from
+`meta` + corrections), so they survive re-imports and model updates.
 
 #### YouTube watch time (`meta.est_watch_min`) — an estimate, not a measurement
 
@@ -137,6 +168,7 @@ DuckDB-WASM v1.5.4) and by the tests (`src/python/tests/test_storage.py`, duckdb
 | `import.sql` | merge `stage_events` into `events` (dedupe), record the import |
 | `views.sql` | `event_facts`, `daily_activity`, `hourly_heatmap`, `source_coverage`, `overlap_window` |
 | `manage.sql` | `remove_import`, `wipe_all`, `set_me`, `reset` |
+| `categorise.sql` | `apply_predictions`, `refresh_categories`, `set_override`, `clear_override` |
 | `queries.sql` | read queries for the Import and Data screens |
 
 ### Tables
@@ -146,7 +178,9 @@ DuckDB-WASM v1.5.4) and by the tests (`src/python/tests/test_storage.py`, duckdb
   that first added the event).
 - **`imports`** — `import_id`, `source`, `file_name`, `file_hash` (SHA-256 of the file text),
   `rows_added`, `rows_skipped` (parsed rows already stored), `min_date`, `max_date`, `imported_at` (UTC).
-- **`settings`** — key/value; `me` = the user's own WhatsApp name (needed for sent/received).
+- **`settings`** — key/value; `me` = the user's own WhatsApp name (needed for sent/received);
+  `categoriser_version`, `categoriser_test_macro_f1`.
+- **`category_overrides`** — the user's category corrections (see "Bank categories").
 
 ### Getting rows from Python into DuckDB
 
@@ -196,8 +230,8 @@ file to restore them (it will then add them).
   `wa_received` (messages by / not by `settings.me`; NULL until it is set),
   `wa_late_night_share` (all messages), `wa_active_chats`, `spend_total` (Σ debits in INR, as a
   positive number — includes transfers to friends and ATM cash), `spend_txn_count`,
-  `received_total` (Σ credits), `food_delivery_spend` (NULL until bank rows have categories,
-  then Σ debits with `category = 'food_delivery'`), `is_weekend` (Sat/Sun).
+  `received_total` (Σ credits), `food_delivery_spend` (Σ debits with `category = 'food_delivery'`;
+  NULL until bank rows have been categorised), `is_weekend` (Sat/Sun).
   A source's columns are **NULL outside its own first..last date** (no data ≠ zero activity),
   counts are **0** on in-range days with no events, and shares/rates are NULL when there were
   no events that day (undefined, not 0).

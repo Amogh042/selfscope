@@ -1,0 +1,1145 @@
+{
+  "model_version": "1.0",
+  "trained_at": "2026-11-23",
+  "seconds": 198,
+  "versions": {
+    "sklearn": "1.8.0",
+    "numpy": "2.4.6",
+    "pandas": "3.0.2"
+  },
+  "data": {
+    "train_rows": 23692,
+    "train_payees": 611,
+    "train_statements": 12,
+    "train_class_share": {
+      "meals": 0.2057,
+      "tea_snacks": 0.4608,
+      "transport": 0.1249,
+      "entertainment": 0.0171,
+      "groceries_qcommerce": 0.0434,
+      "p2p_transfer": 0.0646,
+      "food_delivery": 0.0253,
+      "shopping": 0.0135,
+      "other": 0.0124,
+      "bills_recharge": 0.0122,
+      "cash_atm": 0.01,
+      "subscriptions": 0.0101
+    },
+    "test_debits": 2565,
+    "test_class_share": {
+      "tea_snacks": 0.5283,
+      "meals": 0.2659,
+      "transport": 0.106,
+      "p2p_transfer": 0.0281,
+      "groceries_qcommerce": 0.0113,
+      "food_delivery": 0.0191,
+      "bills_recharge": 0.0047,
+      "subscriptions": 0.0094,
+      "cash_atm": 0.0039,
+      "shopping": 0.0082,
+      "entertainment": 0.0152
+    }
+  },
+  "comparison": {
+    "rules": {
+      "cv_acc": 0.5189,
+      "cv_macro_f1": 0.551,
+      "cv_macro_f1_std": 0.036,
+      "test_acc": 0.7287,
+      "test_macro_f1": 0.8411,
+      "config": "rules"
+    },
+    "text": {
+      "cv_acc": 0.6418,
+      "cv_macro_f1": 0.5622,
+      "cv_macro_f1_std": 0.0445,
+      "test_acc": 0.8016,
+      "test_macro_f1": 0.8143,
+      "config": "text C=8.0 cw=balanced"
+    },
+    "full": {
+      "cv_acc": 0.9055,
+      "cv_macro_f1": 0.8036,
+      "cv_macro_f1_std": 0.0279,
+      "test_acc": 0.9618,
+      "test_macro_f1": 0.9652,
+      "config": "full C=0.5 cw=balanced"
+    }
+  },
+  "grid": {
+    "text C=0.5 cw=None": {
+      "cv_macro_f1": 0.5312,
+      "cv_acc": 0.6625
+    },
+    "full C=0.5 cw=None": {
+      "cv_macro_f1": 0.799,
+      "cv_acc": 0.9074
+    },
+    "text C=0.5 cw=balanced": {
+      "cv_macro_f1": 0.5453,
+      "cv_acc": 0.6131
+    },
+    "full C=0.5 cw=balanced": {
+      "cv_macro_f1": 0.8036,
+      "cv_acc": 0.9055
+    },
+    "text C=2.0 cw=None": {
+      "cv_macro_f1": 0.5607,
+      "cv_acc": 0.6573
+    },
+    "full C=2.0 cw=None": {
+      "cv_macro_f1": 0.7997,
+      "cv_acc": 0.9075
+    },
+    "text C=2.0 cw=balanced": {
+      "cv_macro_f1": 0.553,
+      "cv_acc": 0.6267
+    },
+    "full C=2.0 cw=balanced": {
+      "cv_macro_f1": 0.8022,
+      "cv_acc": 0.9072
+    },
+    "text C=8.0 cw=None": {
+      "cv_macro_f1": 0.5579,
+      "cv_acc": 0.6444
+    },
+    "full C=8.0 cw=None": {
+      "cv_macro_f1": 0.7936,
+      "cv_acc": 0.8986
+    },
+    "text C=8.0 cw=balanced": {
+      "cv_macro_f1": 0.5622,
+      "cv_acc": 0.6418
+    },
+    "full C=8.0 cw=balanced": {
+      "cv_macro_f1": 0.8003,
+      "cv_acc": 0.8998
+    }
+  },
+  "threshold": {
+    "value": 0.54,
+    "target_precision": 0.95,
+    "oof_coverage": 0.9339861556643593,
+    "curve": [
+      {
+        "t": 0.0,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.01,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.02,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.03,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.04,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.05,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.06,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.07,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.08,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.09,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.1,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.11,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.12,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.13,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.14,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.15,
+        "coverage": 1.0,
+        "acc": 0.905495525915921
+      },
+      {
+        "t": 0.16,
+        "coverage": 0.999957791659632,
+        "acc": 0.9054915368705415
+      },
+      {
+        "t": 0.17,
+        "coverage": 0.9998733749788958,
+        "acc": 0.9055679851407826
+      },
+      {
+        "t": 0.18,
+        "coverage": 0.9996623332770556,
+        "acc": 0.9057591623036649
+      },
+      {
+        "t": 0.19,
+        "coverage": 0.9992824582137431,
+        "acc": 0.9060190073917634
+      },
+      {
+        "t": 0.2,
+        "coverage": 0.9990292081715347,
+        "acc": 0.9061641809962399
+      },
+      {
+        "t": 0.21,
+        "coverage": 0.9984382914063819,
+        "acc": 0.906573663073346
+      },
+      {
+        "t": 0.22,
+        "coverage": 0.9979317913219652,
+        "acc": 0.9069069069069069
+      },
+      {
+        "t": 0.23,
+        "coverage": 0.9965811244301874,
+        "acc": 0.907797213163356
+      },
+      {
+        "t": 0.24,
+        "coverage": 0.994808374134729,
+        "acc": 0.909075480504052
+      },
+      {
+        "t": 0.25,
+        "coverage": 0.9930356238392707,
+        "acc": 0.9104433204403451
+      },
+      {
+        "t": 0.26,
+        "coverage": 0.9916427486071248,
+        "acc": 0.9113390652932664
+      },
+      {
+        "t": 0.27,
+        "coverage": 0.9899966233327706,
+        "acc": 0.9127691323811554
+      },
+      {
+        "t": 0.28,
+        "coverage": 0.9883927063987844,
+        "acc": 0.9138232907716616
+      },
+      {
+        "t": 0.29,
+        "coverage": 0.9864933310822218,
+        "acc": 0.9151120999486565
+      },
+      {
+        "t": 0.3,
+        "coverage": 0.9847627891271316,
+        "acc": 0.9162916291629163
+      },
+      {
+        "t": 0.31,
+        "coverage": 0.9832432888738815,
+        "acc": 0.9174930242541318
+      },
+      {
+        "t": 0.32,
+        "coverage": 0.9815549552591593,
+        "acc": 0.9186411524403354
+      },
+      {
+        "t": 0.33,
+        "coverage": 0.979908829984805,
+        "acc": 0.919882839421089
+      },
+      {
+        "t": 0.34,
+        "coverage": 0.977671787945298,
+        "acc": 0.9214695851141907
+      },
+      {
+        "t": 0.35,
+        "coverage": 0.9752659125443187,
+        "acc": 0.923353241582273
+      },
+      {
+        "t": 0.36,
+        "coverage": 0.9734087455681243,
+        "acc": 0.9248113780244558
+      },
+      {
+        "t": 0.37,
+        "coverage": 0.9715515785919298,
+        "acc": 0.9261013120166826
+      },
+      {
+        "t": 0.38,
+        "coverage": 0.9689768698294783,
+        "acc": 0.9281264973646383
+      },
+      {
+        "t": 0.39,
+        "coverage": 0.9669930778321797,
+        "acc": 0.9298123090353557
+      },
+      {
+        "t": 0.4,
+        "coverage": 0.9649670774945129,
+        "acc": 0.9313270929927391
+      },
+      {
+        "t": 0.41,
+        "coverage": 0.9634475772412628,
+        "acc": 0.9324454569350741
+      },
+      {
+        "t": 0.42,
+        "coverage": 0.9613371602228601,
+        "acc": 0.9338338602037232
+      },
+      {
+        "t": 0.43,
+        "coverage": 0.9593111598851933,
+        "acc": 0.9351460753255896
+      },
+      {
+        "t": 0.44,
+        "coverage": 0.9569052844842141,
+        "acc": 0.9368797141722905
+      },
+      {
+        "t": 0.45,
+        "coverage": 0.9552591592098598,
+        "acc": 0.9380965005302226
+      },
+      {
+        "t": 0.46,
+        "coverage": 0.9531487421914571,
+        "acc": 0.9391550792666725
+      },
+      {
+        "t": 0.47,
+        "coverage": 0.9507006584501098,
+        "acc": 0.9405966968566862
+      },
+      {
+        "t": 0.48,
+        "coverage": 0.9488856998142833,
+        "acc": 0.9415951247720297
+      },
+      {
+        "t": 0.49,
+        "coverage": 0.9469019078169847,
+        "acc": 0.9427654453062316
+      },
+      {
+        "t": 0.5,
+        "coverage": 0.9443694073949013,
+        "acc": 0.9445785286493251
+      },
+      {
+        "t": 0.51,
+        "coverage": 0.9415414485902415,
+        "acc": 0.9462500560362218
+      },
+      {
+        "t": 0.52,
+        "coverage": 0.9391355731892622,
+        "acc": 0.9476404494382022
+      },
+      {
+        "t": 0.53,
+        "coverage": 0.9366452811075469,
+        "acc": 0.9491235185435537
+      },
+      {
+        "t": 0.54,
+        "coverage": 0.9339861556643593,
+        "acc": 0.9503344179320318
+      },
+      {
+        "t": 0.55,
+        "coverage": 0.9306094884349148,
+        "acc": 0.9516962989840348
+      },
+      {
+        "t": 0.56,
+        "coverage": 0.9287945297990883,
+        "acc": 0.9522835719154737
+      },
+      {
+        "t": 0.57,
+        "coverage": 0.9254600709100118,
+        "acc": 0.9534342789382468
+      },
+      {
+        "t": 0.58,
+        "coverage": 0.9229697788282964,
+        "acc": 0.9544976448529748
+      },
+      {
+        "t": 0.59,
+        "coverage": 0.920437278406213,
+        "acc": 0.9554271564176641
+      },
+      {
+        "t": 0.6,
+        "coverage": 0.9177781529630255,
+        "acc": 0.9563097866077999
+      },
+      {
+        "t": 0.61,
+        "coverage": 0.9153300692216783,
+        "acc": 0.9570229641243199
+      },
+      {
+        "t": 0.62,
+        "coverage": 0.9110670268445045,
+        "acc": 0.9576094510076442
+      },
+      {
+        "t": 0.63,
+        "coverage": 0.9079014013169002,
+        "acc": 0.9586703858670386
+      },
+      {
+        "t": 0.64,
+        "coverage": 0.9041870673645113,
+        "acc": 0.9598543553356362
+      },
+      {
+        "t": 0.65,
+        "coverage": 0.9001772750295458,
+        "acc": 0.9611290851971679
+      },
+      {
+        "t": 0.66,
+        "coverage": 0.8956187742697957,
+        "acc": 0.9625335783967199
+      },
+      {
+        "t": 0.67,
+        "coverage": 0.8911446901907817,
+        "acc": 0.9643347700468905
+      },
+      {
+        "t": 0.68,
+        "coverage": 0.8876836062806011,
+        "acc": 0.9650040416527983
+      },
+      {
+        "t": 0.69,
+        "coverage": 0.8841803140300524,
+        "acc": 0.9665839220928012
+      },
+      {
+        "t": 0.7,
+        "coverage": 0.880930271821712,
+        "acc": 0.9673230798715922
+      },
+      {
+        "t": 0.71,
+        "coverage": 0.8777224379537396,
+        "acc": 0.9682135128636692
+      },
+      {
+        "t": 0.72,
+        "coverage": 0.8744723957453993,
+        "acc": 0.9691089873539916
+      },
+      {
+        "t": 0.73,
+        "coverage": 0.8708002701333784,
+        "acc": 0.970093548543454
+      },
+      {
+        "t": 0.74,
+        "coverage": 0.8663261860543643,
+        "acc": 0.9714007308160779
+      },
+      {
+        "t": 0.75,
+        "coverage": 0.8626962687827114,
+        "acc": 0.972161064631342
+      },
+      {
+        "t": 0.76,
+        "coverage": 0.8576734762789127,
+        "acc": 0.9727854330708662
+      },
+      {
+        "t": 0.77,
+        "coverage": 0.8529461421576904,
+        "acc": 0.9735253365003959
+      },
+      {
+        "t": 0.78,
+        "coverage": 0.8473324328887388,
+        "acc": 0.974346201743462
+      },
+      {
+        "t": 0.79,
+        "coverage": 0.8418875569812595,
+        "acc": 0.97513285871854
+      },
+      {
+        "t": 0.8,
+        "coverage": 0.8357673476278913,
+        "acc": 0.9758598050603505
+      },
+      {
+        "t": 0.81,
+        "coverage": 0.8293516798919467,
+        "acc": 0.9767418189220826
+      },
+      {
+        "t": 0.82,
+        "coverage": 0.8217119702853284,
+        "acc": 0.9777070063694268
+      },
+      {
+        "t": 0.83,
+        "coverage": 0.8123839270639879,
+        "acc": 0.9791655842468956
+      },
+      {
+        "t": 0.84,
+        "coverage": 0.8041533006922168,
+        "acc": 0.9792672685282385
+      },
+      {
+        "t": 0.85,
+        "coverage": 0.7959648826608138,
+        "acc": 0.9797433449994697
+      },
+      {
+        "t": 0.86,
+        "coverage": 0.7892959648826608,
+        "acc": 0.9803743315508021
+      },
+      {
+        "t": 0.87,
+        "coverage": 0.7806854634475773,
+        "acc": 0.9806985294117647
+      },
+      {
+        "t": 0.88,
+        "coverage": 0.7696690866115145,
+        "acc": 0.9815738963531669
+      },
+      {
+        "t": 0.89,
+        "coverage": 0.7592014182002363,
+        "acc": 0.9816534163562572
+      },
+      {
+        "t": 0.9,
+        "coverage": 0.7467499577916596,
+        "acc": 0.9819692516391589
+      },
+      {
+        "t": 0.91,
+        "coverage": 0.7357335809555968,
+        "acc": 0.9819287476335264
+      },
+      {
+        "t": 0.92,
+        "coverage": 0.7174573695762283,
+        "acc": 0.9819978821037769
+      },
+      {
+        "t": 0.93,
+        "coverage": 0.6961843660307276,
+        "acc": 0.9820540802716139
+      },
+      {
+        "t": 0.94,
+        "coverage": 0.6814536552422759,
+        "acc": 0.9820997212759368
+      },
+      {
+        "t": 0.95,
+        "coverage": 0.6652456525409421,
+        "acc": 0.9833766892963645
+      },
+      {
+        "t": 0.96,
+        "coverage": 0.6449012324835387,
+        "acc": 0.9842267164081419
+      },
+      {
+        "t": 0.97,
+        "coverage": 0.612400810400135,
+        "acc": 0.9853194568888276
+      },
+      {
+        "t": 0.98,
+        "coverage": 0.5568546344757724,
+        "acc": 0.9850678390055332
+      },
+      {
+        "t": 0.99,
+        "coverage": 0.48699983116663853,
+        "acc": 0.9863061189114232
+      },
+      {
+        "t": 1.0,
+        "coverage": 0.0,
+        "acc": 1.0
+      }
+    ],
+    "reliability": [
+      {
+        "bin": "0.1-0.2",
+        "conf": 0.18297990595824568,
+        "acc": 0.21739130434782608,
+        "n": 23
+      },
+      {
+        "bin": "0.2-0.3",
+        "conf": 0.25719017133743777,
+        "acc": 0.20710059171597633,
+        "n": 338
+      },
+      {
+        "bin": "0.3-0.4",
+        "conf": 0.35271634890687215,
+        "acc": 0.18336886993603413,
+        "n": 469
+      },
+      {
+        "bin": "0.4-0.5",
+        "conf": 0.45188898228142393,
+        "acc": 0.3237704918032787,
+        "n": 488
+      },
+      {
+        "bin": "0.5-0.6",
+        "conf": 0.5497929571103356,
+        "acc": 0.5396825396825397,
+        "n": 630
+      },
+      {
+        "bin": "0.6-0.7",
+        "conf": 0.6509615288167246,
+        "acc": 0.693012600229095,
+        "n": 873
+      },
+      {
+        "bin": "0.7-0.8",
+        "conf": 0.755958822453918,
+        "acc": 0.8093457943925234,
+        "n": 1070
+      },
+      {
+        "bin": "0.8-0.9",
+        "conf": 0.8544730434536922,
+        "acc": 0.9246088193456614,
+        "n": 2109
+      },
+      {
+        "bin": "0.9-1.0",
+        "conf": 0.9849497758473981,
+        "acc": 0.9819692516391589,
+        "n": 17692
+      }
+    ]
+  },
+  "test": {
+    "accuracy": 0.9618,
+    "macro_f1": 0.9652,
+    "accuracy_with_threshold": 0.9536,
+    "macro_f1_with_threshold": 0.9689,
+    "review_count": 57,
+    "review_share": 0.0222,
+    "debits": 2565,
+    "credits": 64,
+    "credits_income_rule_accuracy": 1.0
+  },
+  "test_known_vs_unknown": {
+    "known_share": 0.2834,
+    "known_acc": 1.0,
+    "unknown_acc": 0.9467
+  },
+  "per_class": {
+    "bills_recharge": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 12.0
+    },
+    "cash_atm": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "entertainment": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 39.0
+    },
+    "food_delivery": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 49.0
+    },
+    "groceries_qcommerce": {
+      "precision": 0.8529,
+      "recall": 1.0,
+      "f1-score": 0.9206,
+      "support": 29.0
+    },
+    "meals": {
+      "precision": 0.9967,
+      "recall": 0.8739,
+      "f1-score": 0.9313,
+      "support": 682.0
+    },
+    "p2p_transfer": {
+      "precision": 1.0,
+      "recall": 0.8333,
+      "f1-score": 0.9091,
+      "support": 72.0
+    },
+    "shopping": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 21.0
+    },
+    "subscriptions": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 24.0
+    },
+    "tea_snacks": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 1355.0
+    },
+    "transport": {
+      "precision": 0.7493,
+      "recall": 1.0,
+      "f1-score": 0.8567,
+      "support": 272.0
+    }
+  },
+  "confusion": {
+    "labels": [
+      "bills_recharge",
+      "cash_atm",
+      "entertainment",
+      "food_delivery",
+      "groceries_qcommerce",
+      "meals",
+      "p2p_transfer",
+      "shopping",
+      "subscriptions",
+      "tea_snacks",
+      "transport"
+    ],
+    "matrix": [
+      [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        10,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        39,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        49,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        29,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        596,
+        0,
+        0,
+        0,
+        0,
+        86
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        5,
+        2,
+        60,
+        0,
+        0,
+        0,
+        5
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        21,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        24,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1355,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        272
+      ]
+    ]
+  },
+  "top_confusions": [
+    {
+      "true": "meals",
+      "pred": "transport",
+      "count": 86
+    },
+    {
+      "true": "p2p_transfer",
+      "pred": "groceries_qcommerce",
+      "count": 5
+    },
+    {
+      "true": "p2p_transfer",
+      "pred": "transport",
+      "count": 5
+    },
+    {
+      "true": "p2p_transfer",
+      "pred": "meals",
+      "count": 2
+    }
+  ],
+  "mistakes": [
+    {
+      "date": "2026-05-26",
+      "payee": "VARUN RA",
+      "upi_id": "varunrao@o",
+      "amount": 60.0,
+      "true": "p2p_transfer",
+      "pred": "transport",
+      "confidence": 0.818,
+      "reason": "a friend paid repeatedly (31 payments, median \u20b9220, 1.0 per active day); the amounts look like a transport payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-10-31",
+      "payee": "ANNAPOOR",
+      "upi_id": "annapoorna",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.813,
+      "reason": "UPI ID 'annapoorna' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 116 payments, median \u20b9115, 1.0 per active day"
+    },
+    {
+      "date": "2025-12-28",
+      "payee": "UDUPI GR",
+      "upi_id": "udupigrand",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.659,
+      "reason": "UPI ID 'udupigrand' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 32 payments, median \u20b9120, 1.0 per active day"
+    },
+    {
+      "date": "2026-10-30",
+      "payee": "DAKSHIN",
+      "upi_id": "dakshinmes",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.538,
+      "reason": "UPI ID 'dakshinmes' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 91 payments, median \u20b9115, 1.0 per active day"
+    },
+    {
+      "date": "2026-10-24",
+      "payee": "PRIYA SH",
+      "upi_id": "priyasharm",
+      "amount": 480.0,
+      "true": "p2p_transfer",
+      "pred": "groceries_qcommerce",
+      "confidence": 0.518,
+      "reason": "a friend paid repeatedly (14 payments, median \u20b9200, 1.0 per active day); the amounts look like a groceries qcommerce payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-06-03",
+      "payee": "ISHITA R",
+      "upi_id": "ishita.r@o",
+      "amount": 210.0,
+      "true": "p2p_transfer",
+      "pred": "meals",
+      "confidence": 0.436,
+      "reason": "a friend paid repeatedly (2 payments, median \u20b9225, 1.0 per active day); the amounts look like a meals payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-07-11",
+      "payee": "ROHAN KU",
+      "upi_id": "rohank98@o",
+      "amount": 80.0,
+      "true": "p2p_transfer",
+      "pred": "transport",
+      "confidence": 0.377,
+      "reason": "a friend paid repeatedly (13 payments, median \u20b9230, 1.0 per active day); the amounts look like a transport payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-08-29",
+      "payee": "ROHAN KU",
+      "upi_id": "rohank98@o",
+      "amount": 370.0,
+      "true": "p2p_transfer",
+      "pred": "groceries_qcommerce",
+      "confidence": 0.355,
+      "reason": "a friend paid repeatedly (13 payments, median \u20b9230, 1.0 per active day); the amounts look like a groceries qcommerce payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-10-17",
+      "payee": "KARTHIK",
+      "upi_id": "karthik.s@",
+      "amount": 410.0,
+      "true": "p2p_transfer",
+      "pred": "groceries_qcommerce",
+      "confidence": 0.203,
+      "reason": "a friend paid repeatedly (11 payments, median \u20b9410, 1.0 per active day); the amounts look like a groceries qcommerce payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-03-14",
+      "payee": "KARTHIK",
+      "upi_id": "karthik.s@",
+      "amount": 430.0,
+      "true": "p2p_transfer",
+      "pred": "transport",
+      "confidence": 0.203,
+      "reason": "a friend paid repeatedly (11 payments, median \u20b9410, 1.0 per active day); the amounts look like a transport payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-08-16",
+      "payee": "KARTHIK",
+      "upi_id": "karthik.s@",
+      "amount": 220.0,
+      "true": "p2p_transfer",
+      "pred": "meals",
+      "confidence": 0.192,
+      "reason": "a friend paid repeatedly (11 payments, median \u20b9410, 1.0 per active day); the amounts look like a meals payee's and nothing in the name says 'person'"
+    },
+    {
+      "date": "2026-05-29",
+      "payee": "ANNAPOOR",
+      "upi_id": "annapoorna",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.813,
+      "reason": "UPI ID 'annapoorna' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 116 payments, median \u20b9115, 1.0 per active day"
+    },
+    {
+      "date": "2025-12-27",
+      "payee": "UDUPI GR",
+      "upi_id": "udupigrand",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.659,
+      "reason": "UPI ID 'udupigrand' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 32 payments, median \u20b9120, 1.0 per active day"
+    },
+    {
+      "date": "2026-10-20",
+      "payee": "DAKSHIN",
+      "upi_id": "dakshinmes",
+      "amount": 100.0,
+      "true": "meals",
+      "pred": "transport",
+      "confidence": 0.538,
+      "reason": "UPI ID 'dakshinmes' has no shop word (SBI keeps only 10 characters), so it looks like a person's name, like the auto drivers paid to name-like IDs in training; 91 payments, median \u20b9115, 1.0 per active day"
+    },
+    {
+      "date": "2026-02-15",
+      "payee": "VARUN RA",
+      "upi_id": "varunrao@o",
+      "amount": 480.0,
+      "true": "p2p_transfer",
+      "pred": "transport",
+      "confidence": 0.369,
+      "reason": "a friend paid repeatedly (31 payments, median \u20b9220, 1.0 per active day); the amounts look like a transport payee's and nothing in the name says 'person'"
+    }
+  ],
+  "errors_by_payee": [
+    {
+      "payee": "annapoor|annapoorna",
+      "errors": 71
+    },
+    {
+      "payee": "dakshin|dakshinmes",
+      "errors": 13
+    },
+    {
+      "payee": "rohan ku|rohank98@o",
+      "errors": 4
+    },
+    {
+      "payee": "varun ra|varunrao@o",
+      "errors": 3
+    },
+    {
+      "payee": "karthik|karthik.s@",
+      "errors": 3
+    },
+    {
+      "payee": "udupi gr|udupigrand",
+      "errors": 2
+    },
+    {
+      "payee": "priya sh|priyasharm",
+      "errors": 1
+    },
+    {
+      "payee": "ishita r|ishita.r@o",
+      "errors": 1
+    }
+  ],
+  "review_by_true_class": {
+    "p2p_transfer": 19,
+    "meals": 38
+  },
+  "parity_max_abs_diff": 2.7647680811426767e-09,
+  "export_kb": 1900
+}

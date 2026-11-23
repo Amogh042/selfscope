@@ -39,6 +39,16 @@ CREATE TABLE IF NOT EXISTS settings (
     value VARCHAR
 );
 
+-- User corrections to bank categories. They always win over the model and survive
+-- re-imports and model retraining (applied by categorise.sql refresh_categories).
+CREATE TABLE IF NOT EXISTS category_overrides (
+    scope      VARCHAR   NOT NULL,   -- 'event' = one transaction | 'payee' = all debits to this payee
+    target     VARCHAR   NOT NULL,   -- event_key, or payee_key(meta) (see views.sql)
+    category   VARCHAR   NOT NULL,
+    created_at TIMESTAMP NOT NULL,   -- UTC
+    PRIMARY KEY (scope, target)
+);
+
 -- Scratch table one parsed file is loaded into before import.sql merges it. Not persisted.
 CREATE TABLE IF NOT EXISTS stage_events (
     seq         BIGINT,               -- row order within the parsed file

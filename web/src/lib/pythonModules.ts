@@ -4,7 +4,7 @@
 import { pythonEngine } from './pythonEngine'
 
 // Bundled as raw text at build time. Tests are not shipped.
-const SOURCES = import.meta.glob(['../python/*.py', '../python/parsers/*.py'], {
+const SOURCES = import.meta.glob(['../python/*.py', '../python/parsers/*.py', '../python/selfscope_ml/*.py'], {
   query: '?raw',
   import: 'default',
   eager: true,

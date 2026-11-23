@@ -1,0 +1,455 @@
+kind,name,keyword,vpa,bank,category,min,max,weight
+merchant,SWIGGY,swiggy,swiggyupi@axisbank,UTIB,food_delivery,150,700,5
+merchant,BUNDL TECHNOLOGIES,bundl,bundl.swiggy@icici,ICIC,food_delivery,150,700,3
+merchant,ZOMATO,zomato,zomato.payu@hdfcbank,HDFC,food_delivery,150,700,5
+merchant,ZOMATO LIMITED,zomato,zomatoltd@icici,ICIC,food_delivery,150,700,3
+merchant,ZOMATO ORDER,zomato,zomatoorder@ybl,YESB,food_delivery,150,700,2
+merchant,DOMINOS PIZZA,dominos,dominos.jfl@hdfcbank,HDFC,food_delivery,199,900,3
+merchant,JUBILANT FOODWORKS,jubilant,jubilantfood@icici,ICIC,food_delivery,199,900,2
+merchant,PIZZA HUT,pizzahut,pizzahut.online@ybl,YESB,food_delivery,199,900,2
+merchant,EATSURE,eatsure,eatsure.rebel@icici,ICIC,food_delivery,150,600,2
+merchant,REBEL FOODS,rebel,rebelfoods@axisbank,UTIB,food_delivery,150,600,2
+merchant,FAASOS,faasos,faasos.order@icici,ICIC,food_delivery,150,500,2
+merchant,BEHROUZ BIRYANI,behrouz,behrouz.rebel@icici,ICIC,food_delivery,250,800,2
+merchant,OVENSTORY PIZZA,ovenstory,ovenstory@icici,ICIC,food_delivery,200,700,1
+merchant,BOX8,box8,box8.order@hdfcbank,HDFC,food_delivery,150,450,2
+merchant,FRESHMENU,freshmenu,freshmenu@axisbank,UTIB,food_delivery,200,500,1
+merchant,BIRYANI BY KILO,biryani,bbk.order@icici,ICIC,food_delivery,300,900,1
+merchant,MAGICPIN,magicpin,magicpin@ybl,YESB,food_delivery,100,500,1
+merchant,LUNCHBOX,lunchbox,lunchbox.rebel@icici,ICIC,food_delivery,150,400,1
+merchant,EATFIT,eatfit,eatfit.cure@icici,ICIC,food_delivery,150,450,1
+merchant,THE GOOD BOWL,goodbowl,goodbowl.rebel@icici,ICIC,food_delivery,150,450,1
+merchant,WOW MOMO DELIVERY,wowmomo,wowmomo.online@axisbank,UTIB,food_delivery,150,450,1
+merchant,SWIGGY ONLINE ORDER,swiggy,swiggy.order@icici,ICIC,food_delivery,150,700,2
+merchant,ZOMATO MEDIA,zomato,zomatomedia@hdfcbank,HDFC,food_delivery,150,700,1
+merchant,LA PINOZ PIZZA,lapinoz,lapinoz.order@ybl,YESB,food_delivery,199,700,1
+merchant,BURGER SINGH ONLINE,burgersingh,burgersingh@paytm,PYTM,food_delivery,150,500,1
+merchant,ZEPTO,zepto,zepto.payu@axisbank,UTIB,groceries_qcommerce,99,900,5
+merchant,KIRANAKART TECHNOLOGIES,kiranakart,kiranakart@ybl,YESB,groceries_qcommerce,99,900,3
+merchant,BLINKIT,blinkit,blinkit.rzp@icici,ICIC,groceries_qcommerce,99,900,5
+merchant,BLINK COMMERCE,blinkcommerce,blinkcommerce@hdfcbank,HDFC,groceries_qcommerce,99,900,2
+merchant,GROFERS,grofers,grofers@hdfcbank,HDFC,groceries_qcommerce,99,800,1
+merchant,SWIGGY INSTAMART,instamart,instamart.swiggy@axisbank,UTIB,groceries_qcommerce,99,900,4
+merchant,BIGBASKET,bigbasket,bigbasket@hdfcbank,HDFC,groceries_qcommerce,150,1500,4
+merchant,SUPERMARKET GROCERY SUPPLIES,bigbasket,bbinnovative@icici,ICIC,groceries_qcommerce,150,1500,2
+merchant,BB NOW,bbnow,bbnow.bigbasket@ybl,YESB,groceries_qcommerce,99,700,2
+merchant,JIOMART,jiomart,jiomart@sbi,SBIN,groceries_qcommerce,150,1200,3
+merchant,RELIANCE RETAIL,relianceretail,relianceretail@icici,ICIC,groceries_qcommerce,100,1500,3
+merchant,RELIANCE SMART,reliancesmart,reliancesmart@ybl,YESB,groceries_qcommerce,100,1500,2
+merchant,RELIANCE FRESH,reliancefresh,reliancefresh@icici,ICIC,groceries_qcommerce,80,800,2
+merchant,DMART,dmart,dmart.avenue@hdfcbank,HDFC,groceries_qcommerce,150,2500,4
+merchant,AVENUE SUPERMARTS,avenuesuper,avenuesupermarts@hdfcbank,HDFC,groceries_qcommerce,150,2500,2
+merchant,MORE SUPERMARKET,moresuper,moreretail@ybl,YESB,groceries_qcommerce,100,1500,2
+merchant,MORE RETAIL,moreretail,more.retail@icici,ICIC,groceries_qcommerce,100,1500,1
+merchant,SPENCERS RETAIL,spencers,spencers@hdfcbank,HDFC,groceries_qcommerce,100,1500,1
+merchant,NATURES BASKET,naturesbasket,naturesbasket@icici,ICIC,groceries_qcommerce,150,1800,1
+merchant,RATNADEEP SUPERMARKET,ratnadeep,ratnadeep@ybl,YESB,groceries_qcommerce,100,1500,1
+merchant,STAR BAZAAR,starbazaar,starbazaar.trent@icici,ICIC,groceries_qcommerce,150,2000,1
+merchant,NAMDHARIS FRESH,namdharis,namdharis@hdfcbank,HDFC,groceries_qcommerce,100,1200,1
+merchant,LICIOUS,licious,licious.delightful@icici,ICIC,groceries_qcommerce,200,900,2
+merchant,FRESHTOHOME,freshtohome,freshtohome@ybl,YESB,groceries_qcommerce,200,900,1
+merchant,COUNTRY DELIGHT,countrydelight,countrydelight@icici,ICIC,groceries_qcommerce,50,600,2
+merchant,MILKBASKET,milkbasket,milkbasket@hdfcbank,HDFC,groceries_qcommerce,30,500,1
+merchant,DUNZO,dunzo,dunzo.daily@icici,ICIC,groceries_qcommerce,80,700,1
+merchant,FLIPKART MINUTES,flipkartminutes,fkminutes@axisbank,UTIB,groceries_qcommerce,99,800,1
+merchant,AMAZON FRESH,amazonfresh,amazonfresh@apl,UTIB,groceries_qcommerce,150,1200,1
+merchant,NILGIRIS,nilgiris,nilgiris1905@ybl,YESB,groceries_qcommerce,80,900,1
+merchant,HERITAGE FRESH,heritagefresh,heritagefresh@icici,ICIC,groceries_qcommerce,80,900,1
+merchant,VIJETHA SUPERMARKET,vijetha,vijetha@ybl,YESB,groceries_qcommerce,80,1200,1
+merchant,EASYDAY,easyday,easyday@icici,ICIC,groceries_qcommerce,80,900,1
+merchant,SIMPLI NAMDHARIS,simplinamdhari,simplinamdhari@icici,ICIC,groceries_qcommerce,100,1000,1
+merchant,MAX HYPERMARKET,maxhyper,maxhypermarket@hdfcbank,HDFC,groceries_qcommerce,150,2000,1
+merchant,BIG BAZAAR,bigbazaar,bigbazaar@ybl,YESB,groceries_qcommerce,150,2000,1
+merchant,TATA 1MG GROCERY,tata1mg,tata1mg.grocery@icici,ICIC,other,100,900,1
+merchant,UBER,uber,uber.rides@icici,ICIC,transport,60,600,5
+merchant,UBER INDIA SYSTEMS,uber,uberindia@hdfcbank,HDFC,transport,60,600,3
+merchant,OLA,ola,olacabs@ybl,YESB,transport,60,600,4
+merchant,ANI TECHNOLOGIES,anitech,ani.olacabs@icici,ICIC,transport,60,600,2
+merchant,OLA CABS,olacabs,olacabs.rides@axisbank,UTIB,transport,60,600,2
+merchant,RAPIDO,rapido,rapido.bike@axisbank,UTIB,transport,25,250,5
+merchant,ROPPEN TRANSPORTATION,roppen,roppen.rapido@ybl,YESB,transport,25,250,2
+merchant,NAMMA YATRI,nammayatri,nammayatri@ybl,YESB,transport,30,300,3
+merchant,JUSPAY NAMMA YATRI,nammayatri,juspay.ny@axisbank,UTIB,transport,30,300,1
+merchant,BLUSMART,blusmart,blusmart.ev@icici,ICIC,transport,150,700,1
+merchant,BMRCL,bmrcl,bmrcl.tickets@hdfcbank,HDFC,transport,20,120,4
+merchant,NAMMA METRO,nammametro,nammametro@ybl,YESB,transport,20,120,3
+merchant,BANGALORE METRO RAIL,bmrcl,bmrcl.card@icici,ICIC,transport,100,500,2
+merchant,DELHI METRO RAIL,dmrc,dmrc.smartcard@icici,ICIC,transport,20,200,2
+merchant,MUMBAI METRO ONE,mumbaimetro,mmopl@ybl,YESB,transport,20,120,1
+merchant,L AND T METRO RAIL HYDERABAD,ltmetro,ltmrhl@icici,ICIC,transport,20,120,1
+merchant,CHENNAI METRO RAIL,cmrl,cmrl.qr@hdfcbank,HDFC,transport,20,120,1
+merchant,KOCHI METRO RAIL,kmrl,kmrl@axisbank,UTIB,transport,20,120,1
+merchant,IRCTC,irctc,irctc.uts@sbi,SBIN,transport,15,2500,4
+merchant,IRCTC ECATERING,irctc,irctcecatering@ybl,YESB,food_delivery,100,500,1
+merchant,REDBUS,redbus,redbus.ibibo@icici,ICIC,transport,300,2500,3
+merchant,ABHIBUS,abhibus,abhibus@hdfcbank,HDFC,transport,300,2000,1
+merchant,KSRTC,ksrtc,ksrtc.online@sbi,SBIN,transport,100,1500,2
+merchant,BMTC,bmtc,bmtc.pass@icici,ICIC,transport,20,1200,3
+merchant,MSRTC,msrtc,msrtc@sbi,SBIN,transport,100,1200,1
+merchant,TSRTC,tsrtc,tsrtc@ybl,YESB,transport,100,1200,1
+merchant,INDIAN OIL,indianoil,iocl.fuel@sbi,SBIN,transport,100,1500,3
+merchant,HP PETROL PUMP,hpcl,hpcl.fuel@icici,ICIC,transport,100,1500,2
+merchant,BHARAT PETROLEUM,bpcl,bpcl.retail@hdfcbank,HDFC,transport,100,1500,2
+merchant,SHELL INDIA,shell,shell.fuel@icici,ICIC,transport,200,1500,1
+merchant,NAYARA ENERGY,nayara,nayara@ybl,YESB,transport,100,1500,1
+merchant,FASTAG RECHARGE,fastag,fastag.netc@icici,ICIC,transport,200,1500,2
+merchant,NHAI FASTAG,fastag,nhai.fastag@sbi,SBIN,transport,200,1500,1
+merchant,YULU BIKES,yulu,yulu.rides@icici,ICIC,transport,20,200,2
+merchant,BOUNCE,bounce,bounce.rides@ybl,YESB,transport,30,400,1
+merchant,VOGO,vogo,vogo.rentals@icici,ICIC,transport,30,400,1
+merchant,QUICK RIDE,quickride,quickride@ybl,YESB,transport,40,300,1
+merchant,BLABLACAR,blablacar,blablacar@hdfcbank,HDFC,transport,200,1500,1
+merchant,MAKEMYTRIP,makemytrip,makemytrip@icici,ICIC,transport,500,6000,2
+merchant,GOIBIBO,goibibo,goibibo.ibibo@icici,ICIC,transport,500,6000,1
+merchant,IXIGO,ixigo,ixigo@ybl,YESB,transport,200,4000,1
+merchant,INDIGO AIRLINES,indigo,goindigo@hdfcbank,HDFC,transport,1500,8000,1
+merchant,AIR INDIA,airindia,airindia.pay@icici,ICIC,transport,1500,9000,1
+merchant,AKASA AIR,akasa,akasaair@hdfcbank,HDFC,transport,1500,7000,1
+merchant,PARKING CHARGES,parking,parking.mlcp@ybl,YESB,transport,20,100,1
+merchant,UBER AUTO,uber,uberauto@icici,ICIC,transport,40,250,2
+merchant,OLA AUTO,olaauto,olaauto@ybl,YESB,transport,40,250,2
+merchant,AMAZON,amazon,amazon@apl,UTIB,shopping,99,3000,5
+merchant,AMAZON PAY INDIA,amazon,amazonpay@apl,UTIB,shopping,99,3000,4
+merchant,AMAZON SELLER SERVICES,amazon,amazonseller@icici,ICIC,shopping,99,3000,3
+merchant,FLIPKART,flipkart,flipkart@axisbank,UTIB,shopping,99,3000,5
+merchant,FLIPKART INTERNET,flipkart,flipkartinternet@ybl,YESB,shopping,99,3000,3
+merchant,MYNTRA,myntra,myntra@icici,ICIC,shopping,299,3000,4
+merchant,MYNTRA DESIGNS,myntra,myntradesigns@hdfcbank,HDFC,shopping,299,3000,2
+merchant,AJIO,ajio,ajio.reliance@icici,ICIC,shopping,299,2500,3
+merchant,NYKAA,nykaa,nykaa.fsn@hdfcbank,HDFC,shopping,199,2500,3
+merchant,FSN ECOMMERCE,fsnecom,fsn.nykaa@icici,ICIC,shopping,199,2500,1
+merchant,MEESHO,meesho,meesho@ybl,YESB,shopping,99,1200,3
+merchant,TATA CLIQ,tatacliq,tatacliq@icici,ICIC,shopping,299,4000,1
+merchant,SNAPDEAL,snapdeal,snapdeal@axisbank,UTIB,shopping,99,1500,1
+merchant,LENSKART,lenskart,lenskart@ybl,YESB,shopping,500,4000,1
+merchant,DECATHLON,decathlon,decathlon.sports@hdfcbank,HDFC,shopping,199,4000,2
+merchant,H AND M,hennes,hm.india@icici,ICIC,shopping,399,3000,2
+merchant,ZARA,zara,zara.inditex@hdfcbank,HDFC,shopping,999,5000,1
+merchant,UNIQLO,uniqlo,uniqlo@icici,ICIC,shopping,599,4000,1
+merchant,MAX FASHION,maxfashion,maxfashion@hdfcbank,HDFC,shopping,299,2500,2
+merchant,PANTALOONS,pantaloons,pantaloons@icici,ICIC,shopping,399,3000,1
+merchant,WESTSIDE,westside,westside.trent@icici,ICIC,shopping,399,3000,2
+merchant,TRENT LIMITED,trent,trent.zudio@icici,ICIC,shopping,199,2500,1
+merchant,ZUDIO,zudio,zudio.trent@ybl,YESB,shopping,199,2000,3
+merchant,LIFESTYLE STORES,lifestyle,lifestyle@hdfcbank,HDFC,shopping,499,4000,1
+merchant,SHOPPERS STOP,shoppersstop,shoppersstop@icici,ICIC,shopping,499,4000,1
+merchant,CROMA,croma,croma.infiniti@hdfcbank,HDFC,shopping,299,8000,2
+merchant,RELIANCE DIGITAL,reliancedigital,reliancedigital@icici,ICIC,shopping,299,8000,1
+merchant,VIJAY SALES,vijaysales,vijaysales@ybl,YESB,shopping,299,8000,1
+merchant,BOAT LIFESTYLE,boat,boat.imagine@icici,ICIC,shopping,499,3000,2
+merchant,NOISE,gonoise,gonoise@ybl,YESB,shopping,499,3000,1
+merchant,APPLE INDIA,apple,apple.store@hdfcbank,HDFC,shopping,999,9000,1
+merchant,SAMSUNG INDIA,samsung,samsung.estore@icici,ICIC,shopping,499,9000,1
+merchant,XIAOMI INDIA,xiaomi,mi.store@ybl,YESB,shopping,299,6000,1
+merchant,ONEPLUS STORE,oneplus,oneplus@icici,ICIC,shopping,499,6000,1
+merchant,IKEA INDIA,ikea,ikea.india@hdfcbank,HDFC,shopping,199,4000,1
+merchant,PEPPERFRY,pepperfry,pepperfry@icici,ICIC,shopping,299,4000,1
+merchant,FIRSTCRY,firstcry,firstcry@ybl,YESB,shopping,199,2000,1
+merchant,BEWAKOOF,bewakoof,bewakoof@icici,ICIC,shopping,299,1500,2
+merchant,THE SOULED STORE,souledstore,souledstore@ybl,YESB,shopping,399,2000,2
+merchant,PURPLLE,purplle,purplle@icici,ICIC,shopping,199,1500,1
+merchant,MAMAEARTH,mamaearth,mamaearth@hdfcbank,HDFC,shopping,199,1200,1
+merchant,SUGAR COSMETICS,sugarcosmetics,sugarcosmetics@ybl,YESB,shopping,199,1500,1
+merchant,BATA INDIA,bata,bata.store@icici,ICIC,shopping,399,3000,1
+merchant,PUMA SPORTS,puma,puma.india@hdfcbank,HDFC,shopping,999,4000,1
+merchant,NIKE INDIA,nike,nike.store@icici,ICIC,shopping,1499,6000,1
+merchant,ADIDAS INDIA,adidas,adidas@ybl,YESB,shopping,999,5000,1
+merchant,CROSSWORD BOOKSTORES,crossword,crossword@icici,ICIC,shopping,199,2000,1
+merchant,SAPNA BOOK HOUSE,sapnabook,sapnabook@ybl,YESB,shopping,150,1500,1
+merchant,TITAN COMPANY,titan,titan.eyeplus@hdfcbank,HDFC,shopping,999,8000,1
+merchant,FABINDIA,fabindia,fabindia@icici,ICIC,shopping,499,4000,1
+merchant,CAMPUS SHOES,campusshoes,campus.activewear@ybl,YESB,shopping,599,2500,1
+merchant,METRO SHOES,metroshoes,metrobrands@hdfcbank,HDFC,shopping,599,3000,1
+merchant,WILDCRAFT,wildcraft,wildcraft@icici,ICIC,shopping,599,3500,1
+merchant,SKULLCANDY,skullcandy,skullcandy@ybl,YESB,shopping,999,4000,1
+merchant,FLIPKART SHOPSY,shopsy,shopsy.flipkart@axisbank,UTIB,shopping,99,800,1
+merchant,AMAZON MARKETPLACE,amazon,amazonmkt@apl,UTIB,shopping,99,3000,2
+merchant,RELIANCE TRENDS,reliancetrends,trends.reliance@icici,ICIC,shopping,299,2500,1
+merchant,LIBAS,libas,libas.designs@ybl,YESB,shopping,499,2500,1
+merchant,MINISO,miniso,miniso@icici,ICIC,shopping,99,1500,2
+merchant,STATIONERY WORLD,stationery,stationeryworld@ybl,YESB,shopping,20,500,1
+merchant,BOOKMYSHOW,bookmyshow,bookmyshow@icici,ICIC,entertainment,150,1200,5
+merchant,BIGTREE ENTERTAINMENT,bigtree,bigtree.bms@hdfcbank,HDFC,entertainment,150,1200,3
+merchant,PVR CINEMAS,pvr,pvr.cinemas@icici,ICIC,entertainment,150,1200,3
+merchant,PVR INOX,pvrinox,pvrinox@ybl,YESB,entertainment,150,1200,2
+merchant,INOX LEISURE,inox,inox.movies@hdfcbank,HDFC,entertainment,150,1000,1
+merchant,CINEPOLIS,cinepolis,cinepolis@icici,ICIC,entertainment,150,1000,2
+merchant,PAYTM INSIDER,insider,insider.paytm@paytm,PYTM,entertainment,199,2500,2
+merchant,DISTRICT BY ZOMATO,district,district.zomato@hdfcbank,HDFC,entertainment,199,2000,1
+merchant,TIMEZONE,timezone,timezone.games@icici,ICIC,entertainment,200,1500,2
+merchant,SMAAASH,smaaash,smaaash@ybl,YESB,entertainment,200,1500,1
+merchant,WONDERLA,wonderla,wonderla@icici,ICIC,entertainment,800,2500,1
+merchant,FUN WORLD,funworld,funworld@ybl,YESB,entertainment,300,1500,1
+merchant,STEAM GAMES,steam,steam.valve@icici,ICIC,entertainment,99,2000,1
+merchant,PLAYSTATION STORE,playstation,psn.sony@hdfcbank,HDFC,entertainment,299,4000,1
+merchant,BOWLING ALLEY,bowling,amoeba.bowling@ybl,YESB,entertainment,250,1200,1
+merchant,TATA STARBUCKS,starbucks,starbucks.tata@icici,ICIC,entertainment,200,800,4
+merchant,STARBUCKS COFFEE,starbucks,starbucks@hdfcbank,HDFC,entertainment,200,800,2
+merchant,THIRD WAVE COFFEE,thirdwave,thirdwavecoffee@ybl,YESB,entertainment,150,600,3
+merchant,BLUE TOKAI COFFEE,bluetokai,bluetokai@icici,ICIC,entertainment,150,600,2
+merchant,CHAI POINT,chaipoint,chaipoint.mtn@icici,ICIC,entertainment,60,300,2
+merchant,CHAAYOS,chaayos,chaayos@ybl,YESB,entertainment,80,400,2
+merchant,CAFE COFFEE DAY,ccd,ccd.coffeeday@hdfcbank,HDFC,entertainment,100,500,2
+merchant,COFFEE DAY GLOBAL,coffeeday,coffeeday@icici,ICIC,entertainment,100,500,1
+merchant,BARISTA COFFEE,barista,barista@ybl,YESB,entertainment,120,500,1
+merchant,COSTA COFFEE,costa,costacoffee@icici,ICIC,entertainment,150,600,1
+merchant,TIM HORTONS,timhortons,timhortons@hdfcbank,HDFC,entertainment,150,600,1
+merchant,DYU ART CAFE,dyuartcafe,dyuart@ybl,YESB,entertainment,150,600,1
+merchant,MATTEO COFFEA,matteo,matteo@icici,ICIC,entertainment,150,600,1
+merchant,SOCIAL OFFLINE,social,impresario.social@icici,ICIC,entertainment,300,2000,2
+merchant,HARD ROCK CAFE,hardrock,hardrockcafe@hdfcbank,HDFC,entertainment,500,3000,1
+merchant,TOIT BREWPUB,toit,toit.brew@ybl,YESB,entertainment,500,3000,1
+merchant,BREW AND BARREL,brewbarrel,brewbarrel@icici,ICIC,entertainment,400,2500,1
+merchant,BYG BREWSKI,brewski,bygbrewski@ybl,YESB,entertainment,500,3000,1
+merchant,THE BEER CAFE,beercafe,thebeercafe@icici,ICIC,entertainment,400,2500,1
+merchant,GAME ZONE,gamezone,gamezone.arcade@ybl,YESB,entertainment,100,800,1
+merchant,SNOW CITY,snowcity,snowcity@icici,ICIC,entertainment,400,1200,1
+merchant,KOLLY ESCAPE ROOM,escaperoom,escaperoom@ybl,YESB,entertainment,400,1200,1
+merchant,MCDONALDS,mcdonalds,mcdonalds.hrpl@icici,ICIC,meals,99,600,4
+merchant,HARDCASTLE RESTAURANTS,hardcastle,hardcastle@hdfcbank,HDFC,meals,99,600,2
+merchant,CONNAUGHT PLAZA RESTAURANTS,connaught,cprl.mcd@icici,ICIC,meals,99,600,1
+merchant,KFC,kfc,kfc.devyani@icici,ICIC,meals,149,800,3
+merchant,DEVYANI INTERNATIONAL,devyani,devyani.kfc@hdfcbank,HDFC,meals,149,800,1
+merchant,SAPPHIRE FOODS,sapphire,sapphirefoods@icici,ICIC,meals,149,800,1
+merchant,BURGER KING,burgerking,burgerking.rbl@ybl,YESB,meals,99,600,3
+merchant,RESTAURANT BRANDS ASIA,rbasia,rbasia.bk@icici,ICIC,meals,99,600,1
+merchant,SUBWAY,subway,subway.india@hdfcbank,HDFC,meals,150,500,2
+merchant,HALDIRAMS,haldiram,haldirams@icici,ICIC,meals,100,600,2
+merchant,SARAVANA BHAVAN,saravana,hotelsaravana@ybl,YESB,meals,80,400,2
+merchant,ADYAR ANANDA BHAVAN,a2b,a2b.sweets@icici,ICIC,meals,80,400,2
+merchant,MAVALLI TIFFIN ROOM,mtr,mtr1924@ybl,YESB,meals,80,400,2
+merchant,VIDYARTHI BHAVAN,vidyarthi,vidyarthibhavan@icici,ICIC,meals,60,250,1
+merchant,BRAHMINS COFFEE BAR,brahmins,brahminscoffee@ybl,YESB,meals,40,200,1
+merchant,SHANTI SAGAR,shantisagar,shantisagar@ybl,YESB,meals,60,300,2
+merchant,ADIGAS,adigas,adigas.hotel@icici,ICIC,meals,60,300,2
+merchant,RAMESHWARAM CAFE,rameshwaram,rameshwaramcafe@ybl,YESB,meals,60,300,3
+merchant,EMPIRE RESTAURANT,empire,empire.hotel@icici,ICIC,meals,150,700,2
+merchant,MEGHANA FOODS,meghana,meghanafoods@ybl,YESB,meals,250,900,2
+merchant,TRUFFLES,truffles,truffles@icici,ICIC,meals,200,800,2
+merchant,CHAI SUTTA BAR,chaisutta,chaisuttabar@ybl,YESB,tea_snacks,20,150,2
+merchant,BEHROUZ DINE IN,behrouzdine,behrouzdine@icici,ICIC,meals,250,800,1
+merchant,BARBEQUE NATION,barbeque,bbqnation@hdfcbank,HDFC,meals,600,2000,1
+merchant,PARADISE BIRYANI,paradise,paradisebiryani@icici,ICIC,meals,250,900,1
+merchant,BAWARCHI RESTAURANT,bawarchi,bawarchi@ybl,YESB,meals,200,800,1
+merchant,NAGARJUNA RESTAURANT,nagarjuna,nagarjuna@icici,ICIC,meals,200,800,1
+merchant,ANDHRA MEALS,andhrameals,andhrameals@ybl,YESB,meals,100,300,1
+merchant,TAJ HOTELS,tajhotels,taj.ihcl@hdfcbank,HDFC,meals,800,4000,1
+merchant,DAILY SUBS,subway,dailysubs@ybl,YESB,meals,150,400,1
+merchant,KAMAT HOTEL,kamat,kamathotel@icici,ICIC,meals,80,350,1
+merchant,UDUPI KRISHNA BHAVAN,krishnabhavan,ukb.hotel@ybl,YESB,meals,60,300,1
+merchant,NAIDU MILITARY HOTEL,militaryhotel,naidumilitary@ybl,YESB,meals,150,500,1
+merchant,THALASSERY RESTAURANT,thalassery,thalassery@icici,ICIC,meals,150,500,1
+merchant,CHINESE WOK,chinesewok,chinesewok@ybl,YESB,meals,150,500,1
+merchant,BIKANERVALA,bikanervala,bikanervala@icici,ICIC,meals,100,600,1
+merchant,SAGAR RATNA,sagarratna,sagarratna@hdfcbank,HDFC,meals,100,500,1
+merchant,DOSA PLAZA,dosaplaza,dosaplaza@ybl,YESB,meals,80,350,1
+merchant,CHAT HOUSE,chathouse,chathouse@ybl,YESB,tea_snacks,30,150,1
+merchant,AMUL PARLOUR,amul,amul.parlour@icici,ICIC,tea_snacks,20,200,3
+merchant,BASKIN ROBBINS,baskin,baskinrobbins@hdfcbank,HDFC,tea_snacks,80,400,2
+merchant,NATURALS ICE CREAM,naturalsicecream,naturals.icecream@ybl,YESB,tea_snacks,60,300,2
+merchant,HATSUN AGRO,hatsun,hatsun.arun@icici,ICIC,tea_snacks,20,200,1
+merchant,ARUN ICE CREAMS,arunicecream,arunicecreams@ybl,YESB,tea_snacks,30,200,1
+merchant,KEVENTERS,keventers,keventers@icici,ICIC,tea_snacks,120,300,1
+merchant,FROZEN BOTTLE,frozenbottle,frozenbottle@ybl,YESB,tea_snacks,120,300,1
+merchant,KRISPY KREME,krispykreme,krispykreme@hdfcbank,HDFC,tea_snacks,90,500,1
+merchant,KARACHI BAKERY,karachibakery,karachibakery@icici,ICIC,tea_snacks,50,500,1
+merchant,THEOBROMA,theobroma,theobroma@hdfcbank,HDFC,tea_snacks,80,600,1
+merchant,MONGINIS,monginis,monginis@ybl,YESB,tea_snacks,30,400,1
+merchant,WOW MOMO,wowmomo,wowmomo@axisbank,UTIB,tea_snacks,80,300,2
+merchant,CHAAT STREET,chaat,chaatstreet@ybl,YESB,tea_snacks,30,150,1
+merchant,CORNER HOUSE,cornerhouse,cornerhouse@icici,ICIC,tea_snacks,80,300,1
+merchant,JUICE JUNCTION,juice,juicejunction@ybl,YESB,tea_snacks,30,150,1
+merchant,MILKSHAKE STUDIO,milkshake,milkshakestudio@ybl,YESB,tea_snacks,60,200,1
+merchant,TEA VILLA CAFE,teavilla,teavilla@icici,ICIC,tea_snacks,40,250,1
+merchant,BREADTALK,breadtalk,breadtalk@ybl,YESB,tea_snacks,50,300,1
+merchant,POLAR BEAR ICE CREAM,polarbear,polarbear@icici,ICIC,tea_snacks,50,300,1
+merchant,HANGYO ICE CREAMS,hangyo,hangyo@ybl,YESB,tea_snacks,30,200,1
+merchant,VADA PAV CORNER,vadapav,vadapavcorner@ybl,YESB,tea_snacks,15,80,1
+merchant,BIRIYANI ZONE STALL,stall,biryanistall@ybl,YESB,meals,80,200,1
+merchant,AIRTEL,airtel,airtel.payments@airtel,AIRP,bills_recharge,99,1200,4
+merchant,BHARTI AIRTEL,airtel,bhartiairtel@icici,ICIC,bills_recharge,99,1200,3
+merchant,AIRTEL XSTREAM FIBER,airtel,airtel.broadband@airtel,AIRP,bills_recharge,499,1500,1
+merchant,AIRTEL DTH,airteldth,airtel.dth@airtel,AIRP,bills_recharge,200,800,1
+merchant,RELIANCE JIO,jio,jio.recharge@sbi,SBIN,bills_recharge,149,1200,4
+merchant,RELIANCE JIO INFOCOMM,jio,jioinfocomm@icici,ICIC,bills_recharge,149,1200,3
+merchant,JIO FIBER,jiofiber,jiofiber@sbi,SBIN,bills_recharge,399,1500,1
+merchant,VODAFONE IDEA,vodafone,vi.recharge@icici,ICIC,bills_recharge,99,900,2
+merchant,VI PREPAID,viprepaid,vi.prepaid@ybl,YESB,bills_recharge,99,900,1
+merchant,BSNL,bsnl,bsnl.recharge@sbi,SBIN,bills_recharge,99,700,1
+merchant,ACT FIBERNET,actfibernet,act.fibernet@icici,ICIC,bills_recharge,499,1500,2
+merchant,HATHWAY BROADBAND,hathway,hathway@ybl,YESB,bills_recharge,399,1200,1
+merchant,TATA PLAY,tataplay,tataplay@icici,ICIC,bills_recharge,200,700,1
+merchant,DISH TV,dishtv,dishtv@ybl,YESB,bills_recharge,200,700,1
+merchant,BESCOM,bescom,bescom.billdesk@hdfcbank,HDFC,bills_recharge,300,3000,3
+merchant,BANGALORE ELECTRICITY SUPPLY,bescom,bescom@sbi,SBIN,bills_recharge,300,3000,1
+merchant,MSEDCL,msedcl,msedcl.billdesk@hdfcbank,HDFC,bills_recharge,300,3000,1
+merchant,TANGEDCO,tangedco,tangedco@sbi,SBIN,bills_recharge,300,3000,1
+merchant,TSSPDCL,tsspdcl,tsspdcl@icici,ICIC,bills_recharge,300,3000,1
+merchant,BSES RAJDHANI,bses,bses.billdesk@hdfcbank,HDFC,bills_recharge,300,3000,1
+merchant,TATA POWER,tatapower,tatapower@icici,ICIC,bills_recharge,300,3000,1
+merchant,ADANI ELECTRICITY,adanielectricity,adanielec@hdfcbank,HDFC,bills_recharge,300,3000,1
+merchant,BWSSB,bwssb,bwssb.water@sbi,SBIN,bills_recharge,100,1500,1
+merchant,INDANE GAS,indane,indane.ioc@sbi,SBIN,bills_recharge,800,1200,2
+merchant,HP GAS,hpgas,hpgas@icici,ICIC,bills_recharge,800,1200,1
+merchant,BHARATGAS,bharatgas,bharatgas@hdfcbank,HDFC,bills_recharge,800,1200,1
+merchant,GAIL GAS,gailgas,gailgas@icici,ICIC,bills_recharge,200,1000,1
+merchant,BILLDESK,billdesk,billdesk.bbps@hdfcbank,HDFC,bills_recharge,100,3000,2
+merchant,BBPS BILL PAYMENT,bbps,bbps@icici,ICIC,bills_recharge,100,3000,1
+merchant,PHONEPE RECHARGE,recharge,recharge.phonepe@ybl,YESB,bills_recharge,99,900,2
+merchant,PAYTM RECHARGE,recharge,recharge@paytm,PYTM,bills_recharge,99,900,2
+merchant,MOBIKWIK BILLS,mobikwik,mobikwik@ikwik,IDFB,bills_recharge,99,1500,1
+merchant,FREECHARGE,freecharge,freecharge@axisbank,UTIB,bills_recharge,99,900,1
+merchant,MAINTENANCE NOBROKERHOOD,nobroker,nobrokerhood@icici,ICIC,bills_recharge,500,3000,1
+merchant,NETFLIX,netflix,netflix@hdfcbank,HDFC,subscriptions,149,649,4
+merchant,NETFLIX ENTERTAINMENT SERVICES,netflix,netflix.india@icici,ICIC,subscriptions,149,649,2
+merchant,SPOTIFY,spotify,spotify@hdfcbank,HDFC,subscriptions,59,199,4
+merchant,SPOTIFY INDIA,spotify,spotify.india@icici,ICIC,subscriptions,59,199,2
+merchant,AMAZON PRIME,prime,amazonprime@apl,UTIB,subscriptions,299,1499,3
+merchant,DISNEY HOTSTAR,hotstar,hotstar.novi@icici,ICIC,subscriptions,149,1499,3
+merchant,NOVI DIGITAL,novidigital,novidigital@hdfcbank,HDFC,subscriptions,149,1499,1
+merchant,YOUTUBE PREMIUM,youtubepremium,youtube.google@icici,ICIC,subscriptions,89,189,3
+merchant,GOOGLE PLAY,googleplay,googleplay@axisbank,UTIB,subscriptions,30,500,3
+merchant,GOOGLE ONE,googleone,googleone@icici,ICIC,subscriptions,35,650,2
+merchant,APPLE MEDIA SERVICES,applemedia,apple.services@hdfcbank,HDFC,subscriptions,49,299,2
+merchant,ICLOUD STORAGE,icloud,icloud.apple@hdfcbank,HDFC,subscriptions,75,299,1
+merchant,SONYLIV,sonyliv,sonyliv@icici,ICIC,subscriptions,99,999,1
+merchant,ZEE5,zee5,zee5@ybl,YESB,subscriptions,99,999,1
+merchant,JIOCINEMA,jiocinema,jiocinema@sbi,SBIN,subscriptions,29,299,2
+merchant,JIOSAAVN,jiosaavn,jiosaavn@icici,ICIC,subscriptions,49,99,1
+merchant,GAANA PLUS,gaana,gaana@ybl,YESB,subscriptions,49,99,1
+merchant,WYNK MUSIC,wynk,wynk.airtel@airtel,AIRP,subscriptions,49,99,1
+merchant,MICROSOFT 365,microsoft,microsoft365@hdfcbank,HDFC,subscriptions,129,699,1
+merchant,OPENAI CHATGPT,openai,openai.chatgpt@icici,ICIC,subscriptions,399,1999,2
+merchant,CANVA PRO,canva,canva@hdfcbank,HDFC,subscriptions,99,499,1
+merchant,NOTION LABS,notion,notion@icici,ICIC,subscriptions,99,499,1
+merchant,LINKEDIN PREMIUM,linkedin,linkedin@hdfcbank,HDFC,subscriptions,499,1599,1
+merchant,AUDIBLE,audible,audible@apl,UTIB,subscriptions,199,199,1
+merchant,KINDLE UNLIMITED,kindle,kindleunlimited@apl,UTIB,subscriptions,169,169,1
+merchant,TIMES PRIME,timesprime,timesprime@icici,ICIC,subscriptions,299,1199,1
+merchant,SWIGGY ONE,swiggyone,swiggyone@axisbank,UTIB,subscriptions,99,299,1
+merchant,ZOMATO GOLD,zomatogold,zomatogold@hdfcbank,HDFC,subscriptions,99,299,1
+merchant,CULTFIT,cultfit,cultfit.cure@icici,ICIC,subscriptions,499,2500,2
+merchant,ADOBE SYSTEMS,adobe,adobe@hdfcbank,HDFC,subscriptions,230,1675,1
+merchant,DUOLINGO,duolingo,duolingo@icici,ICIC,subscriptions,99,499,1
+merchant,GITHUB,github,github@hdfcbank,HDFC,subscriptions,350,850,1
+merchant,CRUNCHYROLL,crunchyroll,crunchyroll@icici,ICIC,subscriptions,79,199,1
+merchant,LENSKART GOLD,lenskartgold,lenskartgold@ybl,YESB,subscriptions,300,600,1
+merchant,APOLLO PHARMACY,apollopharmacy,apollo.pharmacy@icici,ICIC,other,50,1500,3
+merchant,MEDPLUS,medplus,medplus@ybl,YESB,other,40,1200,3
+merchant,PHARMEASY,pharmeasy,pharmeasy@icici,ICIC,other,100,1500,2
+merchant,TATA 1MG,tata1mg,tata1mg@hdfcbank,HDFC,other,100,1500,2
+merchant,NETMEDS,netmeds,netmeds@icici,ICIC,other,100,1500,1
+merchant,WELLNESS FOREVER,wellness,wellnessforever@ybl,YESB,other,50,1000,1
+merchant,MANIPAL HOSPITALS,manipal,manipalhospital@icici,ICIC,other,300,5000,1
+merchant,APOLLO HOSPITALS,apollohospital,apollohospitals@hdfcbank,HDFC,other,300,5000,1
+merchant,NARAYANA HEALTH,narayana,narayanahealth@icici,ICIC,other,300,5000,1
+merchant,PRACTO,practo,practo@ybl,YESB,other,200,1500,1
+merchant,THYROCARE,thyrocare,thyrocare@icici,ICIC,other,200,2000,1
+merchant,DR LAL PATHLABS,pathlabs,lalpathlabs@hdfcbank,HDFC,other,200,2000,1
+merchant,LIC OF INDIA,lic,lic.premium@sbi,SBIN,other,500,5000,1
+merchant,ACKO GENERAL INSURANCE,acko,acko@icici,ICIC,other,300,3000,1
+merchant,DIGIT INSURANCE,godigit,godigit@hdfcbank,HDFC,other,300,3000,1
+merchant,STAR HEALTH INSURANCE,starhealth,starhealth@icici,ICIC,other,500,5000,1
+merchant,PASSPORT SEVA,passport,passportseva@sbi,SBIN,other,1000,2000,1
+merchant,INCOME TAX DEPARTMENT,incometax,incometax.gov@sbi,SBIN,other,500,5000,1
+merchant,UNIVERSITY FEES,university,univ.fees@sbi,SBIN,other,2000,30000,1
+merchant,COLLEGE FEE PAYMENT,college,collegefee@sbi,SBIN,other,1000,30000,1
+merchant,EXAM FEE PORTAL,examfee,examfee@sbi,SBIN,other,300,2500,1
+merchant,COURSERA,coursera,coursera@hdfcbank,HDFC,other,399,4000,1
+merchant,UDEMY,udemy,udemy@icici,ICIC,other,399,3500,1
+merchant,UNACADEMY,unacademy,unacademy@ybl,YESB,other,399,4000,1
+merchant,PHYSICSWALLAH,physicswallah,pw.live@icici,ICIC,other,299,4000,1
+merchant,BLUE DART,bluedart,bluedart@icici,ICIC,other,100,800,1
+merchant,DTDC COURIER,dtdc,dtdc@ybl,YESB,other,60,500,1
+merchant,INDIA POST,indiapost,indiapost@sbi,SBIN,other,30,300,1
+merchant,NATURALS SALON,naturalssalon,naturals.salon@icici,ICIC,other,150,1500,2
+merchant,GREEN TRENDS,greentrends,greentrends@ybl,YESB,other,150,1200,1
+merchant,URBAN COMPANY,urbancompany,urbanclap@icici,ICIC,other,299,2000,2
+merchant,LAUNDRY SERVICE,laundry,laundromat@ybl,YESB,other,80,600,1
+merchant,XEROX AND PRINT,xerox,xeroxprint@ybl,YESB,other,5,200,2
+merchant,PG HOSTEL RENT,hostel,pg.hostel@ybl,YESB,other,3000,12000,1
+merchant,NOBROKER RENT,nobroker,nobroker.rent@icici,ICIC,other,3000,15000,1
+merchant,GIVEINDIA,giveindia,giveindia@icici,ICIC,other,100,2000,1
+merchant,ISKCON TEMPLE,iskcon,iskcon.donation@sbi,SBIN,other,50,1000,1
+merchant,DECATHLON SPORTS GROUND,sportsground,playo.booking@icici,ICIC,entertainment,100,600,1
+merchant,PLAYO,playo,playo@ybl,YESB,entertainment,100,600,1
+merchant,CRED CLUB,cred,cred.club@axisbank,UTIB,other,500,8000,2
+merchant,ZERODHA BROKING,zerodha,zerodha@hdfcbank,HDFC,other,500,10000,1
+merchant,GROWW,groww,groww@ybl,YESB,other,100,5000,2
+merchant,DREAM11,dream11,dream11@icici,ICIC,entertainment,49,500,1
+merchant,MPL GAMES,mpl,mpl.games@ybl,YESB,entertainment,25,500,1
+merchant,RAZORPAY MERCHANT,razorpay,razorpay.merchant@icici,ICIC,other,50,2000,2
+merchant,PAYU PAYMENTS,payu,payu.merchant@hdfcbank,HDFC,other,50,2000,1
+merchant,CASHFREE PAYMENTS,cashfree,cashfree@ybl,YESB,other,50,2000,1
+merchant,GOOGLE PAY MERCHANT,googlepay,gpaymerchant@okaxis,UTIB,other,20,1000,1
+merchant,PHONEPE MERCHANT,phonepe,phonepe.merchant@ybl,YESB,other,20,1000,1
+merchant,SALOON AND SPA,salon,hairstudio@ybl,YESB,other,100,800,1
+merchant,MEDICAL STORE,medical,medicalstore@ybl,YESB,other,20,800,2
+merchant,DENTAL CLINIC,clinic,dentalclinic@ybl,YESB,other,300,3000,1
+merchant,OPTICALS,opticals,opticals@ybl,YESB,shopping,300,3000,1
+merchant,MOBILE ACCESSORIES SHOP,mobileshop,mobileaccess@ybl,YESB,shopping,100,1500,1
+merchant,FOOTWEAR SHOP,footwear,footwearshop@ybl,YESB,shopping,200,1500,1
+merchant,GARMENTS STORE,garments,garments@ybl,YESB,shopping,200,2000,1
+merchant,PROVISION STORE,provision,provisionstore@ybl,YESB,groceries_qcommerce,30,800,3
+merchant,KIRANA STORE,kirana,kiranastore@ybl,YESB,groceries_qcommerce,30,800,3
+merchant,FRUITS AND VEGETABLES,fruits,fruitsveg@ybl,YESB,groceries_qcommerce,30,400,2
+merchant,DAIRY AND MILK BOOTH,dairy,milkbooth@ybl,YESB,groceries_qcommerce,25,200,2
+merchant,GENERAL STORES,generalstores,generalstore@ybl,YESB,groceries_qcommerce,30,800,2
+merchant,SUPER MARKET,supermarket,supermkt@ybl,YESB,groceries_qcommerce,80,1500,2
+merchant,FRESH MART,freshmart,freshmart@ybl,YESB,groceries_qcommerce,50,1000,1
+merchant,MEAT AND CHICKEN SHOP,chicken,chickenshop@ybl,YESB,groceries_qcommerce,150,600,1
+merchant,PETROL BUNK,petrol,petrolbunk@ybl,YESB,transport,100,1000,2
+merchant,AUTO STAND,autostand,autostand@ybl,YESB,transport,20,150,1
+merchant,TRAVELS AND TOURS,travels,travels@ybl,YESB,transport,300,3000,1
+merchant,BIKE SERVICE CENTRE,bikeservice,bikeservice@ybl,YESB,transport,200,2000,1
+merchant,TYRE AND PUNCTURE,puncture,puncture@ybl,YESB,transport,50,500,1
+merchant,MOVIE THEATRE,theatre,theatre.tickets@ybl,YESB,entertainment,100,500,1
+merchant,GAMING CAFE,gamingcafe,gamingcafe@ybl,YESB,entertainment,50,400,1
+merchant,SNOOKER CLUB,snooker,snookerclub@ybl,YESB,entertainment,100,500,1
+merchant,BOARD GAME CAFE,boardgame,boardgamecafe@ybl,YESB,entertainment,150,600,1
+merchant,TURF BOOKING,turf,turfbooking@ybl,YESB,entertainment,100,800,1
+merchant,RESTAURANT AND BAR,bar,restobar@ybl,YESB,entertainment,400,2500,1
+merchant,FAMILY RESTAURANT,restaurant,familyrestaurant@ybl,YESB,meals,150,800,2
+merchant,VEG RESTAURANT,restaurant,vegrestaurant@ybl,YESB,meals,100,500,2
+merchant,BIRYANI POINT,biryani,biryanipoint@ybl,YESB,meals,120,400,2
+merchant,MEALS HOTEL,meals,mealshotel@ybl,YESB,meals,60,200,2
+merchant,TIFFIN CENTRE,tiffin,tiffincentre@ybl,YESB,meals,30,150,2
+merchant,FOOD COURT,foodcourt,foodcourt@ybl,YESB,meals,100,400,2
+merchant,DHABA,dhaba,dhaba@ybl,YESB,meals,100,500,1
+merchant,MESS AND CATERERS,caterers,caterers@ybl,YESB,meals,60,250,2
+merchant,FAST FOOD CENTRE,fastfood,fastfood@ybl,YESB,meals,60,250,2
+merchant,CHINESE FAST FOOD,chinese,chinesefood@ybl,YESB,meals,60,250,1
+merchant,TEA STALL,teastall,teastall@ybl,YESB,tea_snacks,10,40,3
+merchant,COFFEE STALL,coffeestall,coffeestall@ybl,YESB,tea_snacks,10,40,2
+merchant,JUICE CENTRE,juicecentre,juicecentre@ybl,YESB,tea_snacks,20,80,2
+merchant,BAKERY AND SWEETS,bakery,bakerysweets@ybl,YESB,tea_snacks,15,200,3
+merchant,SWEET STALL,sweets,sweetstall@ybl,YESB,tea_snacks,20,200,1
+merchant,PANI PURI STALL,panipuri,panipuri@ybl,YESB,tea_snacks,20,60,1
+merchant,CHAI CORNER,chai,chaicorner@ybl,YESB,tea_snacks,10,40,2
+merchant,COOL DRINKS,cooldrinks,cooldrinks@ybl,YESB,tea_snacks,20,60,1
+merchant,ICE CREAM PARLOUR,icecream,icecream@ybl,YESB,tea_snacks,30,150,1
+merchant,CONDIMENTS SHOP,condiments,condiments@ybl,YESB,tea_snacks,10,80,2
+merchant,PETTY SHOP,pettyshop,pettyshop@ybl,YESB,tea_snacks,10,60,2
+merchant,SNACKS CORNER,snacks,snackscorner@ybl,YESB,tea_snacks,15,80,2
+merchant,FILTER COFFEE,filtercoffee,filtercoffee@ybl,YESB,tea_snacks,10,40,2
+merchant,BHEL PURI CART,bhel,bhelpuri@ybl,YESB,tea_snacks,20,60,1
+handle,PERSON VIA GPAY AXIS,,@okaxis,UTIB,p2p_transfer,20,2000,3
+handle,PERSON VIA GPAY HDFC,,@okhdfcbank,HDFC,p2p_transfer,20,2000,3
+handle,PERSON VIA GPAY ICICI,,@okicici,ICIC,p2p_transfer,20,2000,3
+handle,PERSON VIA GPAY SBI,,@oksbi,SBIN,p2p_transfer,20,2000,3
+handle,PERSON VIA PHONEPE YBL,,@ybl,YESB,p2p_transfer,20,2000,4
+handle,PERSON VIA PHONEPE IBL,,@ibl,INDB,p2p_transfer,20,2000,2
+handle,PERSON VIA PHONEPE AXL,,@axl,UTIB,p2p_transfer,20,2000,2
+handle,PERSON VIA PAYTM,,@paytm,PYTM,p2p_transfer,20,2000,2
+handle,PERSON VIA PAYTM PTYES,,@ptyes,YESB,p2p_transfer,20,2000,1
+handle,PERSON VIA PAYTM PTSBI,,@ptsbi,SBIN,p2p_transfer,20,2000,1
+handle,PERSON VIA BHIM,,@upi,SBIN,p2p_transfer,20,2000,1
+handle,PERSON VIA SBI YONO,,@sbi,SBIN,p2p_transfer,20,2000,2
+handle,PERSON VIA AMAZON PAY,,@apl,UTIB,p2p_transfer,20,1000,1
+handle,PERSON VIA KOTAK,,@kotak,KKBK,p2p_transfer,20,2000,1
+handle,PERSON VIA FAMPAY,,@fam,IDFB,p2p_transfer,20,500,1
+handle,PERSON PHONE NUMBER,,PHONE@ybl,YESB,p2p_transfer,20,2000,3
+handle,MERCHANT QR PAYTM,,paytmqr@paytm,PYTM,merchant_qr,10,500,4
+handle,MERCHANT QR PHONEPE,,Q@ybl,YESB,merchant_qr,10,500,3
+handle,MERCHANT QR BHARATPE,,bharatpe@yesbank,YESB,merchant_qr,10,500,2
+handle,MERCHANT QR GPAY,,gpay-merchant@okbizaxis,UTIB,merchant_qr,10,500,2

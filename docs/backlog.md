@@ -31,7 +31,22 @@ Known gaps and open decisions. Move items to "Done" when fixed.
   source (account numbers are deliberately not kept). A user-chosen per-account label would
   separate them without storing the number.
 - **Bank spend includes transfers** (step 5). `spend_total` counts every debit, including money
-  sent to friends and ATM cash; the categoriser (next step) will let views separate real spend.
+  sent to friends and ATM cash; categories now exist (step 6), so a "real spend" column excluding
+  `p2p_transfer` / `cash_atm` can be added when the dashboard needs it.
+- **Categoriser v2: shops whose shop word is cut off** (step 6). The largest error on the demo test is a
+  canteen whose UPI ID `annapoornamess@…` is printed as `annapoorna`; it looks like a person and is
+  predicted as transport (an auto driver). The training data has few long-named shops whose keyword is
+  truncated. Fix in the training generator, then evaluate on a **new** unseen statement (the demo test set
+  has now been looked at, so improving against it would be tuning on the test set).
+- **Categoriser real-world accuracy is unknown** (step 6). Both training and test data are synthetic.
+  A small, consented, hand-labelled real statement (kept in `data/private/`, never committed) would give
+  an honest estimate.
+- **Autos vs friends** (step 6). Auto drivers paid to phone-number UPI IDs look like friends; only the
+  small fixed fare separates them. Time of day would help, but SBI statements have no times.
+- **Categoriser speed on long histories** (step 6). All bank rows are re-categorised after every bank import
+  (payee behaviour needs the whole history): ~2.6k rows take well under a second, 100k+ rows will take
+  seconds. Re-categorise only affected payees if needed.
+- **Categories for other banks' narrations** (step 6). Features assume SBI's parsed fields.
 - **Takeout search history, subscriptions, comments** are ignored (step 3). Only
   `watch-history.json` is read from a Takeout zip.
 
@@ -70,6 +85,7 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 
 ## Done
 
+- Step 6: bank debits are categorised (in-browser model + rules), with user corrections that survive re-imports.
 - Step 4: data survives reloads (DuckDB + IndexedDB snapshots, separate demo/real databases).
 - Step 4: Spotify account + extended formats no longer double-count (60 s cross-format rule).
 - Step 4: imports append only new events (event_key) instead of re-parsing everything; exact

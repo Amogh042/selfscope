@@ -12,6 +12,7 @@
 import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm'
 import { initDuckDB } from './duckdb'
 import { idbDelete, idbGet, idbPut } from './idb'
+import categoriseSql from '../sql/categorise.sql?raw'
 import importSql from '../sql/import.sql?raw'
 import manageSql from '../sql/manage.sql?raw'
 import queriesSql from '../sql/queries.sql?raw'
@@ -23,13 +24,14 @@ import viewsSql from '../sql/views.sql?raw'
 export type Mode = 'demo' | 'real'
 export const DB_NAME: Record<Mode, string> = { demo: 'selfscope_demo', real: 'selfscope_real' }
 
-const SNAPSHOT_TABLES = ['events', 'imports', 'settings'] as const
+const SNAPSHOT_TABLES = ['events', 'imports', 'settings', 'category_overrides'] as const
 const SNAPSHOT_VERSION = 1
 
 interface Snapshot {
   version: number
   savedAt: string
-  tables: Record<(typeof SNAPSHOT_TABLES)[number], Uint8Array>
+  /** Tables added in later versions (e.g. category_overrides) may be missing from old snapshots. */
+  tables: Partial<Record<(typeof SNAPSHOT_TABLES)[number], Uint8Array>>
 }
 
 export interface StoreState {
@@ -61,6 +63,7 @@ function namedBlocks(text: string): Record<string, string> {
 
 export const QUERIES = namedBlocks(queriesSql)
 const MANAGE = namedBlocks(manageSql)
+const CATEGORISE = namedBlocks(categoriseSql)
 
 function literal(v: string | number | null | undefined): string {
   if (v === null || v === undefined) return 'NULL'
@@ -140,10 +143,11 @@ class Store {
       const snap = await idbGet<Snapshot>(DB_NAME[mode])
       if (snap && snap.version === SNAPSHOT_VERSION) {
         for (const t of SNAPSHOT_TABLES) {
+          if (!snap.tables[t]) continue
           // Unique names: DuckDB-WASM caches file metadata by name, so reusing a name for a
           // different buffer (e.g. demo after real) fails with a Snappy size mismatch.
           const name = `restore_${t}_${crypto.randomUUID()}.parquet`
-          await db.registerFileBuffer(name, snap.tables[t])
+          await db.registerFileBuffer(name, snap.tables[t]!)
           await c.query(`INSERT INTO ${t} BY NAME SELECT * FROM read_parquet('${name}')`)
           await db.dropFile(name)
         }
@@ -237,14 +241,49 @@ class Store {
   }
 
   private async mutate(block: string, vars: Record<string, string | null> = {}) {
+    await this.runBlocks([MANAGE[block]], vars)
+  }
+
+  private async runBlocks(sqls: string[], vars: Record<string, string | null> = {}) {
     await this.ready()
     await this.exclusive(async (c) => {
       if (Object.keys(vars).length) await c.query(setVars(vars))
-      await c.query(MANAGE[block])
+      for (const sql of sqls) await c.query(sql)
       await this.persist(c)
     })
     this.set({ version: this.state.version + 1 })
   }
+
+  /** Store categoriser output (src/sql/categorise.sql) and recompute final categories. */
+  async applyPredictions(mode: Mode, predictionsJson: string, modelVersion: string, modelF1: string) {
+    await this.ready(mode)
+    if (this.state.mode !== mode) throw new Error(`database switched away from ${mode}`)
+    const db = await initDuckDB()
+    const file = `pred_${crypto.randomUUID()}.json`
+    await db.registerFileText(file, predictionsJson)
+    try {
+      await this.runBlocks([CATEGORISE.apply_predictions, CATEGORISE.refresh_categories], {
+        pred_file: file,
+        model_version: modelVersion,
+        model_f1: modelF1,
+      })
+    } finally {
+      await db.dropFile(file)
+    }
+  }
+
+  /** User correction: one transaction ('event', event_key) or all debits to a payee ('payee', payee_key). */
+  setOverride = (scope: 'event' | 'payee', target: string, category: string) =>
+    this.runBlocks([CATEGORISE.set_override, CATEGORISE.refresh_categories], {
+      scope,
+      target,
+      category,
+      created_at: new Date().toISOString().replace('T', ' ').replace('Z', ''),
+    })
+
+  /** Remove a correction: back to the payee correction / the model. */
+  clearOverride = (scope: 'event' | 'payee', target: string) =>
+    this.runBlocks([CATEGORISE.clear_override, CATEGORISE.refresh_categories], { scope, target })
 
   removeImport = (importId: string) => this.mutate('remove_import', { import_id: importId })
   setMe = (name: string) => this.mutate('set_me', { me: name })

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react'
+import { BankCategories } from '../components/BankCategories'
 import { DataRows, Panel, Terminal } from '../components/pixel'
 import { SourceIcon } from '../components/SourceIcon'
 import { useApp, useStoreQuery } from '../lib/appState'
@@ -382,7 +383,7 @@ function BankPanel({ s }: { s: BankSummary }) {
   ).data ?? []
   const months = useStoreQuery<{ month: string; spent: number; received: number; txns: number }>('bank_by_month').data ?? []
   return (
-    <Panel title="BANK · SBI" tag={<span className="font-mono text-[11px] text-muted">CATEGORIES COME NEXT STEP</span>}>
+    <Panel title="BANK · SBI" tag={<span className="font-mono text-[11px] text-muted">CATEGORISED IN THIS BROWSER</span>}>
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-4">
           <DataRows
@@ -417,6 +418,7 @@ function BankPanel({ s }: { s: BankSummary }) {
         head={['month', 'spent', 'received', 'txns']}
         rows={months.map((m) => [m.month, inr(m.spent), inr(m.received), fmt.format(m.txns)])}
       />
+      <BankCategories />
     </Panel>
   )
 }

@@ -1,6 +1,11 @@
 -- Analysis-ready views over events. Idempotent (CREATE OR REPLACE).
 -- "Late night" = local 23:00-02:59 everywhere. Days are calendar days in Asia/Kolkata.
 
+-- Who was paid: normalised counterparty + UPI ID. Must match selfscope_ml.features.payee_key.
+CREATE OR REPLACE MACRO payee_key(meta) AS
+    lower(trim(coalesce(json_extract_string(meta, '$.counterparty'), ''))) || '|' ||
+    lower(trim(coalesce(json_extract_string(meta, '$.vpa_fragment'), '')));
+
 -- Helper: events with the meta fields the views need pulled out of the JSON.
 CREATE OR REPLACE VIEW event_facts AS
 SELECT

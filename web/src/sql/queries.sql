@@ -138,6 +138,82 @@ WHERE source = 'bank'
 GROUP BY month
 ORDER BY month;
 
+-- name: bank_rows_for_model
+-- Every stored bank row: the categoriser needs the whole history for payee behaviour.
+SELECT event_key, CAST(local_date AS VARCHAR) AS local_date, weekday, value, meta
+FROM events
+WHERE source = 'bank'
+ORDER BY ts_utc, event_key;
+
+-- name: bank_uncategorised
+-- Variables: model_version. Rows never categorised, or by an older model version.
+SELECT count(*) AS n
+FROM events
+WHERE source = 'bank'
+  AND json_extract_string(meta, '$.model_version') IS DISTINCT FROM getvariable('model_version');
+
+-- name: categoriser_info
+SELECT max(value) FILTER (WHERE key = 'categoriser_version')      AS version,
+       max(value) FILTER (WHERE key = 'categoriser_test_macro_f1') AS test_macro_f1
+FROM settings;
+
+-- name: bank_by_category
+WITH d AS (
+    SELECT coalesce(category, 'uncategorised') AS category, -value AS spent
+    FROM events WHERE source = 'bank' AND value < 0
+)
+SELECT category, round(sum(spent), 2) AS spent, count(*) AS txns,
+       round(sum(spent) / nullif(sum(sum(spent)) OVER (), 0), 4) AS share
+FROM d
+GROUP BY category
+ORDER BY spent DESC, category;
+
+-- name: bank_review
+-- Low-confidence predictions (shown as 'other') the user has not corrected yet.
+SELECT e.event_key, payee_key(e.meta) AS payee_key, CAST(e.local_date AS VARCHAR) AS local_date,
+       e.actor, e.title, -e.value AS amount,
+       json_extract_string(e.meta, '$.model_category') AS model_category,
+       TRY_CAST(json_extract_string(e.meta, '$.category_confidence') AS DOUBLE) AS confidence
+FROM events e
+WHERE e.source = 'bank' AND e.value < 0
+  AND json_extract_string(e.meta, '$.category_source') = 'review'
+  AND NOT EXISTS (SELECT 1 FROM category_overrides o
+                  WHERE (o.scope = 'event' AND o.target = e.event_key)
+                     OR (o.scope = 'payee' AND o.target = payee_key(e.meta)))
+ORDER BY e.ts_utc DESC, e.event_key
+LIMIT 50;
+
+-- name: bank_review_count
+SELECT count(*) AS n
+FROM events e
+WHERE e.source = 'bank' AND e.value < 0
+  AND json_extract_string(e.meta, '$.category_source') = 'review'
+  AND NOT EXISTS (SELECT 1 FROM category_overrides o
+                  WHERE (o.scope = 'event' AND o.target = e.event_key)
+                     OR (o.scope = 'payee' AND o.target = payee_key(e.meta)));
+
+-- name: bank_txns
+-- Variables: txn_category (NULL = all), txn_offset. 25 rows per page, newest first.
+SELECT e.event_key, payee_key(e.meta) AS payee_key, CAST(e.local_date AS VARCHAR) AS local_date,
+       e.actor, e.title, e.value, e.category,
+       json_extract_string(e.meta, '$.model_category') AS model_category,
+       TRY_CAST(json_extract_string(e.meta, '$.category_confidence') AS DOUBLE) AS confidence,
+       CASE WHEN oe.target IS NOT NULL THEN 'override'
+            WHEN op.target IS NOT NULL AND e.value < 0 THEN 'payee override'
+            ELSE json_extract_string(e.meta, '$.category_source') END AS source
+FROM events e
+LEFT JOIN category_overrides oe ON oe.scope = 'event' AND oe.target = e.event_key
+LEFT JOIN category_overrides op ON op.scope = 'payee' AND op.target = payee_key(e.meta)
+WHERE e.source = 'bank'
+  AND (getvariable('txn_category') IS NULL OR e.category = getvariable('txn_category'))
+ORDER BY e.ts_utc DESC, e.event_key
+LIMIT 25 OFFSET CAST(getvariable('txn_offset') AS INTEGER);
+
+-- name: bank_txn_count
+-- Variables: txn_category (NULL = all).
+SELECT count(*) AS n FROM events
+WHERE source = 'bank' AND (getvariable('txn_category') IS NULL OR category = getvariable('txn_category'));
+
 -- name: preview
 -- Variables: preview_source, preview_chat (NULL = any chat).
 SELECT source, strftime(ts_utc, '%Y-%m-%dT%H:%M:%SZ') AS ts_utc, CAST(local_date AS VARCHAR) AS local_date,

@@ -5,15 +5,26 @@ small artefacts that the browser app loads into Pyodide. Nothing here is deploye
 and no user data is uploaded anywhere.
 
 ```bash
-cd ml
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-jupyter lab
+# from the repo root
+python3.14 -m venv .venv
+.venv/bin/pip install -r ml/requirements.txt -r web/src/python/requirements-test.txt
 ```
 
-- `notebooks/` — exploration and experiments
-- `scripts/` — reproducible training / export scripts
-- `models/` — exported model artefacts consumed by `web/`
+- `data/` — merchant list, training set, demo answer key (see `data/README.md`)
+- `selfscope_ml/` — feature + rule code shared with the browser (see `selfscope_ml/README.md`)
+- `scripts/` — `generate_demo_data.py` (demo exports), `make_training_set.py`, `train_categoriser.py`
+- `notebooks/` — `01_spend_categoriser.ipynb`: the categoriser story with charts
+- `reports/` — `categoriser_report.md` + charts + `results.json` (written by `train_categoriser.py`)
+- `tests/` — `cd ml && ../.venv/bin/python -m pytest`
+- `models/` — see `models/README.md`
 
-Keep scikit-learn's version matched to the one Pyodide ships (see `requirements.txt`),
-otherwise pickled models may fail to load in the browser.
+## Spend categoriser
+
+```bash
+.venv/bin/python ml/scripts/make_training_set.py   # -> ml/data/training_set.csv
+.venv/bin/python ml/scripts/train_categoriser.py   # -> web/public/models/categoriser.json + ml/reports/
+.venv/bin/jupyter nbconvert --to notebook --execute --inplace ml/notebooks/01_spend_categoriser.ipynb
+```
+
+The demo statement's answer key (`data/demo_bank_truth.csv`) is the **final test set**: it is used once,
+at the end of `train_categoriser.py`, and never for training, feature design or tuning.

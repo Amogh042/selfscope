@@ -10,7 +10,7 @@ the real exports use, so the same parsers work on demo data and real data.
               data/samples/whatsapp/WhatsApp Chat - Rohan.zip      (iOS, _chat.txt inside)
   Bank     -> data/samples/bank/SBI_statement_demo.xlsx         (SBI Excel statement)
               ml/data/demo_bank_truth.csv  (true category per row; answer key, not used by the app)
-  Periods  -> data/samples/periods.json (exam weeks, pre-tagged in the DEMO database)
+  Periods  -> data/samples/periods.json (exam weeks + semester breaks, pre-tagged in the DEMO database)
   Answer key for sentiment: ml/data/demo_whatsapp_truth.csv (true pos/neu/neg per text message)
 
 All data is SYNTHETIC. Song and channel names are real so the demo looks natural,
@@ -792,10 +792,11 @@ def main():
         w.writerow(["chat", "local_time", "sender", "label", "text"])
         for chat, t, sender, label, text in wa_truth:
             w.writerow([chat, t.isoformat(sep=" "), sender, label, text])
-    # Exam periods, pre-tagged in the app's DEMO database, and the demo user's chat name ("me")
+    # Exam weeks + semester breaks, pre-tagged in the app's DEMO database, and the demo user's chat name ("me")
     with open(os.path.join(a.out, "periods.json"), "w", encoding="utf-8") as f:
-        json.dump({"periods": [{"label": "Exams", "start": s.isoformat(), "end": e.isoformat()}
-                               for s, e in EXAM_WEEKS], "me": WA_ME}, f, indent=2)
+        json.dump({"periods": [{"label": "Exams", "start": s.isoformat(), "end": e.isoformat()} for s, e in EXAM_WEEKS]
+                   + [{"label": "Breaks", "start": s.isoformat(), "end": e.isoformat()} for s, e in BREAKS],
+                   "me": WA_ME}, f, indent=2)
 
     bank_rows, bank_truth, bank_stats = gen_bank(a.seed, yt)
     bank_dir = os.path.join(a.out, "bank")

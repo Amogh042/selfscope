@@ -3,6 +3,7 @@
 // Everything follows the global date range and the DEMO / MY DATA mode.
 
 import { useCallback, useState, type ReactNode } from 'react'
+import { AnalysisProgress } from '../components/AnalysisProgress'
 import { DayDrawer } from '../components/dashboard/DayDrawer'
 import { InsightsSection } from '../components/dashboard/InsightsSection'
 import { PeriodsSection } from '../components/dashboard/PeriodsSection'
@@ -76,6 +77,7 @@ export default function DashboardPage() {
         </p>
       </header>
 
+      {engine.busy && engine.step && <AnalysisProgress step={engine.step} />}
       {engine.error && <Terminal tone="error">{engine.error}</Terminal>}
       {hasChats && !me && (
         <Terminal tone="muted">

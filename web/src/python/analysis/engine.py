@@ -57,7 +57,7 @@ def run(payload: dict) -> dict:
         corr_matrix = correlations.matrix(tests, tests_c)
     else:
         ins, summary, weak = [], {"tests": 0, "significant": 0, "weak_signals": 0}, []
-        controlled = {"insights": [], "weak_signals": [], "tests": 0, "controls": []}
+        controlled = {"insights": [], "weak_signals": [], "borderline": [], "strongest": [], "tests": 0, "controls": []}
         corr_matrix = {"metrics": [], "cells": []}
     out = {
         "engine_version": ENGINE_VERSION,

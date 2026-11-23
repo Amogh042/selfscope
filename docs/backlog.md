@@ -71,16 +71,18 @@ Known gaps and open decisions. Move items to "Done" when fixed.
   the user could label their top unknown channels/songs.
 - **Insights need `me`** (step 7). Without "Which one is you?" the user's own message mood metrics
   are NULL; the page shows a tip.
-- **Cross-app links are mostly calendar-driven** (step 7). Most strong associations come from exams /
-  weekends moving several habits together. Partial correlation controlling for weekend + tagged
-  periods would separate "direct" links.
+- **Cross-app links are mostly calendar-driven** (step 7). Addressed by the calendar control (step 8, strict
+  since step 9): with weekday + exams + breaks removed, none of the 40 raw insights passes (docs/analysis.md §3b).
+- **Power after calendar control** (step 9). The planted YouTube → food link keeps its size (partial rho 0.18,
+  p 0.0005) but is "unconfirmed" under BH over 1,170 tests (q 0.58). Fewer, pre-chosen tests (e.g. only
+  same-day, or only pairs the user asks about) or more data would give it a chance; don't loosen the correction.
 
 ## Dashboard (step 8)
 
-- **First analysis after a cold start is slow** (step 8). Booting Pyodide + the engine (now with the calendar
-  control) took ~15 s on the full demo year in the browser; after that the result is cached per range + data
-  version (warm runs ~2 s for 30 days). Runs in the worker, so the UI stays usable. Could precompute the
-  "All" range right after an import.
+- **First analysis after a cold start is slow** (step 8). Booting Pyodide + the engine took ~15–30 s on the full
+  demo year; cached afterwards per range + data version (warm 30-day runs ~2 s). Since step 9 Python starts loading
+  on the landing screen and the dashboard shows a 3-step progress bar. Could precompute the "All" range right
+  after an import.
 - **Weekly charts start on Monday** (step 8): the first bar of a custom range can be a partial week
   (labelled "week of …"). Could normalise per day instead.
 - **Scatter plots show raw daily values** (step 8), also for calendar-controlled links, whose statistic is
@@ -88,6 +90,20 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 - **Timeline metric list = all daily metrics** (step 8); it may need grouping on real data with more sources.
 - **Demo `me`** (step 8): LOAD DEMO DATA now also sets "Which one is you?" to the demo user (from
   `data/samples/periods.json`) unless a name is already set.
+
+## Deployment & privacy (step 9)
+
+- **GitHub Pages can't send headers.** The CSP is a `<meta>` tag there, which covers the page but not the Web
+  Workers (a worker's CSP comes from its own response headers). Vercel sends the real headers to every file.
+  `frame-ancestors` (anti-clickjacking) also only works as a header.
+- **DuckDB extensions are pinned to the DuckDB version** (step 9). `web/public/duckdb-ext/v1.5.4/` holds the official
+  json + parquet binaries; bumping `@duckdb/duckdb-wasm` needs new files (README there). A missing extension shows as
+  a CSP error in the console.
+- **Pyodide still comes from jsDelivr** (step 9). Self-hosting the runtime + wheels (~30–40 MB used of the full
+  distribution) would remove the last third-party host, at the cost of a larger deploy. Requests carry no user data
+  (audit in docs/privacy.md); jsDelivr sees the visitor's IP like any CDN.
+- **Subresource integrity** for the Pyodide files is not set (dynamic import in a worker); the version is pinned.
+- **Export guide menu names** (step 9) match late 2026 and will drift; check before a demo.
 
 ## App / architecture
 
@@ -123,6 +139,10 @@ Known gaps and open decisions. Move items to "Done" when fixed.
 - **First import downloads pyarrow** (~10 MB, step 4); CSV fallback is used if that fails.
 
 ## Done
+
+- Step 9: landing screen (TRY THE DEMO / IMPORT MY DATA), export guide, first-analysis progress, self-hosted fonts and
+  DuckDB extensions, CSP, privacy audit (docs/privacy.md), Vercel + GitHub Pages build, strict BH + "borderline" in the
+  calendar control, demo semester breaks tagged, viva notes.
 
 - Step 8: dashboard (player stats, timeline, source panels, insights + matrix, periods, day drill-down) and calendar-controlled correlations.
 

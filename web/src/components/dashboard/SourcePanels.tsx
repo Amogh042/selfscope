@@ -321,7 +321,7 @@ function ChatsPanel({ me }: { me: string | null }) {
         legend: { data: names },
         tooltip: { trigger: 'axis', formatter: (ps: { dataIndex: number; color: string; seriesName: string; value: number }[]) => `<b>Week of ${fmtDay(weeks[ps[0].dataIndex])}</b>` + ps.map((p) => tipRow(p.color, p.seriesName, int(p.value))).join('') },
         xAxis: { type: 'category', data: weeks, boundaryGap: false, axisLabel: { formatter: fmtDayShort } },
-        yAxis: { type: 'value', name: 'messages / week' },
+        yAxis: { type: 'value', name: 'messages / week', nameTextStyle: { align: 'left' } },
         series: names.map((n, i) => ({
           name: n,
           type: 'line',

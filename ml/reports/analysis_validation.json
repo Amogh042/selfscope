@@ -22,16 +22,16 @@
   },
   "youtube_topics": {
     "podcast": 875,
-    "tech": 698,
     "study": 1488,
+    "tech": 698,
     "music": 1840,
     "comedy": 2050,
     "finance": 427
   },
   "spotify_moods": {
     "upbeat": 563,
-    "romantic": 7996,
-    "sad": 3202
+    "sad": 3202,
+    "romantic": 7996
   },
   "spotify_languages": {
     "hi": 9424,
@@ -39,9 +39,9 @@
     "kn": 1147
   },
   "whatsapp_sentiment": {
-    "neg": 2718,
+    "neu": 9364,
     "pos": 7450,
-    "neu": 9364
+    "neg": 2718
   },
   "sentiment_eval": {
     "all": {
@@ -168,37 +168,37 @@
     "b_exams": {
       "youtube_study_min": {
         "sentence": "During Exams, your time on study videos is 166% higher (70 min vs 26 min a day).",
-        "q": 2.5800209832237383e-12,
+        "q": 3.3171698355733776e-12,
         "significant": true,
         "direction": "up"
       },
       "wa_late_night_share": {
         "sentence": "During Exams, the share of your chat messages that are late at night is 23 points higher (30% vs 8%).",
-        "q": 5.850720217804142e-18,
+        "q": 8.776080326706213e-18,
         "significant": true,
         "direction": "up"
       },
       "spotify_late_night_share": {
         "sentence": "During Exams, the share of songs you play late at night is 9 points higher (28% vs 20%).",
-        "q": 1.0451842393954137e-06,
+        "q": 1.0660879241833217e-06,
         "significant": true,
         "direction": "up"
       },
       "youtube_late_night_share": {
         "sentence": "During Exams, the share of YouTube you watch late at night is 4 points higher (26% vs 22%).",
-        "q": 0.21617075125232282,
+        "q": 0.22754815921297142,
         "significant": false,
         "direction": "up"
       },
       "spotify_sad_share": {
         "sentence": "During Exams, the share of sad songs you play is 26 points higher (51% vs 25%).",
-        "q": 1.196199286538299e-22,
+        "q": 1.7942989298074484e-22,
         "significant": true,
         "direction": "up"
       },
       "wa_negative_share": {
         "sentence": "During Exams, the share of your messages that are negative is 22 points higher (34% vs 12%).",
-        "q": 3.476114467101891e-19,
+        "q": 5.214171700652837e-19,
         "significant": true,
         "direction": "up"
       }
@@ -206,13 +206,13 @@
     "c_weekends": {
       "youtube_comedy_min": {
         "sentence": "On weekends, your time on comedy videos is 71% higher (62 min vs 36 min a day).",
-        "q": 2.0631788779359355e-15,
+        "q": 2.836870957161911e-15,
         "significant": true,
         "direction": "up"
       },
       "entertainment_shopping_spend": {
         "sentence": "On weekends, your entertainment & shopping spend is 105% higher (₹120 vs ₹59 a day).",
-        "q": 2.9790127477602533e-07,
+        "q": 3.0169865518764967e-07,
         "significant": true,
         "direction": "up"
       }
@@ -253,6 +253,116 @@
       "sentence": "Songs you play late at night (11pm–3am) are sad 48% of the time, vs 22% at other hours (2.2x)."
     }
   },
+  "calendar_control": {
+    "exams_only": {
+      "controls": [
+        "weekday",
+        "Exams"
+      ],
+      "insights": {
+        "holds": 0,
+        "borderline": 12,
+        "unconfirmed": 13,
+        "fades": 15
+      },
+      "weak_signals": {
+        "holds": 0,
+        "borderline": 8,
+        "unconfirmed": 17,
+        "fades": 37
+      },
+      "new_search": {
+        "insights": [
+          "youtube_comedy_min ~ wa_received lag 2: partial rho +0.224, q 0.018",
+          "spotify_plays ~ youtube_study_min lag 2: partial rho -0.212, q 0.018",
+          "youtube_comedy_min ~ wa_sent lag 2: partial rho +0.211, q 0.018",
+          "wa_received ~ spotify_minutes lag 2: partial rho +0.210, q 0.018",
+          "spotify_plays ~ wa_received lag 2: partial rho +0.204, q 0.026"
+        ],
+        "weak_signals": [
+          "spotify_minutes ~ wa_received lag 2: partial rho +0.197, q 0.032",
+          "spotify_minutes ~ wa_sentiment_mean lag 2: partial rho +0.197, q 0.032",
+          "spotify_minutes ~ youtube_study_min lag 2: partial rho -0.188, q 0.048",
+          "wa_received ~ spotify_plays lag 2: partial rho +0.188, q 0.048"
+        ],
+        "borderline": 34
+      },
+      "strongest": [
+        "youtube_comedy_min ~ wa_received lag 2: partial rho +0.224, q 0.018",
+        "spotify_plays ~ youtube_study_min lag 2: partial rho -0.212, q 0.018",
+        "youtube_comedy_min ~ wa_sent lag 2: partial rho +0.211, q 0.018"
+      ],
+      "youtube_food": [
+        {
+          "x": "youtube_videos",
+          "lag": 0,
+          "rho": 0.181,
+          "p": 0.0005754253381401963,
+          "q": 0.05620031067350234,
+          "status": "borderline",
+          "holds": false
+        },
+        {
+          "x": "youtube_est_minutes",
+          "lag": 0,
+          "rho": 0.157,
+          "p": 0.0029257800305828923,
+          "q": 0.08170201616589648,
+          "status": "borderline",
+          "holds": false
+        }
+      ]
+    },
+    "exams_and_breaks": {
+      "controls": [
+        "weekday",
+        "Breaks",
+        "Exams"
+      ],
+      "insights": {
+        "holds": 0,
+        "borderline": 0,
+        "unconfirmed": 3,
+        "fades": 37
+      },
+      "weak_signals": {
+        "holds": 0,
+        "borderline": 0,
+        "unconfirmed": 7,
+        "fades": 55
+      },
+      "new_search": {
+        "insights": [],
+        "weak_signals": [],
+        "borderline": 0
+      },
+      "strongest": [
+        "youtube_videos ~ food_delivery_spend lag 0: partial rho +0.182, q 0.584",
+        "spotify_romantic_share ~ wa_negative_share lag 0: partial rho -0.173, q 0.584",
+        "spotify_sad_share ~ wa_negative_share lag 0: partial rho +0.163, q 0.698"
+      ],
+      "youtube_food": [
+        {
+          "x": "youtube_videos",
+          "lag": 0,
+          "rho": 0.182,
+          "p": 0.0005427588759882736,
+          "q": 0.5835836236374926,
+          "status": "unconfirmed",
+          "holds": false
+        },
+        {
+          "x": "youtube_est_minutes",
+          "lag": 0,
+          "rho": 0.156,
+          "p": 0.003061539363420289,
+          "q": 0.6984735361736935,
+          "status": "unconfirmed",
+          "holds": false
+        }
+      ]
+    }
+  },
   "null_test": {
     "runs": 40,
     "false_insights_total": 0,
@@ -290,5 +400,5 @@
     "15 May 2026: 2.5h of study videos (above usual), share of sad songs 69% (above usual), share of romantic songs 31% (below usual).",
     "3 Aug 2026: ₹1,689 discretionary spend, ₹15,000 money received and ₹1,689 total spend, all far above your usual."
   ],
-  "seconds": 33
+  "seconds": 37
 }

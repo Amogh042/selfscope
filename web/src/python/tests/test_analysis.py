@@ -113,7 +113,7 @@ def test_anomalies_and_trends(res):
 def test_date_range_is_respected(con):
     r = engine.run(dp.engine_payload(con, "2026-05-01", "2026-06-30"))
     assert r["range"]["days"] == 61 and r["correlation_window"]["days"] == 61
-    assert {p["period"] for p in r["periods"]} <= {"Exams", "Weekends"}
+    assert {p["period"] for p in r["periods"]} <= {"Exams", "Breaks", "Weekends"}
 
 
 def test_json_round_trip(con):
@@ -147,15 +147,46 @@ def test_calendar_residuals_remove_weekday_and_period_means(con):
         assert abs(r[X.loc[r.index, "period_Exams"] == 1].mean()) < 1e-6 * max(1.0, df[m].abs().max())
 
 
-def test_calendar_control_keeps_the_planted_youtube_food_link(res):
-    # Food delivery depends directly on YouTube time in the generator (and also on exams).
-    # After removing weekday + exam effects the link must still be at least a weak signal:
-    # same direction, partial rho >= 0.1, and "holds" (adjusted p < 0.05 over the re-checked links).
-    pool = res["insights"] + res["weak_signals"]
-    hits = [i for i in pool if i["x"] in ("youtube_videos", "youtube_est_minutes") and i["y"] == "food_delivery_spend"]
+def _yt_food(items):
+    hits = [i for i in items if i["x"] in ("youtube_videos", "youtube_est_minutes") and i["y"] == "food_delivery_spend"]
     assert hits
-    best = max(hits, key=lambda i: i["calendar"]["rho"])
-    assert best["calendar"]["holds"] and best["calendar"]["rho"] >= 0.1 and best["calendar"]["q"] < 0.05
+    return max(hits, key=lambda i: i["calendar"]["rho"])
+
+
+@pytest.fixture(scope="module")
+def res_exams_only(con):
+    # the step-8 setting: only the exam weeks tagged (semester breaks not removed)
+    p = dp.engine_payload(con)
+    return engine.run(dict(p, periods=[x for x in p["periods"] if x["label"] != "Breaks"]))
+
+
+def test_calendar_control_planted_link_is_borderline_under_strict_bh(res_exams_only):
+    # Food delivery depends directly on YouTube time in the generator (and also on exams).
+    # With weekday + exams removed and BH over ALL 1,170 partial tests, the link keeps its size
+    # but its adjusted p is ~0.056: "borderline", not dropped and not claimed.
+    best = _yt_food(res_exams_only["insights"] + res_exams_only["weak_signals"])
+    c = best["calendar"]
+    assert c["status"] == "borderline" and not c["holds"]
+    assert c["rho"] >= 0.15 and 0.05 <= c["q"] < 0.06
+    assert any(b["x"] == "youtube_videos" and b["y"] == "food_delivery_spend"
+               for b in res_exams_only["calendar_controlled"]["borderline"])
+
+
+def test_tagged_breaks_remove_the_slow_trend_links(res, res_exams_only):
+    # Exams only: the new search finds "two days later" links (the untagged semester breaks).
+    before = res_exams_only["calendar_controlled"]
+    assert before["insights"] and all(i["lag"] == 2 for i in before["insights"])
+    # Breaks tagged too: they are gone, and so are the "busy day" links that came from the breaks.
+    after = res["calendar_controlled"]
+    assert after["controls"] == ["weekday", "Breaks", "Exams"]
+    assert not any(i["lag"] == 2 for i in after["insights"] + after["weak_signals"])
+    assert len(after["insights"]) < len(before["insights"])
+    # The planted direct link is still the strongest remaining one and about as big, but one
+    # p ~ 0.0005 among 1,170 tests is not enough under strict BH: "unconfirmed", not "fades".
+    top = after["strongest"][0]
+    assert (top["x"], top["y"], top["lag"]) == ("youtube_videos", "food_delivery_spend", 0)
+    c = _yt_food(res["insights"] + res["weak_signals"])["calendar"]
+    assert c["rho"] >= 0.15 and c["status"] == "unconfirmed"
 
 
 def test_calendar_only_links_weaken(res):
@@ -165,9 +196,9 @@ def test_calendar_only_links_weaken(res):
     ctl = sorted(abs(i["calendar"]["rho"]) for i in ins)
     assert ctl[len(ctl) // 2] < 0.5 * raw[len(raw) // 2]
     exam_pair = next(i for i in ins if {i["x"], i["y"]} == {"youtube_study_min", "wa_negative_share"})
-    assert not exam_pair["calendar"]["holds"] and abs(exam_pair["calendar"]["rho"]) < 0.5 * abs(exam_pair["rho"])
+    assert exam_pair["calendar"]["status"] == "fades" and abs(exam_pair["calendar"]["rho"]) < 0.5 * abs(exam_pair["rho"])
     assert sum(i["calendar"]["holds"] for i in ins) <= len(ins) / 2
-    assert res["calendar_controlled"]["controls"] == ["weekday", "Exams"]
+    assert all(i["calendar"]["status"] in ("holds", "borderline", "unconfirmed", "fades") for i in ins)
 
 
 def test_matrix_cells_match_tests(res):

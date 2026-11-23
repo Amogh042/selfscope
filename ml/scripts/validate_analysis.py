@@ -1,9 +1,10 @@
 """Validate the analysis engine on the demo data and write ml/reports/analysis_validation.{json,md}.
 
-1. Build the demo database exactly like the app (import, categorise, enrich, tag exams).
+1. Build the demo database exactly like the app (import, categorise, enrich, tag exams + breaks).
 2. Enrichment coverage (incl. YouTube with title rules only, as if no channel were known).
 3. Run the engine on the whole demo year; check each planted pattern.
-4. Null test: shuffle the dates of one source at a time (10 seeds x 4 sources) and count
+4. Calendar control (strict BH over all tests) with exams only vs exams + semester breaks.
+5. Null test: shuffle the dates of one source at a time (10 seeds x 4 sources) and count
    cross-source findings involving that source that still survive (all false positives).
 
 Usage:  python ml/scripts/validate_analysis.py
@@ -64,7 +65,25 @@ def main():
         "c_weekends": {m: p("Weekends", m) for m in ("youtube_comedy_min", "entertainment_shopping_spend")},
         "d_late_night_sad": res["song_mood_by_hour"],
     }
-    df = engine.frame(dp.engine_payload(con)["features"])
+    def calendar_summary(r):
+        cc = r["calendar_controlled"]
+        count = lambda items: {s: sum(i["calendar"]["status"] == s for i in items)
+                               for s in ("holds", "borderline", "unconfirmed", "fades")}
+        short = lambda items: [f'{i["x"]} ~ {i["y"]} lag {i["lag"]}: partial rho {i["rho"]:+.3f}, q {i["q"]:.3f}'
+                               for i in items]
+        return {"controls": cc["controls"], "insights": count(r["insights"]), "weak_signals": count(r["weak_signals"]),
+                "new_search": {"insights": short(cc["insights"]), "weak_signals": short(cc["weak_signals"]),
+                               "borderline": len(cc["borderline"])},
+                "strongest": short(cc["strongest"][:3]),
+                "youtube_food": [{"x": i["x"], "lag": i["lag"], "rho": i["rho"], **i["calendar"]} for i in yt_fd]}
+    payload = dp.engine_payload(con)
+    exams_only = engine.run(dict(payload, periods=[x for x in payload["periods"] if x["label"] != "Breaks"]))
+    yt_fd_exams = [i for i in exams_only["insights"] + exams_only["weak_signals"] if (i["x"], i["y"], i["lag"]) in
+                   {(j["x"], j["y"], j["lag"]) for j in yt_fd}]
+    calendar = {"exams_only": calendar_summary(exams_only), "exams_and_breaks": calendar_summary(res)}
+    calendar["exams_only"]["youtube_food"] = [{"x": i["x"], "lag": i["lag"], "rho": i["rho"], **i["calendar"]}
+                                             for i in yt_fd_exams]
+    df = engine.frame(payload["features"])
     runs = validation.null_test(df, ["spotify", "youtube", "whatsapp", "bank"], range(10))
     null = {"runs": len(runs),
             "false_insights_total": sum(r["false_insights"] for r in runs),
@@ -80,11 +99,11 @@ def main():
            "whatsapp_sentiment": wa_cats, "sentiment_eval": {k: sentiment[k] for k in ("all", "mine", "baseline_neutral")},
            "tests": res["tests"], "top_insights": [{"sentence": i["sentence"], "strength": i["strength"],
                                                    "stats": i["stats"]} for i in res["insights"][:10]],
-           "planted": planted, "null_test": null, "anomalies": [d["sentence"] for d in res["anomalies"]["days"][:5]],
+           "planted": planted, "calendar_control": calendar, "null_test": null, "anomalies": [d["sentence"] for d in res["anomalies"]["days"][:5]],
            "seconds": round(time.time() - t0)}
     with open(os.path.join(REPORTS, "analysis_validation.json"), "w", encoding="utf-8") as f:
         json.dump(engine._clean(out), f, indent=2, ensure_ascii=False)
-    print(json.dumps(engine._clean({k: out[k] for k in ("coverage", "tests", "null_test")}), indent=1))
+    print(json.dumps(engine._clean({k: out[k] for k in ("coverage", "tests", "calendar_control", "null_test")}), indent=1))
     for i in out["top_insights"]:
         print(" -", i["strength"], "|", i["sentence"], "|", i["stats"])
     for a in planted["a_youtube_food_delivery"]:

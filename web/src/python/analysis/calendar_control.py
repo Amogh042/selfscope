@@ -17,12 +17,17 @@ Why rank first: mostly-zero metrics (food delivery) have many tied zeros. Rankin
 of the raw values would give those zeros different ranks per weekday group and put the
 weekday pattern straight back in; residuals of ranks are already free of it.
 
-An insight "holds after controlling for calendar" when, at the same lag, the partial
-correlation has the same sign, |rho| >= WEAK_RHO and adjusted p < FDR, where this p is adjusted
-(BH) over the reported links being re-checked (insights + weaker signals), because the check is a
-re-test of those links, not a new search. The separate "calendar removed" ranking is a new search
-and is adjusted over all tests, like the raw one. Calendar effects that
-are NOT tagged (semester breaks, start of month) are not removed. See docs/analysis.md.
+Each reported insight / weaker signal gets a calendar status at the same lag, using the STRICT
+correction (BH over ALL partial tests, exactly like a new search):
+  holds      - same sign, |partial rho| >= WEAK_RHO and adjusted p < FDR (0.05);
+  borderline - same sign, |partial rho| >= WEAK_RHO and FDR <= adjusted p < BORDERLINE_Q (0.10):
+               shown with a "borderline" label instead of being dropped;
+  unconfirmed- same sign and |partial rho| >= WEAK_RHO, but adjusted p >= BORDERLINE_Q: the link is
+               about as big as before, yet one such p-value among ~1,000 tests is not enough evidence;
+  fades      - the partial rho shrinks below WEAK_RHO or flips sign.
+The "calendar removed" ranking (insights / weak_signals / borderline) is the same strict search;
+`strongest` lists its top links by p-value even when none is significant.
+Calendar effects that are NOT tagged (start of month, festivals) are not removed. See docs/analysis.md.
 """
 
 from __future__ import annotations
@@ -37,6 +42,8 @@ from scipy.stats import t as t_dist
 
 from .correlations import FDR, LAGS, MIN_DAYS, MIN_RHO, WEAK_RHO, metric_columns, significant
 from .metrics import label, source_of, strength
+
+BORDERLINE_Q = 0.10  # FDR <= adjusted p < this: "borderline" (not dropped, not claimed)
 
 
 def period_labels(periods: list[dict]) -> list[str]:
@@ -117,25 +124,50 @@ def _describe(sig: pd.DataFrame) -> list[dict]:
     } for r in sig.itertuples()]
 
 
+def borderline(tests: pd.DataFrame) -> pd.DataFrame:
+    """|rho| >= WEAK_RHO with FDR <= q < BORDERLINE_Q; per unordered pair its strongest lag."""
+    b = tests[(tests["q"] >= FDR) & (tests["q"] < BORDERLINE_Q) & (tests["rho"].abs() >= WEAK_RHO)].copy()
+    if b.empty:
+        return b
+    b["pair"] = [tuple(sorted((x, y))) for x, y in zip(b["x"], b["y"])]
+    b = b.sort_values(["pair", "q", "lag"]).groupby("pair", as_index=False).first()
+    b["abs_rho"] = b["rho"].abs()
+    return b.sort_values("abs_rho", ascending=False).drop(columns=["abs_rho"]).reset_index(drop=True)
+
+
+def status(rho_raw: float, rho: float, q: float) -> str:
+    if np.sign(rho) != np.sign(rho_raw) or abs(rho) < WEAK_RHO:
+        return "fades"
+    return "holds" if q < FDR else "borderline" if q < BORDERLINE_Q else "unconfirmed"
+
+
+def strongest(tests: pd.DataFrame, k: int = 5) -> pd.DataFrame:
+    """The k smallest p-values, one per unordered pair (shown when nothing is significant)."""
+    if tests.empty:
+        return tests
+    t = tests.assign(pair=[tuple(sorted((x, y))) for x, y in zip(tests["x"], tests["y"])])
+    return t.sort_values(["p", "lag"]).drop_duplicates("pair").head(k).drop(columns=["pair"]).reset_index(drop=True)
+
+
 def control(df: pd.DataFrame, periods: list[dict], insights: list[dict], weak: list[dict]) -> tuple[dict, pd.DataFrame]:
     """Annotate raw insights / weak signals with `calendar` (in place) and return the controlled
-    ranking: ({insights, weak_signals, tests, controls}, controlled tests)."""
+    ranking: ({insights, weak_signals, borderline, strongest, tests, controls}, controlled tests)."""
     res = residualize(df, periods)
     tests = run_partial_tests(res, design(df.index, periods).shape[1])
     by_key = {(r.x, r.y, r.lag): r for r in tests.itertuples()}
-    checked = [(item, by_key.get((item["x"], item["y"], item["lag"]))) for item in insights + weak]
-    found = [r for _, r in checked if r is not None]
-    q_check = iter(false_discovery_control([r.p for r in found], method="bh") if found else [])
-    for item, r in checked:
+    for item in insights + weak:
+        r = by_key.get((item["x"], item["y"], item["lag"]))
         if r is None:
-            item["calendar"] = {"rho": None, "p": None, "q": None, "q_all": None, "holds": False}
+            item["calendar"] = {"rho": None, "p": None, "q": None, "status": "fades", "holds": False}
             continue
-        q = float(next(q_check))
-        holds = bool(q < FDR and abs(r.rho) >= WEAK_RHO and np.sign(r.rho) == np.sign(item["rho"]))
-        item["calendar"] = {"rho": round(float(r.rho), 3), "p": float(r.p), "q": q, "q_all": float(r.q), "holds": holds}
+        st = status(item["rho"], float(r.rho), float(r.q))
+        item["calendar"] = {"rho": round(float(r.rho), 3), "p": float(r.p), "q": float(r.q), "status": st,
+                            "holds": st == "holds"}
     out = {
         "insights": _describe(significant(tests)),
         "weak_signals": _describe(significant(tests, lo=WEAK_RHO, hi=MIN_RHO)),
+        "borderline": _describe(borderline(tests)),
+        "strongest": _describe(strongest(tests)),
         "tests": int(len(tests)),
         "controls": ["weekday"] + [c.removeprefix("period_") for c in design(df.index, periods).columns
                                    if c.startswith("period_")],

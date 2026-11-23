@@ -13,8 +13,8 @@ const fmt = (s: string) =>
 
 export function AppHeader() {
   const { path, mode, setMode, range, setRange, resolved, href, storeState, bounds } = useApp()
-  // "/" shows the dashboard once there is data, else the import screen
-  const current = path === '/' ? ((bounds?.events ?? 0) > 0 ? '/dashboard' : '/import') : path === '/insights' ? '/dashboard' : path
+  // "/" shows the dashboard once there is data, else the landing screen
+  const current = path === '/' ? ((bounds?.events ?? 0) > 0 ? '/dashboard' : '/welcome') : path === '/insights' ? '/dashboard' : path
   const [from, setFrom] = useState(range.from ?? '')
   const [to, setTo] = useState(range.to ?? '')
   useEffect(() => {

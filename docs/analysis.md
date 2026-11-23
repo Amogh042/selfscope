@@ -73,7 +73,7 @@ sad songs and negative messages up together; weekends push comedy and spending u
 **Method: partial Spearman correlation.**
 1. Rank each daily metric (as Spearman does).
 2. Fit a small linear model to each metric's ranks on **its own day's calendar**: 7 weekday means + one
-   in/out dummy per tagged period label (on the demo: Exams). Keep the **residual** = "higher or lower than
+   in/out dummy per tagged period label (on the demo: Exams, Breaks). Keep the **residual** = "higher or lower than
    usual for this weekday and period".
 3. Correlate the residuals (Pearson) for every cross-app pair at lags 0/1/2. The p-value comes from a t-test
    with n − 2 − (number of calendar terms) degrees of freedom; then BH over all tests, as before.
@@ -82,37 +82,57 @@ sad songs and negative messages up together; weekends push comedy and spending u
 rare metric (food delivery) would get different ranks in different weekday groups, which puts the weekday
 pattern straight back in. (A first version did this and produced odd "two days later" links; fixed.)
 
-**Two outputs:**
-- Each reported insight / weaker signal gets a **"holds after controlling for calendar"** badge when, at
-  the same lag, the partial rho has the same sign, |partial rho| ≥ 0.1 and its adjusted p < 0.05. This is a
-  **re-check of links already found**, so BH runs over those ~100 re-checked links (not a new search over
-  all 1,170). Because the links were picked on the same data, this check is a bit optimistic.
-- The toggle also shows a **new ranking** with the calendar removed (a new search: BH over all tests).
+**Strict correction.** The partial tests get Benjamini–Hochberg over **all** of them (1,170 on the demo), exactly
+like a new search; a re-check of only the already-found links would be more lenient but also more optimistic,
+because those links were picked on the same data. (Step 8 used that lenient re-check; step 9 switched to strict.)
 
-**Demo results (full year, 365 days):**
-- **16 of 40** insights and **12 of 62** weaker signals hold; the median |rho| of the 40 insights falls from
-  0.28 to 0.11. The links that hold are mostly "busy days": more music ↔ more messages, more comedy, better
-  mood (partial rho ≈ 0.13–0.18).
-- **Calendar-only links fade:** study videos ↔ your negative messages (rho 0.27 → about 0.06, no longer
-  significant), sad-song share ↔ late-night messages, and other exam-driven pairs.
-- **The planted YouTube → food delivery link holds:** partial rho 0.18 (24+ videos) and 0.16 (3h+ of YouTube),
-  re-check adjusted p 0.02. This fits the generator, which makes delivery depend on YouTube time directly
-  (as well as on exams). Over all 1,170 tests its q is 0.056, so it just misses the new-search weak tier.
-- The new-search ranking (calendar removed) finds 5 links at |rho| ≈ 0.20–0.22, all "two days later"
-  between music, comedy videos and messages. Their residual cross-correlations are positive at **every**
-  lag from −4 to +4 (≈ 0.1–0.2), which means a slow shared change the model did not remove: the demo's
-  **semester breaks** (more listening, comedy and chatting) are not tagged. Tagging them as a period would
-  remove it. So "calendar removed" means *weekday + tagged periods* only.
+**Two outputs:**
+- Each reported insight / weaker signal gets a **calendar status** at the same lag:
+  - **holds**: same sign, |partial rho| ≥ 0.1 and adjusted p < 0.05;
+  - **borderline**: same sign, |partial rho| ≥ 0.1 and adjusted p between 0.05 and 0.10, labelled instead of dropped;
+  - **unconfirmed**: same sign and |partial rho| ≥ 0.1, but adjusted p ≥ 0.10. The link is about as big as before,
+    yet one such p-value among ~1,000 tests is not enough evidence;
+  - **fades**: the partial rho shrinks below 0.1 or flips sign: the calendar explains it.
+- The toggle shows a **new ranking** with the calendar removed (insights, weaker signals, borderline links); when
+  nothing passes it lists the **strongest remaining links** (smallest p-values) marked "not significant".
+
+**Demo results (full year, 365 days, `ml/reports/analysis_validation.json` → `calendar_control`):**
+
+| Calendar removed | Insights (40): holds / borderline / unconfirmed / fade | Weaker signals (62) | New search finds |
+|---|---|---|---|
+| weekday + Exams | 0 / **12** / 13 / 15 | 0 / 8 / 17 / 37 | 5 insights + 4 weak, **all "two days later"**, + 34 borderline |
+| weekday + Exams + **Breaks** | 0 / 0 / **3** / 37 | 0 / 0 / 7 / 55 | **nothing** |
+
+- **Exams only (as in step 8).** Under the strict correction no link fully holds; 12 are borderline, mostly "busy
+  days" (more music ↔ more messages, comedy, better mood; partial rho 0.15–0.18). The planted **YouTube → food
+  delivery** link is **borderline**: partial rho 0.18 (24+ videos), adjusted p **0.056** (0.16 and 0.082 for hours of
+  YouTube). Exam-driven pairs fade: study videos ↔ your negative messages 0.27 → about 0.06.
+- The new search finds "two days later" links between music, comedy and messages whose residual
+  cross-correlations are positive at every lag from −4 to +4: a slow shared change, the **semester breaks** (in the
+  generator: more listening, comedy and chatting).
+- **Breaks tagged** (21 Dec 2025 – 4 Jan 2026, 1 Jun – 31 Jul 2026, pre-tagged in the DEMO database since step 9):
+  the "two days later" links disappear, and so do the busy-day links. They were break effects too. Nothing passes
+  the strict correction any more. The **strongest remaining link is the planted one**: YouTube videos → food
+  delivery, partial rho **0.18** (barely changed from 0.19), raw p 0.0005, the smallest of all 1,170. But 12 tests
+  have p < 0.01 where ~11.7 are expected by pure chance, so BH cannot single it out: adjusted p **0.58**,
+  status **unconfirmed**.
+
+*What this shows:* (1) almost every raw cross-app link in the demo is the calendar (weekday, exams, breaks)
+moving several habits at once; (2) the one direct effect the generator planted survives *in size*, but one year of
+daily data with 1,170 tests does not have the power to prove it under a strict correction. That is a limit of the
+data, reported as such, not tuned away. (A pre-registered single test of "YouTube → food delivery" would pass:
+p = 0.0005.)
 
 Tests: `test_calendar_residuals_remove_weekday_and_period_means`,
-`test_calendar_control_keeps_the_planted_youtube_food_link`, `test_calendar_only_links_weaken`.
+`test_calendar_control_planted_link_is_borderline_under_strict_bh`, `test_tagged_breaks_remove_the_slow_trend_links`,
+`test_calendar_only_links_weaken`.
 
 ## 4. Periods (`analysis/periods.py`)
 
 You tag date ranges ("Exams", "Trip"); weekends are compared automatically. For every metric, days inside
 vs outside are compared with the **Mann–Whitney U test** (ranks again: no normality assumption), with
 **BH correction** over all metric × period tests, and reported as % change of the daily average plus the
-rank-biserial effect size. The DEMO database comes with its 3 exam periods pre-tagged.
+rank-biserial effect size. The DEMO database comes with its 3 exam periods and 2 semester breaks pre-tagged.
 
 ## 5. Unusual days (`analysis/anomalies.py`)
 
@@ -153,6 +173,8 @@ bar and why weaker signals are labelled "may be chance".
 - **Confounding.** Most cross-app links in the demo come from the exam calendar. Tag your exams/trips and
   compare periods to see the common cause directly, and use the calendar-control toggle (section 3b), which
   removes weekday and tagged-period effects but not untagged ones.
+- **Power.** With ~1,000 tests and one year of days, a real but small direct effect (|rho| ≈ 0.18) cannot pass a strict
+  correction once the calendar is removed (section 3b). More data or a pre-chosen hypothesis would be needed.
 - **Time-series dependence.** Neighbouring days are similar, which makes p-values a bit optimistic; the null
   test (which keeps each app's own day-to-day pattern) is the practical check.
 - **Enrichment quality caps everything:** unknown songs and channels, lexicon-based sentiment (~79% on the

@@ -118,8 +118,10 @@ function resultNote(o: Awaited<ReturnType<typeof ingest>>): string {
   return parts.join(' · ')
 }
 
+let autoDemoDone = false
+
 export default function ImportPage() {
-  const { mode, setMode, storeState } = useApp()
+  const { mode, setMode, storeState, href } = useApp()
   const [items, setItems] = useState<Item[]>([])
   const itemsRef = useRef<Item[]>([])
   const [dragging, setDragging] = useState(false)
@@ -183,24 +185,38 @@ export default function ImportPage() {
     }
   }
 
-  async function loadDemo() {
+  async function loadDemo(): Promise<boolean> {
     setBusy(true)
     try {
       await addFiles(await fetchDemoFiles(), 'demo')
-      // the demo comes with its exam periods tagged (only once)
+      // the demo comes with its exam weeks and semester breaks tagged (each one once)
       const demo = await fetchDemoSettings()
-      const existing = await store.query<{ origin: string }>('periods_list')
-      if (!existing.some((p) => p.origin === 'demo')) {
-        for (const p of demo.periods) await store.addPeriod(p.label, p.start, p.end, 'demo')
-      }
+      const existing = await store.query<{ label: string; start_date: string; end_date: string; origin: string }>('periods_list')
+      const have = new Set(existing.filter((p) => p.origin === 'demo').map((p) => `${p.label}|${p.start_date}|${p.end_date}`))
+      for (const p of demo.periods) if (!have.has(`${p.label}|${p.start}|${p.end}`)) await store.addPeriod(p.label, p.start, p.end, 'demo')
       // the demo chats are written from one user's point of view: pick that name unless one is set
       const [cur] = await store.query<{ me: string | null }>('me')
       if (demo.me && !cur?.me) await store.setMe(demo.me)
+      return true
     } catch (err) {
       setNotice({ text: errorText(err), tone: 'error' })
       setBusy(false)
+      return false
     }
   }
+
+  // TRY THE DEMO on the landing screen links here with ?demo=load: load the demo (unless the demo
+  // database already has data), then open the dashboard. Runs once per page load.
+  useEffect(() => {
+    if (autoDemoDone || !new URLSearchParams(window.location.hash.split('?')[1] ?? '').has('demo')) return
+    if (storeState.status !== 'ready' || storeState.mode !== 'demo') return
+    autoDemoDone = true
+    window.history.replaceState(null, '', window.location.hash.replace(/[?&]demo=load/, (m) => (m[0] === '?' ? '?' : '')).replace('?&', '?'))
+    void (async () => {
+      const [b] = await store.query<{ events: number }>('bounds')
+      if ((b?.events ?? 0) > 0 || (await loadDemo())) window.location.hash = '#/dashboard?mode=demo&range=all'
+    })()
+  }, [storeState.status, storeState.mode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function onDrop(e: DragEvent) {
     e.preventDefault()
@@ -260,10 +276,16 @@ export default function ImportPage() {
           <button className="pixel-btn" onClick={() => inputRef.current?.click()} disabled={busy}>
             ▶ CHOOSE FILES
           </button>
-          <button className="pixel-btn pixel-btn-secondary" onClick={loadDemo} disabled={busy}>
+          <button className="pixel-btn pixel-btn-secondary" onClick={() => void loadDemo()} disabled={busy}>
             ★ LOAD DEMO DATA
           </button>
         </div>
+        <p className="font-mono text-xs text-muted">
+          Don't have the files yet?{' '}
+          <a href={href('/guide')} className="text-orange underline hover:text-orange-light">
+            How to export your data
+          </a>
+        </p>
         <input
           ref={inputRef}
           type="file"

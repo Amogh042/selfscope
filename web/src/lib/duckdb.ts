@@ -1,6 +1,7 @@
 // DuckDB-WASM: in-browser SQL engine.
 // The .wasm binaries and DuckDB's own worker are bundled by Vite from node_modules
-// (self-hosted, no CDN), and DuckDB runs in that worker off the main thread.
+// (self-hosted, no CDN), and DuckDB runs in that worker off the main thread. Extensions it
+// loads on demand (json, parquet) come from public/duckdb-ext/, not from extensions.duckdb.org.
 
 import * as duckdb from '@duckdb/duckdb-wasm'
 import mvpWasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url'
@@ -22,6 +23,14 @@ export function initDuckDB(): Promise<duckdb.AsyncDuckDB> {
     const worker = new Worker(bundle.mainWorker!)
     const db = new duckdb.AsyncDuckDB(new duckdb.ConsoleLogger(duckdb.LogLevel.WARNING), worker)
     await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
+    // Autoloaded extensions are fetched from <repo>/v<duckdb version>/<wasm_eh|wasm_mvp>/<name>.duckdb_extension.wasm
+    const repo = new URL(`${import.meta.env.BASE_URL}duckdb-ext`, document.baseURI).href.replace(/\/$/, '')
+    const conn = await db.connect()
+    try {
+      await conn.query(`SET custom_extension_repository = '${repo.replace(/'/g, "''")}'`)
+    } finally {
+      await conn.close()
+    }
     return db
   })().catch((err) => {
     dbPromise = null // allow retry

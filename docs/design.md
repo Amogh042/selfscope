@@ -25,7 +25,8 @@ The default Tailwind palette is removed (`--color-*: initial`) so only these col
 - **Body** — `Inter` (`font-sans`, the default).
 - **Data, labels, code, numbers** — `JetBrains Mono` (`font-mono`), with `tabular-nums` for figures.
 
-Fonts load from Google Fonts in `web/index.html` (fonts only — no user data is sent).
+Fonts are bundled with the app (`@fontsource/*` packages imported in `web/src/main.tsx`), so no font request
+leaves the site.
 
 ## Shape
 

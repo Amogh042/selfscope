@@ -191,12 +191,12 @@ function stripExt(name: string) {
   return basename(name).replace(/\.[^.]+$/, '')
 }
 
-/** Exam periods that come pre-tagged with the demo data (data/samples/periods.json). */
+/** Periods (exam weeks, semester breaks) that come pre-tagged with the demo data (data/samples/periods.json). */
 export async function fetchDemoPeriods(): Promise<{ label: string; start: string; end: string }[]> {
   return (await fetchDemoSettings()).periods
 }
 
-/** Demo settings shipped with the samples: the exam periods and the demo user's chat name. */
+/** Demo settings shipped with the samples: the tagged periods and the demo user's chat name. */
 export async function fetchDemoSettings(): Promise<{ periods: { label: string; start: string; end: string }[]; me: string | null }> {
   const r = await fetch(`${import.meta.env.BASE_URL}demo/periods.json`)
   if (!r.ok) return { periods: [], me: null }

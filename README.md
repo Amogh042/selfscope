@@ -6,7 +6,9 @@ interactive dashboard with insights *across* apps: "on days with 24+ YouTube vid
 to order food delivery", "sad songs peak around 2 am", "during exams your negative messages triple".
 
 **Everything runs in your browser. Your data never leaves your device**: no server, no uploads, no
-analytics. The only network requests are for static code (the Python runtime, fonts).
+analytics. Apart from the site itself, the only network requests download the Python runtime from the jsDelivr CDN,
+and a Content-Security-Policy makes the browser block every other destination. See the privacy audit in
+[`docs/privacy.md`](docs/privacy.md).
 
 ![Dashboard](docs/screenshots/dashboard-full.png)
 
@@ -38,6 +40,7 @@ your export files ──► Import screen (detects the source, unzips)
 - `data/samples/` — a synthetic demo year in the real export formats; `data/private/` — your real exports
   (git-ignored, never committed).
 - `docs/` — design system (`design.md`), event schema (`schema.md`), analysis methods (`analysis.md`),
+  privacy audit (`privacy.md`), viva notes (`viva.md`), planned vs used stack (`tech-stack-final.md`),
   known gaps (`backlog.md`). Developer notes: `CLAUDE.md`.
 
 ## Run it
@@ -50,19 +53,34 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. Production build: `npm run build` (output in `web/dist/`, a static site).
+Open http://localhost:5173. Production build: `npm run build` (output in `web/dist/`, a static site);
+check it with `npm run preview` (http://localhost:4173, served with the same security headers as on Vercel).
 
 ### Load the demo
 
-1. Click **IMPORT** → **★ LOAD DEMO DATA**. This switches to the separate **DEMO** database and imports
-   one synthetic year (Spotify, YouTube, 5 WhatsApp chats, an SBI statement), tags the three exam periods
-   and picks the demo user's chat name.
-2. The first time, the browser downloads the Python runtime and its packages (tens of MB from the jsDelivr CDN, cached afterwards) and analyses the
-   data in a worker (about 15 s for the first analysis, then cached).
-3. Open **DASHBOARD**. Use the date-range picker (or drag the timeline slider), click any day for the
+1. On the landing screen click **★ TRY THE DEMO** (or **IMPORT** → **★ LOAD DEMO DATA**). This switches to the
+   separate **DEMO** database and imports one synthetic year (Spotify, YouTube, 5 WhatsApp chats, an SBI statement),
+   tags the three exam periods and two semester breaks, and picks the demo user's chat name.
+2. The Python runtime starts downloading as soon as the landing screen opens (tens of MB from the jsDelivr CDN,
+   cached afterwards). The first analysis shows its steps (Loading Python → Reading data → Finding patterns) and
+   takes ~15–30 s; after that results are cached.
+3. On the **DASHBOARD**, use the date-range picker (or drag the timeline slider), click any day for the
    drill-down, click an insight card for its scatter plot, and try **Control for weekday + tagged periods**.
 
-Your own files go in **MY DATA**, a separate database that never mixes with the demo.
+Your own files go in **MY DATA**, a separate database that never mixes with the demo. **How to export your data**
+(WhatsApp, Spotify, Google Takeout, SBI) is linked from the landing and import screens (`#/guide`).
+
+### Deploy (static site)
+
+The build is a plain static folder with a relative base path and hash routing, so it works at a domain root and
+under a sub-path. No cross-origin isolation headers are needed (DuckDB-WASM runs single-threaded; Pyodide doesn't
+use SharedArrayBuffer).
+
+- **Vercel:** import the repo, set the project's *Root Directory* to `web`. `web/vercel.json` sets the build and
+  the security headers (CSP, no referrer, …).
+- **GitHub Pages:** Settings → Pages → Source: *GitHub Actions*, then run the *Deploy to GitHub Pages* workflow
+  (`.github/workflows/pages.yml`, manual). Pages can't set headers, so the CSP comes from a `<meta>` tag in the
+  built `index.html` (covers the page, not the workers; see `docs/privacy.md`).
 
 ## Tests and reports
 
@@ -75,7 +93,10 @@ cd ml && ../.venv/bin/python -m pytest                     # ML pipeline
 
 | Report | What |
 |---|---|
+| `docs/viva.md` | 1-minute pitch, architecture diagram, methods, key numbers, limitations, likely questions |
 | `docs/analysis.md` | how the insights are computed, why, validation on the demo, limits |
+| `docs/privacy.md` | network audit (every request the app makes), what is stored where, how to wipe it |
+| `docs/tech-stack-final.md` | what the proposal planned vs what was used, and why |
 | `ml/reports/` | spend categoriser evaluation, sentiment accuracy (`sentiment_report.md`), analysis validation (`analysis_validation.json`) |
 | `ml/notebooks/01_spend_categoriser.ipynb` | categoriser training walkthrough |
 | `docs/screenshots/` | dashboard screenshots (demo data) |

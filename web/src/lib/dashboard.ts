@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useApp } from './appState'
-import { computeInsights, type EngineResult } from './insights'
+import { computeInsights, type AnalysisStep, type EngineResult } from './insights'
 import { store } from './store'
 
 /** Run a named query with range_from / range_to (+ extra vars); null while loading. */
@@ -56,26 +56,28 @@ export interface EngineState {
   busy: boolean
   error: string | null
   meta: { cached: boolean; ms: number } | null
+  /** Current step of an uncached run (null when idle or served from the cache). */
+  step: AnalysisStep | null
 }
 
 /** The analysis engine for the current range (cached in DuckDB by range + data fingerprint). */
 export function useEngine(): EngineState {
   const { resolved, storeState } = useApp()
-  const [state, setState] = useState<EngineState>({ res: null, busy: false, error: null, meta: null })
+  const [state, setState] = useState<EngineState>({ res: null, busy: false, error: null, meta: null, step: null })
   const range = useMemo(() => ({ from: resolved?.from ?? null, to: resolved?.to ?? null }), [resolved?.from, resolved?.to])
   useEffect(() => {
     if (storeState.status !== 'ready' || !storeState.mode || !resolved) {
-      setState({ res: null, busy: false, error: null, meta: null })
+      setState({ res: null, busy: false, error: null, meta: null, step: null })
       return
     }
     let live = true
-    setState((s) => ({ ...s, busy: true, error: null }))
-    computeInsights(storeState.mode, range)
-      .then((r) => live && setState({ res: r.result, busy: false, error: null, meta: { cached: r.cached, ms: r.ms } }))
+    setState((s) => ({ ...s, busy: true, error: null, step: null }))
+    computeInsights(storeState.mode, range, (step) => live && setState((s) => ({ ...s, step })))
+      .then((r) => live && setState({ res: r.result, busy: false, error: null, meta: { cached: r.cached, ms: r.ms }, step: null }))
       .catch(
         (e) =>
           live &&
-          setState((s) => ({ ...s, busy: false, error: e instanceof Error ? e.message.trim().split('\n').slice(-1)[0] : String(e) })),
+          setState((s) => ({ ...s, busy: false, step: null, error: e instanceof Error ? e.message.trim().split('\n').slice(-1)[0] : String(e) })),
       )
     return () => {
       live = false

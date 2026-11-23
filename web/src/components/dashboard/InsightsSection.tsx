@@ -4,7 +4,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRangeQuery } from '../../lib/dashboard'
-import type { EngineResult, Insight, MatrixCell, MetricMeta } from '../../lib/insights'
+import type { CalendarStatus, EngineResult, Insight, MatrixCell, MetricMeta } from '../../lib/insights'
 import { byUnit, colors, fmtDay, int, shade, signed, sourceColor, SOURCE_NAME, type Source } from '../../lib/sourceStyle'
 import { Chart, tipRow } from '../charts/Chart'
 import { Drawer } from './Drawer'
@@ -119,6 +119,23 @@ function MiniScatter({ i, daily }: { i: Insight; daily: Daily[] | null }) {
   )
 }
 
+const CAL_BADGE: Record<CalendarStatus, [string, string]> = {
+  holds: ['border-xp text-xp', '✓ holds after controlling for calendar'],
+  borderline: ['border-orange-light text-orange-light', '~ borderline after controlling for calendar'],
+  unconfirmed: ['border-muted text-muted', 'similar size without the calendar, but not significant'],
+  fades: ['border-muted text-muted', 'fades when calendar is removed'],
+}
+
+function calendarStatus(rho: number | null, rhoC: number | null, q: number | null): CalendarStatus {
+  if (rho == null || rhoC == null || q == null || Math.sign(rhoC) !== Math.sign(rho) || Math.abs(rhoC) < 0.1) return 'fades'
+  return q < 0.05 ? 'holds' : q < 0.1 ? 'borderline' : 'unconfirmed'
+}
+
+function CalendarBadge({ c, cls = '' }: { c: NonNullable<Insight['calendar']>; cls?: string }) {
+  const [style, text] = CAL_BADGE[c.status ?? (c.holds ? 'holds' : 'fades')]
+  return <Badge cls={`${cls} ${style}`}>{text}</Badge>
+}
+
 function InsightCard({ i, rank, meta, daily, controlled, onOpen }: {
   i: Insight
   rank: number
@@ -143,7 +160,9 @@ function InsightCard({ i, rank, meta, daily, controlled, onOpen }: {
         <p className="text-sm leading-snug text-text">{i.sentence}</p>
         {i.detail && !controlled ? <MiniBars i={i} meta={meta} /> : <MiniScatter i={i} daily={daily} />}
         <p className="font-mono text-[10px] text-muted">{i.stats}</p>
-        {!controlled && i.calendar?.holds && <Badge cls="self-start border-xp text-xp">✓ holds after controlling for calendar</Badge>}
+        {!controlled && i.calendar && i.calendar.status !== 'fades' && i.calendar.status !== 'unconfirmed' && (
+          <CalendarBadge c={i.calendar} cls="self-start" />
+        )}
         {controlled && <Badge cls="self-start border-orange-light text-orange-light">weekday + periods removed</Badge>}
       </button>
     </li>
@@ -194,7 +213,7 @@ function DetailPanel({ d, res, daily, onClose, onDay }: { d: Detail; res: Engine
   if (i.calendar && !d.controlled)
     rows.push(
       ['partial rho, calendar removed', signed(i.calendar.rho)],
-      ['adjusted p, calendar removed', pfmt(i.calendar.q)],
+      ['adjusted p, calendar removed (BH, all tests)', pfmt(i.calendar.q)],
     )
   return (
     <Drawer title={d.controlled ? 'LINK · CALENDAR REMOVED' : 'LINK DETAIL'} onClose={onClose}>
@@ -203,8 +222,7 @@ function DetailPanel({ d, res, daily, onClose, onDay }: { d: Detail; res: Engine
         <SourceChips sources={i.sources} />
         <Badge cls={STRENGTH_CLS[i.strength] ?? STRENGTH_CLS.weak}>{i.strength}</Badge>
         {i.q >= 0.05 && <Badge cls="border-muted text-muted">not significant</Badge>}
-        {!d.controlled && i.calendar?.holds && <Badge cls="border-xp text-xp">✓ holds after controlling for calendar</Badge>}
-        {!d.controlled && i.calendar && !i.calendar.holds && <Badge cls="border-muted text-muted">fades when calendar is removed</Badge>}
+        {!d.controlled && i.calendar && <CalendarBadge c={i.calendar} />}
       </div>
       {i.detail && <MiniBars i={i} meta={meta} />}
       <Chart
@@ -338,9 +356,11 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
     )
 
   const list = controlled ? res.calendar_controlled.insights : res.insights
-  const weak = controlled ? res.calendar_controlled.weak_signals : res.weak_signals
+  const weak = controlled ? [...res.calendar_controlled.weak_signals, ...res.calendar_controlled.borderline] : res.weak_signals
   const shown = showAll ? list : list.slice(0, 12)
-  const holds = res.insights.filter((i) => i.calendar?.holds).length
+  const holds = res.insights.filter((i) => i.calendar?.status === 'holds').length
+  const border = res.insights.filter((i) => i.calendar?.status === 'borderline').length
+  const cc = res.calendar_controlled
   const open = (insight: Insight) => setDetail({ insight, controlled })
 
   function openCell(cell: MatrixCell) {
@@ -365,7 +385,10 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
       stats: '',
       note: '',
       detail: null,
-      calendar: controlled ? undefined : { rho: cell.rho_c, q: cell.q_c, holds: !!cell.significant_c && Math.abs(cell.rho_c ?? 0) >= 0.1 && Math.sign(cell.rho_c ?? 0) === Math.sign(cell.rho) },
+      calendar: controlled ? undefined : (() => {
+        const status = calendarStatus(cell.rho, cell.rho_c, cell.q_c)
+        return { rho: cell.rho_c, q: cell.q_c, status, holds: status === 'holds' }
+      })(),
     })
   }
 
@@ -375,7 +398,8 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
         <p className="max-w-2xl font-mono text-[11px] leading-relaxed text-muted">
           Associations between different apps on the same or following days, after correcting for {int(res.tests.tests)} tests at
           once (false-discovery rate 5%). <span className="text-orange-light">Association is not causation.</span>{' '}
-          {res.insights.length > 0 && `${holds} of ${res.insights.length} still hold after removing weekday and tagged-period effects.`}
+          {res.insights.length > 0 &&
+            `${holds} of ${res.insights.length} still hold after removing weekday and tagged-period effects${border ? `, ${border} borderline` : ''}.`}
         </p>
         <label className="flex shrink-0 cursor-pointer items-center gap-2 border-2 border-orange-dark bg-bg px-2 py-1.5 font-mono text-[11px] text-text">
           <input type="checkbox" checked={controlled} onChange={(e) => setControlled(e.target.checked)} className="accent-orange" />
@@ -385,12 +409,33 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
       {controlled && (
         <p className="border-l-2 border-orange-light pl-3 font-mono text-[11px] text-orange-light">
           Partial Spearman: each metric's ranks minus their weekday and in/out-of-period means ({res.calendar_controlled.controls.join(', ')}),
-          then the same tests over all pairs. What is left is not explained by those; slow untagged changes (semester breaks) can still
-          show up, often similarly at every lag.
+          then the same tests over all pairs, with the strict correction (BH over all {int(cc.tests)} tests). What is left is not explained
+          by those; untagged changes (holidays, start of month) can still show up, often similarly at every lag.
         </p>
       )}
+      {controlled && list.length === 0 && cc.strongest.length > 0 && (
+        <div className="flex flex-col gap-2 border-2 border-orange-dark bg-bg p-3">
+          <p className="font-pixel text-[9px] text-orange-light">STRONGEST REMAINING LINKS · NOT SIGNIFICANT</p>
+          <p className="font-mono text-[11px] text-muted">
+            Nothing passes after removing the calendar. These are the smallest p-values left; with {int(cc.tests)} tests, a few this small
+            are expected by chance, so none is a finding on its own.
+          </p>
+          <ul className="flex flex-col gap-1.5">
+            {cc.strongest.map((w) => (
+              <li key={`${w.x}-${w.y}-${w.lag}`}>
+                <button onClick={() => open(w)} className="flex w-full flex-col gap-0.5 border-l-2 border-orange-dark pl-3 text-left hover:border-orange">
+                  <span className="text-xs text-text">{w.sentence}</span>
+                  <span className="font-mono text-[10px] text-muted">
+                    {w.stats} · raw p {pfmt(w.p ?? null)}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {list.length === 0 ? (
-        <p className="font-mono text-xs text-muted">
+        controlled && cc.strongest.length > 0 ? null : <p className="font-mono text-xs text-muted">
           {res.correlation_window.days ? 'No cross-app association passed the bar for this date range.' : `No cross-app links: ${res.correlation_window.reason ?? 'needs at least 30 days where every app has data'}.`}
         </p>
       ) : (
@@ -417,7 +462,7 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
           <p className="font-mono text-[11px] text-muted">
             Significant but weak (|rho| 0.1–0.2). In the null test (dates shuffled, so no real link exists) about 1–2 of these still
             appeared per run, so treat them as hints. Rare events like food delivery can show a large "x times as likely" with only a
-            weak correlation.
+            weak correlation.{controlled && ' Borderline = adjusted p between 0.05 and 0.10.'}
           </p>
           <ul className="flex flex-col gap-1.5">
             {weak.map((w) => (
@@ -426,7 +471,9 @@ export function InsightsSection({ res, busy, onDay }: { res: EngineResult | null
                   <span className="text-xs text-text">{w.sentence}</span>
                   <span className="font-mono text-[10px] text-muted">
                     {w.stats}
-                    {!controlled && w.calendar?.holds && <span className="text-xp"> · holds after controlling for calendar</span>}
+                    {controlled && w.q >= 0.05 && <span className="text-orange-light"> · borderline</span>}
+                    {!controlled && w.calendar?.status === 'holds' && <span className="text-xp"> · holds after controlling for calendar</span>}
+                    {!controlled && w.calendar?.status === 'borderline' && <span className="text-orange-light"> · borderline after controlling for calendar</span>}
                   </span>
                 </button>
               </li>

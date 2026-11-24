@@ -43,7 +43,7 @@ your export files ──► Import screen (detects the source, unzips)
   (git-ignored, never committed).
 - `docs/` — design system (`design.md`), event schema (`schema.md`), analysis methods (`analysis.md`),
   privacy audit (`privacy.md`), viva notes (`viva.md`), planned vs used stack (`tech-stack-final.md`),
-  known gaps (`backlog.md`). Developer notes: `CLAUDE.md`.
+  known gaps (`backlog.md`).
 
 ## Run it
 

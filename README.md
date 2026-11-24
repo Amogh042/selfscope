@@ -1,5 +1,7 @@
 # SelfScope
 
+**Live: https://selfscope-psi.vercel.app** (try the demo; it runs entirely in your browser)
+
 **A privacy-first personal data dashboard.** Drop in your own exports — UPI/SBI bank statements,
 WhatsApp chats, Spotify listening history, YouTube watch history (Google Takeout) — and get one
 interactive dashboard with insights *across* apps: "on days with 24+ YouTube videos you're 3.2x as likely
@@ -76,8 +78,16 @@ The build is a plain static folder with a relative base path and hash routing, s
 under a sub-path. No cross-origin isolation headers are needed (DuckDB-WASM runs single-threaded; Pyodide doesn't
 use SharedArrayBuffer).
 
-- **Vercel:** import the repo, set the project's *Root Directory* to `web`. `web/vercel.json` sets the build and
-  the security headers (CSP, no referrer, …).
+- **Vercel** (live at https://selfscope-psi.vercel.app): the project's *Root Directory* is `web`, with source files
+  outside it included (the build copies `data/samples/` and `ml/selfscope_ml/`). `web/vercel.json` sets the build
+  and the security headers (CSP, no referrer, …). It is deployed from the CLI, uploading only committed files
+  (never `data/private/` or other ignored files). To redeploy, run this from the repo root after `vercel login`:
+
+  ```bash
+  D=$(mktemp -d) && git archive HEAD web data/samples ml/selfscope_ml | tar -x -C "$D" && mkdir "$D/.vercel" && cp .vercel/project.json "$D/.vercel/" && (cd "$D" && vercel deploy --prod)
+  ```
+
+  (`.vercel/project.json` is created by `vercel link --project selfscope`; it is git-ignored.)
 - **GitHub Pages:** Settings → Pages → Source: *GitHub Actions*, then run the *Deploy to GitHub Pages* workflow
   (`.github/workflows/pages.yml`, manual). Pages can't set headers, so the CSP comes from a `<meta>` tag in the
   built `index.html` (covers the page, not the workers; see `docs/privacy.md`).
